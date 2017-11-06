@@ -10,7 +10,7 @@ spec:
         run: nginx-proxy
     spec:
       containers:
-        - image:           nginx-proxy:latest
+        - image:           {{ docker_registry }}/nginx-proxy:latest
           name:            nginx
           imagePullPolicy: Always
           resources:

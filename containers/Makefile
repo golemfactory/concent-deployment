@@ -22,7 +22,7 @@ nginx-proxy-source: build/ $(NGINX_PROXY_SOURCE)
 build/:
 	mkdir --parents "$@"
 
-# Static file
+# Static files
 build/%: %
 	cp --archive --parents "$<" build/
 
