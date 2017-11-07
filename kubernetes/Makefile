@@ -1,6 +1,7 @@
 CLUSTER_SCRIPTS :=                                     \
 	build/services/nginx-proxy.yml                     \
 	build/services/concent-api.yml                     \
+	build/services/mail-relay.yml                      \
 	build/create-config-maps.sh                        \
 	build/delete-config-maps.sh                        \
 	build/create-services.sh                           \

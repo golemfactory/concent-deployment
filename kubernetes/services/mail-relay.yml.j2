@@ -1,0 +1,52 @@
+apiVersion: extensions/v1beta1
+kind:       Deployment
+metadata:
+  name: mail-relay
+spec:
+  replicas:             1
+  revisionHistoryLimit: 2
+  template:
+    metadata:
+      labels:
+        run: mail-relay
+    spec:
+      containers:
+        - name:            mail-relay
+          image:           panubo/postfix
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 587
+          env:
+            - name:  MAILNAME
+              value: {{ mailname }}
+            # $MY_NETWORKS must match pod IPs assigned by Kubernetes. All pods will be able to access this server.
+            - name:  MY_NETWORKS
+              value: {{ kubernetes_pod_network }}
+          volumeMounts:
+            - name:      mail-relay-data
+              mountPath: /var/spool/postfix/
+          resources:
+            requests:
+              memory: "10Mi"
+              cpu:    "50m"
+            limits:
+              memory: "100Mi"
+              cpu:    "300m"
+      volumes:
+        - name:     mail-relay-data
+          emptyDir: {}
+---
+apiVersion: v1
+kind:       Service
+metadata:
+  name: mail-relay
+  labels:
+    run: mail-relay
+spec:
+  type: ClusterIP
+  ports:
+    - port:       587
+      targetPort: 587
+      name:       mail-relay-port
+  selector:
+    run: mail-relay
