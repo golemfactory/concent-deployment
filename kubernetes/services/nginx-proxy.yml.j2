@@ -38,7 +38,8 @@ kind: Service
 metadata:
   name: nginx-proxy
 spec:
-  type: LoadBalancer
+  type:           LoadBalancer
+  loadBalancerIP: {{ external_ip }}
   ports:
     - protocol:   TCP
       port:       80
