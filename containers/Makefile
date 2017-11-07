@@ -3,6 +3,11 @@ NGINX_PROXY_SOURCE :=               \
     build/nginx-proxy/Dockerfile    \
     build/nginx-proxy/index.html    \
 
+ifndef CONCENT_DIR
+	CONCENT_DIR:= $(abspath ../../concent)
+endif
+$(info CONCENT_DIR=$(CONCENT_DIR))
+
 all: nginx-proxy
 
 nginx-proxy: nginx-proxy-source
@@ -14,6 +19,11 @@ docker-clean: nginx-proxy-clean
 
 nginx-proxy-clean:
 	docker rmi nginx-proxy:$(VERSION) --force
+
+
+build/concent-api/concent-api.tar: $(CONCENT_DIR)
+	mkdir --parents $(dir $@)
+	package-builder/build-concent-api.sh "$(CONCENT_DIR)" "build/concent-api"
 
 
 nginx-proxy-source: build/ $(NGINX_PROXY_SOURCE)
