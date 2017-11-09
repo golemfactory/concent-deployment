@@ -1,4 +1,5 @@
-- hosts: all
+- hosts:
+    - concent-builder
   vars_files:
     - consts.yml
   tasks:

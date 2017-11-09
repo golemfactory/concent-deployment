@@ -7,3 +7,6 @@
 # Build files created by Makefiles.
 /containers/build/
 /kubernetes/build/
+
+# Configure files created by Vagrant and VirtualBox.
+/concent-builder-vm/.vagrant/
