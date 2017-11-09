@@ -1,0 +1,80 @@
+- hosts: all
+  vars_files:
+    - consts.yml
+  tasks:
+    - become:      yes
+      become_user: root
+      block:
+        - name: Install required packages for apt_key and apt_repository
+          apt:  name={{ item }}
+          with_items:
+            - apt-transport-https
+            - ca-certificates
+            - curl
+
+        - name: Add Google SDK repository key
+          apt_key:
+            url:   https://packages.cloud.google.com/apt/doc/apt-key.gpg
+            state: present
+
+        - name: Add Google Cloud SDK repository
+          apt_repository:
+            repo:  "deb http://packages.cloud.google.com/apt cloud-sdk-{{ ansible_distribution_release }} main"
+            state: present
+
+        - name: Add Docker repository key
+          apt_key:
+            url:   https://apt.dockerproject.org/gpg
+            state: present
+
+        - name: Add Docker.io apt repository
+          apt_repository:
+            repo:  "deb https://apt.dockerproject.org/repo {{ ansible_distribution|lower }}-{{ ansible_distribution_release }} main"
+            state: present
+
+        - name: Install system updates for Debian
+          apt:  update_cache=yes
+
+        - name: Install basic packages
+          apt:  name={{ item }}
+          with_items:
+            - ncdu
+            - tree
+            - htop
+            - tmux
+
+        - name: Install dependencies
+          apt:  name={{ item }}
+          with_items:
+            - build-essential
+            - python2.7
+            - python3
+            - python-pip
+            - git
+            - kubectl
+            - docker-engine
+            - google-cloud-sdk
+            - ansible
+            - virtualenv
+
+        - name:     apt autoclean
+          command:  apt autoclean
+        - name:     apt autoremove
+          command:  apt autoremove
+
+        - name: Install yasha in global python environment using pip
+          pip:
+            name: yasha
+
+        - name:     Create user that will be used for building stuff
+          user:
+            name:   "{{ shared_user }}"
+            state:  present
+            groups: docker
+
+        - name: Create data_dir
+          file:
+            path:  "{{ data_dir }}"
+            state: directory
+            owner: "{{ shared_user }}"
+            group: "{{ shared_user }}"
