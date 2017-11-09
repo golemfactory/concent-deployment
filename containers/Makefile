@@ -2,7 +2,6 @@ VERSION := 1.0.0
 NGINX_PROXY_SOURCE :=               \
     build/nginx-proxy/Dockerfile    \
     build/nginx-proxy/index.html    \
-    build/nginx-proxy/default.conf
 
 all: nginx-proxy
 

@@ -24,6 +24,14 @@ spec:
             preStop:
               exec:
                 command: ["/usr/sbin/nginx", "-s", "quit"]
+          volumeMounts:
+            - mountPath:  /etc/nginx/conf.d/
+              name:       nginx-config
+              readOnly:   true
+      volumes:
+        -  name: nginx-config
+           configMap:
+             name: nginx-config
 ---
 apiVersion: v1
 kind: Service

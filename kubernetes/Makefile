@@ -1,8 +1,11 @@
-CLUSTER_SCRIPTS :=                 \
-	build/services/nginx-proxy.yml \
-	build/create-services.sh       \
-	build/delete-services.sh       \
-	build/push-docker-images.sh    \
+CLUSTER_SCRIPTS :=                                     \
+	build/services/nginx-proxy.yml                     \
+	build/create-config-maps.sh                        \
+	build/delete-config-maps.sh                        \
+	build/create-services.sh                           \
+	build/delete-services.sh                           \
+	build/push-docker-images.sh                        \
+	build/config-maps/nginx-proxy/default.conf
 
 all: cluster-scripts
 
