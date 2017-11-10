@@ -23,6 +23,14 @@ spec:
             limits:
               memory: "1Gi"
               cpu:    "800m"
+          volumeMounts:
+            - name:      concent-api-settings
+              mountPath: /srv/http/concent_api/concent_api/settings/config_map/
+              readOnly:  true
+      volumes:
+        - name: concent-api-settings
+          configMap:
+            name: concent-api-settings
 ---
 apiVersion: v1
 kind:       Service

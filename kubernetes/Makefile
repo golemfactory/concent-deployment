@@ -6,7 +6,8 @@ CLUSTER_SCRIPTS :=                                     \
 	build/create-services.sh                           \
 	build/delete-services.sh                           \
 	build/push-docker-images.sh                        \
-	build/config-maps/nginx-proxy/default.conf
+	build/config-maps/nginx-proxy/default.conf         \
+	build/config-maps/concent-api/local_settings.py
 
 all: cluster-scripts
 
@@ -18,6 +19,7 @@ build/:
 # Static file
 build/%: %
 	cp --archive --parents "$<" build/
+
 
 # Templates
 build/%: %.j2 var.yml

@@ -9,4 +9,6 @@ COPY concent-api-manage.sh          /usr/local/bin/
 COPY run-gunicorn.sh                /usr/local/bin/
 RUN  /tmp/install-concent-api.sh
 
+COPY local_settings.py              /srv/http/concent_api/concent_api/settings/
+
 CMD ["/usr/local/bin/run-gunicorn.sh"]
