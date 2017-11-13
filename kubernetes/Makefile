@@ -7,7 +7,13 @@ CLUSTER_SCRIPTS :=                                     \
 	build/delete-services.sh                           \
 	build/push-docker-images.sh                        \
 	build/config-maps/nginx-proxy/default.conf         \
-	build/config-maps/concent-api/local_settings.py
+	build/config-maps/concent-api/local_settings.py    \
+	build/concent-secrets/secrets.py
+
+ifndef CONCENT_SECRET_DIR
+	CONCENT_SECRET_DIR:= $(abspath ../../concent-secrets)
+endif
+$(info CONCENT_SECRET_DIR=$(CONCENT_SECRET_DIR))
 
 all: cluster-scripts
 
@@ -20,6 +26,10 @@ build/:
 build/%: %
 	cp --archive --parents "$<" build/
 
+# Secret file
+build/concent-secrets/%: $(CONCENT_SECRET_DIR)/%
+	mkdir --parents $(dir $@)
+	cp --archive "$<" $(dir $@)
 
 # Templates
 build/%: %.j2 var.yml
