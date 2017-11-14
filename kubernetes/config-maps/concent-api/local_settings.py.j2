@@ -2,11 +2,14 @@ from ..production import *
 # Create secrets.py and put passwords and private kyes in it.
 # Don't commit it into the repository.
 from ..secrets.secrets import (
-    SECRET_KEY
+    SECRET_KEY,
+    DATABASE_PASSWORD
 )
 
-DATABASES['default']['ENGINE']   = 'django.db.backends.sqlite3'
-DATABASES['default']['NAME']     = os.path.join(BASE_DIR, 'db.sqlite3')
+DATABASES['default']['USER']     = '{{ database_user }}'
+DATABASES['default']['PASSWORD'] = DATABASE_PASSWORD
+DATABASES['default']['HOST']     = '{{ database_host }}'
+DATABASES['default']['PORT']     = '5432'
 
 ALLOWED_HOSTS = [
 {% for host in allowed_hosts %}
