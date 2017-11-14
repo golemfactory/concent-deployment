@@ -3,6 +3,7 @@ kind: Deployment
 metadata:
   name: nginx-proxy
 spec:
+  replicas:             2
   revisionHistoryLimit: 2
   template:
     metadata:
