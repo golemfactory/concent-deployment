@@ -1,0 +1,57 @@
+- hosts:
+    - concent-builder
+  vars_files:
+    - consts.yml
+    - repositories.yml
+    - "{{ deployment_values }}"
+  tasks:
+    - become:      yes
+      become_user: "{{ shared_user }}"
+      block:
+        - name: Clone concent repositories
+          git:
+            repo:           "{{ item.value.url }}"
+            dest:           "{{ data_dir }}/{{ item.key }}/"
+            clone:          yes
+            update:         yes
+            bare:           yes
+            # FIXME: Do not blindly accept the hostkey
+            accept_hostkey: yes
+          with_dict:        "{{ repositories }}"
+
+        - name: Create a directory for secrets
+          file:
+            path:  "{{ data_dir }}/concent-secrets"
+            state: directory
+
+    - become:      yes
+      become_user: root
+      block:
+        # NOTE: Doing this as root because Ansible's copy module has a bug which causes issues with
+        # permissions when become_user is different than the user used to execute the playbook on the remote machine.
+        # https://github.com/ansible/ansible/issues/21145
+        - name: Upload secrets
+          copy:
+            src:   "{{ local_secret_dir }}/{{ item }}"
+            dest:  "{{ data_dir }}/concent-secrets"
+            owner: "{{ shared_user }}"
+            group: "{{ shared_user }}"
+          with_items:
+            - secrets.py
+            - var-secret.yml
+            - "{{ gke.service_account_name }}-private-key.json"
+
+    - become:      yes
+      become_user: "{{ shared_user }}"
+      block:
+        - name: Activate the service account that has permissions to access the cluster
+          command: gcloud auth activate-service-account                                                   \
+              "{{ gke.service_account_name }}@{{ gke.project }}.iam.gserviceaccount.com"             \
+              --key-file "{{ data_dir }}/concent-secrets/{{ gke.service_account_name }}-private-key.json"
+
+        - name: Get credentials for the cluster
+          command: gcloud container clusters get-credentials \
+              "{{ gke.cluster }}"                            \
+              --project "{{ gke.project }}"                  \
+              --zone    "{{ gke.zone }}"
+

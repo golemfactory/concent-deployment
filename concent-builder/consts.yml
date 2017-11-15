@@ -1,1 +1,3 @@
-shared_user: builder
+shared_user:      builder
+data_dir:         /var/concent-data
+local_secret_dir: ../../concent-secrets
