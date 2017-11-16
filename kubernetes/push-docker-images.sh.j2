@@ -1,0 +1,5 @@
+#!/bin/bash -e
+
+docker tag nginx-proxy:latest {{ docker_registry }}/nginx-proxy:latest
+
+gcloud docker -- push {{ docker_registry }}/nginx-proxy:latest

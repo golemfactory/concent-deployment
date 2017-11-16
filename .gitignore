@@ -1,0 +1,9 @@
+# Vim's temporary files.
+*.sw[ponm]
+
+# We never commit binary files to the repository.
+*.tar
+
+# Build files created by Makefiles.
+/containers/build/
+/kubernetes/build/

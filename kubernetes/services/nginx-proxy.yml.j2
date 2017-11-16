@@ -1,0 +1,48 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: nginx-proxy
+spec:
+  revisionHistoryLimit: 2
+  template:
+    metadata:
+      labels:
+        run: nginx-proxy
+    spec:
+      containers:
+        - image:           {{ docker_registry }}/nginx-proxy:latest
+          name:            nginx
+          imagePullPolicy: Always
+          resources:
+            requests:
+              memory: "100Mi"
+              cpu:    "200m"
+            limits:
+              memory: "512Mi"
+              cpu:    "600m"
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/usr/sbin/nginx", "-s", "quit"]
+          volumeMounts:
+            - mountPath:  /etc/nginx/conf.d/
+              name:       nginx-config
+              readOnly:   true
+      volumes:
+        -  name: nginx-config
+           configMap:
+             name: nginx-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-proxy
+spec:
+  type:           LoadBalancer
+  loadBalancerIP: {{ external_ip }}
+  ports:
+    - protocol:   TCP
+      port:       80
+      targetPort: 80
+  selector:
+    run: nginx-proxy
