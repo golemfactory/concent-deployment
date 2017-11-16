@@ -1,0 +1,25 @@
+from ..production import *
+# Create secrets.py and put passwords and private kyes in it.
+# Don't commit it into the repository.
+from ..secrets.secrets import (
+    SECRET_KEY,
+    DATABASE_PASSWORD
+)
+
+DATABASES['default']['USER']     = '{{ database_user }}'
+DATABASES['default']['PASSWORD'] = DATABASE_PASSWORD
+DATABASES['default']['HOST']     = '{{ database_host }}'
+DATABASES['default']['PORT']     = '5432'
+
+ALLOWED_HOSTS = [
+{% for host in allowed_hosts %}
+    "{{ host }}",
+{% endfor %}
+]
+
+ADMINS = [
+{% for admin in admins %}
+    ("{{ admin.name }}", "{{ admin.mail }}"),
+{% endfor %}
+]
+
