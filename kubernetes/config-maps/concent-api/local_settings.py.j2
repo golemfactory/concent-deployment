@@ -6,6 +6,7 @@ from ..secrets.secrets import (
     DATABASE_PASSWORD
 )
 
+DATABASES['default']['NAME']     = '{{ database_name }}'
 DATABASES['default']['USER']     = '{{ database_user }}'
 DATABASES['default']['PASSWORD'] = DATABASE_PASSWORD
 DATABASES['default']['HOST']     = '{{ database_host }}'
