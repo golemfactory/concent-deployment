@@ -32,8 +32,12 @@ build/concent-secrets/%: $(CONCENT_SECRET_DIR)/%
 	cp --archive "$<" $(dir $@)
 
 # Templates
-build/%: %.j2 vars.yml ../tools/render-jinja-template.sh
-	../tools/render-jinja-template.sh vars.yml "$<" "$@"
+build/%: %.j2 build/vars-merged-with-secrets.yml ../tools/render-jinja-template.sh
+	../tools/render-jinja-template.sh build/vars-merged-with-secrets.yml "$<" "$@"
+
+build/vars-merged-with-secrets.yml: var.yml $(CONCENT_SECRET_DIR)/var-secret.yml ../tools/merge-yaml.py
+	../tools/merge-yaml.py "$<" $(CONCENT_SECRET_DIR)/var-secret.yml --output "$@"
+
 
 clean:
 	rm -rf build/
