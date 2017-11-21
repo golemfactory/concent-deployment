@@ -3,6 +3,11 @@ NGINX_PROXY_SOURCE :=               \
     build/nginx-proxy/Dockerfile    \
     build/nginx-proxy/index.html    \
 
+POSTGRESQL_SOURCE :=                          \
+    build/postgresql/Dockerfile               \
+    build/postgresql/delete-database.sh       \
+    build/postgresql/create-database.sh
+
 CONCENT_API_SOURCE :=                           \
     build/concent-api/install-concent-api.sh    \
     build/concent-api/install-dependencies.sh   \
@@ -16,20 +21,27 @@ ifndef CONCENT_DIR
 endif
 $(info CONCENT_DIR=$(CONCENT_DIR))
 
-all: build/ nginx-proxy concent-api
+all: build/ nginx-proxy concent-api postgresql
 
 nginx-proxy: $(NGINX_PROXY_SOURCE) build/nginx-proxy/concent-api-assets.tar build/nginx-proxy/concent-api-docs.tar
 	docker build -t nginx-proxy:$(VERSION) build/nginx-proxy/
 	docker tag nginx-proxy:$(VERSION) nginx-proxy:latest
 
+postgresql: $(POSTGRESQL_SOURCE)
+	docker build -t postgresql:$(VERSION) build/postgresql/
+	docker tag postgresql:$(VERSION) postgresql:latest
+
 concent-api: $(CONCENT_API_SOURCE) build/concent-api/concent-api.tar
 	docker build -t concent-api:$(VERSION) build/concent-api/
 	docker tag concent-api:$(VERSION) concent-api:latest
 
-docker-clean: nginx-proxy-clean concent-api-clean
+docker-clean: nginx-proxy-clean concent-api-clean postgresql-clean
 
 nginx-proxy-clean:
 	docker rmi nginx-proxy:$(VERSION) --force
+
+postgresql-clean:
+	docker rmi postgresql:$(VERSION) --force
 
 concent-api-clean:
 	docker rmi concent-api:$(VERSION) --force
@@ -69,4 +81,10 @@ clean:
 	rm -rf build/
 
 
-.PHONY: all nginx-proxy docker-clean nginx-proxy-clean clean concent-api concent-api-clean
+.PHONY:                           \
+	all                           \
+	nginx-proxy nginx-proxy-clean \
+	postgresql  postgresql-clean  \
+	concent-api concent-api-clean \
+	docker-clean                  \
+	clean
