@@ -1,6 +1,8 @@
 CLUSTER_SCRIPTS :=                                     \
 	build/services/nginx-proxy.yml                     \
 	build/services/concent-api.yml                     \
+	build/create-job-depedencies.sh                    \
+	build/delete-job-depedencies.sh                    \
 	build/create-config-maps.sh                        \
 	build/delete-config-maps.sh                        \
 	build/create-services.sh                           \
@@ -8,7 +10,11 @@ CLUSTER_SCRIPTS :=                                     \
 	build/push-docker-images.sh                        \
 	build/config-maps/nginx-proxy/default.conf         \
 	build/config-maps/concent-api/local_settings.py    \
-	build/concent-secrets/secrets.py
+	build/concent-secrets/secrets.py                   \
+	build/secrets/db-secrets.yml                       \
+	build/jobs/create-database.yml                     \
+	build/jobs/migrate-database.yml                    \
+	build/jobs/delete-database.yml
 
 ifndef CONCENT_SECRET_DIR
 	CONCENT_SECRET_DIR:= $(abspath ../../concent-secrets)
@@ -30,6 +36,7 @@ build/%: %
 build/concent-secrets/%: $(CONCENT_SECRET_DIR)/%
 	mkdir --parents $(dir $@)
 	cp --archive "$<" $(dir $@)
+
 
 # Templates
 build/%: %.j2 build/vars-merged-with-secrets.yml ../tools/render-jinja-template.sh

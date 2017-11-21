@@ -1,0 +1,34 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: migrate-database
+spec:
+  template:
+    metadata:
+      name: migrate-database
+    spec:
+      restartPolicy: Never
+      containers:
+        - name:            job-ok
+          image:           busybox
+          imagePullPolicy: Always
+          command:         ["sh", "-c", "echo Done."]
+      volumes:
+        - name: concent-api-secrets
+          secret:
+            secretName: concent-api-secrets
+        - name: concent-api-settings
+          configMap:
+            name: concent-api-settings
+      initContainers:
+        - name:             migrate-database
+          image:            {{ docker_registry }}/concent-api:latest
+          imagePullPolicy:  Always
+          command:          ["/usr/local/bin/concent-api-manage.sh", "migrate"]
+          volumeMounts:
+            - name:       concent-api-secrets
+              mountPath:  /srv/http/concent_api/concent_api/settings/secrets/
+              readOnly:   true
+            - name:       concent-api-settings
+              mountPath:  /srv/http/concent_api/concent_api/settings/config_map/
+              readOnly:   true
