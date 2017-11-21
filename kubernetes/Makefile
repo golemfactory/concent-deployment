@@ -34,7 +34,7 @@ build/concent-secrets/%: $(CONCENT_SECRET_DIR)/%
 # Templates
 build/%: %.j2 var.yml
 	mkdir --parents $(dir $@)
-	yasha --variables var.yml "$<" --output "$@"
+	yasha --no-extension-file --variables var.yml "$<" --output "$@"
 
 	# Copy file permissions from the source file
 	chown --reference="$<" "$@"
