@@ -1,0 +1,40 @@
+- hosts:
+    - concent-builder
+  vars_files:
+    - consts.yml
+    - repositories.yml
+  tasks:
+    - become:      yes
+      become_user: "{{ shared_user }}"
+      block:
+        - name: Remove the build directory to get rid of files from previous builds
+          file:
+            path:    "{{ build_dir }}/*"
+            state:   absent
+
+        - name: Check out working copies of all concent repositories
+          git:
+            repo:    "{{ data_dir }}/{{ item.key }}"
+            dest:    "{{ build_dir }}/{{ item.key }}"
+            version: "{{ repositories[item.key].version }}"
+            clone:   yes
+            update:  yes
+          with_dict: "{{ repositories }}"
+
+        - name: Symlink to vars from concent-deployment-values repository
+          file:
+            src:   "{{ build_dir }}/concent-deployment-values/var.yml"
+            dest:  "{{ build_dir }}/concent-deployment/kubernetes/var.yml"
+            state: link
+
+        - name: Build containers
+          make:
+            chdir: "{{ build_dir }}/concent-deployment/containers"
+            params:
+              CONCENT_SECRET_DIR: "{{ data_dir }}/concent-secrets"
+
+        - name: Build cluster configuration
+          make:
+            chdir: "{{ build_dir }}/concent-deployment/kubernetes"
+            params:
+              CONCENT_SECRET_DIR: "{{ data_dir }}/concent-secrets"
