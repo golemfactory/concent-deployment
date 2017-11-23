@@ -1,0 +1,2 @@
+# Retry files created by Ansible when playbook execution fails.
+/*.retry
