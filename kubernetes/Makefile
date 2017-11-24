@@ -13,6 +13,7 @@ CLUSTER_SCRIPTS :=                                     \
 	build/config-maps/concent-api/local_settings.py    \
 	build/concent-secrets/secrets.py                   \
 	build/secrets/db-secrets.yml                       \
+	build/secrets/django-admin-fixture.yaml            \
 	build/jobs/create-database.yml                     \
 	build/jobs/migrate-database.yml                    \
 	build/jobs/delete-database.yml
