@@ -5,6 +5,8 @@ dependencies=(
     python3-pip
     python3-virtualenv
     virtualenv
+
+    # Required by psycopg2 python package (PostgreSQL support)
     libpq-dev
 )
 apt-get --assume-yes update
