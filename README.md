@@ -26,4 +26,5 @@ DATABASE_PASSWORD = "<unencrypted password of a database role>"
 ``` yaml
 database_password: <password for the admin role on the database server>
 user_db_password:  <base64-encoded password for the database role used by django>
+admin_password:    <hash of the admin password for Django admin panel>
 ```
