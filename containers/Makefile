@@ -18,7 +18,7 @@ $(info CONCENT_DIR=$(CONCENT_DIR))
 
 all: build/ nginx-proxy concent-api
 
-nginx-proxy: $(NGINX_PROXY_SOURCE)
+nginx-proxy: $(NGINX_PROXY_SOURCE) build/nginx-proxy/concent-api-assets.tar
 	docker build -t nginx-proxy:$(VERSION) build/nginx-proxy/
 	docker tag nginx-proxy:$(VERSION) nginx-proxy:latest
 
@@ -39,6 +39,13 @@ build/concent-api/concent-api.tar: $(CONCENT_DIR)
 	mkdir --parents $(dir $@)
 	package-builder/build-concent-api.sh "$(CONCENT_DIR)" "build/concent-api"
 
+build/nginx-proxy/concent-api-assets.tar: $(CONCENT_DIR)
+	mkdir --parents "$(dir $@)"
+	package-builder/build-concent-api-assets.sh \
+		"$(CONCENT_DIR)"                        \
+		"$(abspath package-builder)"            \
+		"$(abspath build)"                      \
+		"$(dir $@)"
 
 build/:
 	mkdir --parents "$@"
