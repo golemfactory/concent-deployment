@@ -32,16 +32,8 @@ build/concent-secrets/%: $(CONCENT_SECRET_DIR)/%
 	cp --archive "$<" $(dir $@)
 
 # Templates
-build/%: %.j2 var.yml
-	mkdir --parents $(dir $@)
-	yasha --no-extension-file --variables var.yml "$<" --output "$@"
-	for pass in $$(seq 4); do                                             \
-		yasha --no-extension-file --variables var.yml "$@" --output "$@"; \
-	done
-
-	# Copy file permissions from the source file
-	chown --reference="$<" "$@"
-	chmod --reference="$<" "$@"
+build/%: %.j2 vars.yml ../tools/render-jinja-template.sh
+	../tools/render-jinja-template.sh vars.yml "$<" "$@"
 
 clean:
 	rm -rf build/
