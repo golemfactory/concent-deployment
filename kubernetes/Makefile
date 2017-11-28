@@ -1,8 +1,8 @@
 CLUSTER_SCRIPTS :=                                     \
 	build/services/nginx-proxy.yml                     \
 	build/services/concent-api.yml                     \
-	build/create-job-depedencies.sh                    \
-	build/delete-job-depedencies.sh                    \
+	build/create-job-dependencies.sh                   \
+	build/delete-job-dependencies.sh                   \
 	build/clean-up-jobs.sh                             \
 	build/create-config-maps.sh                        \
 	build/delete-config-maps.sh                        \
