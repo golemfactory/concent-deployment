@@ -1,9 +1,10 @@
 from ..production import *
-# Create secrets.py and put passwords and private kyes in it.
+# Create secrets.py and put passwords and private keys in it.
 # Don't commit it into the repository.
 from ..secrets.secrets import (
     SECRET_KEY,
-    DATABASE_PASSWORD
+    DATABASE_PASSWORD,
+    EMAIL_PASSWORD,
 )
 
 DATABASES['default']['NAME']     = '{{ database_name }}'
@@ -24,3 +25,10 @@ ADMINS = [
 {% endfor %}
 ]
 
+EMAIL_HOST          = "{{ email.host }}"
+EMAIL_PORT          = {{ email.port }}
+EMAIL_HOST_USER     = "{{ email.user }}"
+EMAIL_HOST_PASSWORD = EMAIL_PASSWORD
+EMAIL_USE_TLS       = {{ email.use_tls }}
+DEFAULT_FROM_EMAIL  = "{{ email.default_from_email }}"
+SERVER_EMAIL        = "{{ email.server_email }}"
