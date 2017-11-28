@@ -3,6 +3,7 @@ CLUSTER_SCRIPTS :=                                     \
 	build/services/concent-api.yml                     \
 	build/create-job-depedencies.sh                    \
 	build/delete-job-depedencies.sh                    \
+	build/clean-up-jobs.sh                             \
 	build/create-config-maps.sh                        \
 	build/delete-config-maps.sh                        \
 	build/create-services.sh                           \
