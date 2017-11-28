@@ -1,0 +1,36 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: delete-database
+spec:
+  template:
+    metadata:
+      name: delete-database
+    spec:
+      restartPolicy: Never
+      containers:
+        - name:            job-ok
+          image:           busybox
+          imagePullPolicy: Always
+          command:         ["sh", "-c", "echo Done."]
+      volumes:
+        - name: db-secrets
+          secret:
+            secretName:  db-secrets
+            defaultMode: 0600
+      initContainers:
+        - name:             delete-database
+          image:            {{ docker_registry }}/postgresql:latest
+          imagePullPolicy:  Always
+          command:          ["/usr/local/bin/delete-database.sh", "{{ database_host }}", "{{ database_name }}", "{{ database_user }}"]
+          env:
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secrets
+                  key:  db_admin_password
+            - name: DB_USER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secrets
+                  key:  db_user_password

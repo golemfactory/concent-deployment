@@ -2,6 +2,8 @@
 
 docker tag nginx-proxy:latest {{ docker_registry }}/nginx-proxy:latest
 docker tag concent-api:latest {{ docker_registry }}/concent-api:latest
+docker tag postgresql:latest  {{ docker_registry }}/postgresql:latest
 
 gcloud docker -- push {{ docker_registry }}/nginx-proxy:latest
 gcloud docker -- push {{ docker_registry }}/concent-api:latest
+gcloud docker -- push {{ docker_registry }}/postgresql:latest
