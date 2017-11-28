@@ -18,6 +18,15 @@ spec:
           secret:
             secretName:  db-secrets
             defaultMode: 0600
+        - name: django-admin-fixture
+          secret:
+            secretName: django-admin-fixture
+        - name: concent-api-secrets
+          secret:
+            secretName: concent-api-secrets
+        - name: concent-api-settings
+          configMap:
+            name: concent-api-settings
       initContainers:
         - name:             create-database
           image:            {{ docker_registry }}/postgresql:latest
@@ -34,3 +43,28 @@ spec:
                 secretKeyRef:
                   name: db-secrets
                   key:  db_user_password
+        - name:             migrate-database
+          image:            {{ docker_registry }}/concent-api:latest
+          imagePullPolicy:  Always
+          command:          ["/usr/local/bin/concent-api-manage.sh", "migrate"]
+          volumeMounts:
+            - name:       concent-api-secrets
+              mountPath:  /srv/http/concent_api/concent_api/settings/secrets/
+              readOnly:   true
+            - name:       concent-api-settings
+              mountPath:  /srv/http/concent_api/concent_api/settings/config_map/
+              readOnly:   true
+        - name:             create-django-admin
+          image:            {{ docker_registry }}/concent-api:latest
+          imagePullPolicy:  Always
+          command:          ["/usr/local/bin/concent-api-manage.sh", "loaddata", "/srv/http/fixtures/django-admin-fixture.yaml"]
+          volumeMounts:
+            - name:       django-admin-fixture
+              mountPath:  /srv/http/fixtures/
+              readOnly:   true
+            - name:       concent-api-secrets
+              mountPath:  /srv/http/concent_api/concent_api/settings/secrets/
+              readOnly:   true
+            - name:       concent-api-settings
+              mountPath:  /srv/http/concent_api/concent_api/settings/config_map/
+              readOnly:   true
