@@ -62,15 +62,8 @@ build/%: %
 	cp --archive --parents "$<" build/
 
 # Templates
-build/%: %.j2 config.yml
-	mkdir --parents $(dir $@)
-
-	yasha --variables config.yml "$<" --output "$@"
-
-	# Copy file permissions from the source file
-	chown --reference="$<" "$@"
-	chmod --reference="$<" "$@"
-
+build/%: %.j2 config.yml ../tools/render-jinja-template.sh
+	../tools/render-jinja-template.sh config.yml "$<" "$@"
 
 clean:
 	rm -rf build/
