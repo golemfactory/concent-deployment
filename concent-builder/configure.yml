@@ -57,6 +57,11 @@
             - google-cloud-sdk
             - ansible
             - virtualenv
+            - libpq-dev
+            - gcc
+            - libssl1.0.2
+            - libssl1.0-dev
+            - python3-dev
 
         - name:     apt autoclean
           command:  apt autoclean
