@@ -1,0 +1,11 @@
+- hosts:
+    - concent-builder
+  vars_files:
+    - consts.yml
+  tasks:
+    - become:      yes
+      become_user: "{{ shared_user }}"
+      block:
+        - name:    Migrate the database used by concent-api
+          command: kubectl create \
+            --filename "{{ build_dir }}/concent-deployment/kubernetes/build/jobs/migrate-database.yml"
