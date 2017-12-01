@@ -1,5 +1,9 @@
 #!/bin/bash -e
 
+
+kubectl create configmap nginx-storage-config                           \
+    --from-file=default.conf=config-maps/nginx-storage/default.conf     \
+
 kubectl create secret generic concent-api-secrets            \
     --from-file=secrets.py=concent-secrets/secrets.py        \
     --from-literal=__init__.py=
