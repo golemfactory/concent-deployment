@@ -1,0 +1,53 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: nginx-storage
+spec:
+  replicas:             1
+  revisionHistoryLimit: 1
+  template:
+    metadata:
+      labels:
+        run: nginx-storage
+    spec:
+      containers:
+        - image:           nginx:1.13.6-alpine
+          name:            nginx
+          imagePullPolicy: Always
+          resources:
+            requests:
+              memory: "100Mi"
+              cpu:    "200m"
+            limits:
+              memory: "512Mi"
+              cpu:    "600m"
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/usr/sbin/nginx", "-s", "quit"]
+          volumeMounts:
+            - mountPath:  /srv/storage/
+              name:       concent-storage
+            - mountPath:  /etc/nginx/conf.d/
+              name:       nginx-storage-config
+      volumes:
+        - name: concent-storage
+          gcePersistentDisk:
+            pdName: {{ persistence_disk_name }}
+            fsType: ext4
+        - name: nginx-storage-config
+          configMap:
+            name: nginx-storage-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-storage
+spec:
+  type:           ClusterIP
+  ports:
+    - protocol:   TCP
+      port:       80
+      targetPort: 80
+  selector:
+    run: nginx-storage

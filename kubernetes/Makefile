@@ -16,7 +16,9 @@ CLUSTER_SCRIPTS :=                                     \
 	build/secrets/django-admin-fixture.yaml            \
 	build/jobs/create-database.yml                     \
 	build/jobs/migrate-database.yml                    \
-	build/jobs/delete-database.yml
+	build/jobs/delete-database.yml                     \
+	build/config-maps/nginx-storage/default.conf       \
+	build/services/nginx-storage.yml
 
 ifndef CONCENT_SECRET_DIR
 	CONCENT_SECRET_DIR:= $(abspath ../../concent-secrets)
