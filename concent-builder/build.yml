@@ -3,6 +3,7 @@
   vars_files:
     - consts.yml
     - repositories.yml
+    - "{{ deployment_values }}"
   tasks:
     - become:      yes
       become_user: "{{ shared_user }}"

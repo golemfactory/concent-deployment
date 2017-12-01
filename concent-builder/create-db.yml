@@ -2,6 +2,7 @@
     - concent-builder
   vars_files:
     - consts.yml
+    - "{{ deployment_values }}"
   tasks:
     - become:      yes
       become_user: "{{ shared_user }}"
