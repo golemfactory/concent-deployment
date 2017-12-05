@@ -1,0 +1,12 @@
+repositories:
+  concent:
+    url:     https://github.com/golemfactory/concent.git
+    version: unstable
+
+  concent-deployment:
+    url:     https://github.com/golemfactory/concent-deployment.git
+    version: unstable
+
+  concent-deployment-values:
+    url:     https://github.com/golemfactory/concent-deployment-values.git
+    version: unstable

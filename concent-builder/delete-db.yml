@@ -1,0 +1,22 @@
+- hosts:
+    - concent-builder
+  vars_files:
+    - consts.yml
+    - "{{ deployment_values }}"
+  tasks:
+    - become:      yes
+      become_user: "{{ shared_user }}"
+      block:
+        - name:    Delete outdated secrets and config maps required by jobs
+          command: "{{ build_dir }}/concent-deployment/kubernetes/build/delete-job-dependencies.sh"
+          args:
+            chdir: "{{ build_dir}}/concent-deployment/kubernetes/build/"
+
+        - name:    Create up to date secrets and config maps required by jobs
+          command: "{{ build_dir }}/concent-deployment/kubernetes/build/create-job-dependencies.sh"
+          args:
+            chdir: "{{ build_dir}}/concent-deployment/kubernetes/build/"
+
+        - name:    Drop the database used by concent-api
+          command: kubectl create \
+            --filename "{{ build_dir }}/concent-deployment/kubernetes/build/jobs/delete-database.yml"

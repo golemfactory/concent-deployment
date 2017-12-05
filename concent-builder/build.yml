@@ -1,0 +1,48 @@
+- hosts:
+    - concent-builder
+  vars_files:
+    - consts.yml
+    - repositories.yml
+    - "{{ deployment_values }}"
+  tasks:
+    - become:      yes
+      become_user: "{{ shared_user }}"
+      block:
+        - name: Remove the build directory to get rid of files from previous builds
+          file:
+            path:    "{{ build_dir }}/*"
+            state:   absent
+
+        - name: Check out working copies of all concent repositories
+          git:
+            repo:    "{{ data_dir }}/{{ item.key }}"
+            dest:    "{{ build_dir }}/{{ item.key }}"
+            version: "{{ repositories[item.key].version }}"
+            clone:   yes
+            update:  yes
+          with_dict: "{{ repositories }}"
+
+    - become:      yes
+      become_user: root
+      block:
+        - name: Install var.yml from the local machine
+          copy:
+            src:   "{{ deployment_values }}"
+            dest:  "{{ build_dir }}/concent-deployment/kubernetes/"
+            owner: "{{ shared_user }}"
+            group: "{{ shared_user }}"
+
+    - become:      yes
+      become_user: "{{ shared_user }}"
+      block:
+        - name: Build containers
+          make:
+            chdir: "{{ build_dir }}/concent-deployment/containers"
+            params:
+              CONCENT_SECRET_DIR: "{{ data_dir }}/concent-secrets"
+
+        - name: Build cluster configuration
+          make:
+            chdir: "{{ build_dir }}/concent-deployment/kubernetes"
+            params:
+              CONCENT_SECRET_DIR: "{{ data_dir }}/concent-secrets"

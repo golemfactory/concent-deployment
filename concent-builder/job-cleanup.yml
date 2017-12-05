@@ -1,0 +1,13 @@
+- hosts:
+    - concent-builder
+  vars_files:
+    - consts.yml
+    - "{{ deployment_values }}"
+  tasks:
+    - become:      yes
+      become_user: "{{ shared_user }}"
+      block:
+        - name:    Delete old jobs and their secrets and config maps
+          command: "{{ build_dir }}/concent-deployment/kubernetes/build/clean-up-jobs.sh"
+          args:
+            chdir: "{{ build_dir}}/concent-deployment/kubernetes/build/"

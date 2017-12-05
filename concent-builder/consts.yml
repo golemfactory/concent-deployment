@@ -1,1 +1,5 @@
-shared_user: builder
+shared_user:       builder
+data_dir:          /var/concent-data
+build_dir:         /home/{{ shared_user }}/build
+local_secret_dir:  ../../concent-secrets
+deployment_values: ../../concent-deployment-values/var.yml
