@@ -8,6 +8,7 @@ server {
 
     location /download/ {
         alias /srv/storage/;
+        add_header Content-disposition "attachment";
     }
 
     location /upload  {
