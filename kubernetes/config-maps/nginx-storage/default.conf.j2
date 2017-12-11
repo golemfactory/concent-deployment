@@ -8,7 +8,12 @@ server {
 
     location /download/ {
         alias /srv/storage/;
-        add_header Content-disposition "attachment";
+        proxy_pass_request_headers     on;
+        proxy_method                   GET;
+        proxy_set_header               X-FILE $request_body_file;
+        proxy_set_body                 $request_body_file;
+        proxy_pass                     http://nginx-storage/result-download/;
+        proxy_redirect                 off;
     }
 
     location /upload  {
@@ -27,5 +32,9 @@ server {
    location = /result/ {
         return 200 "File was upload";
     }
+
+    location = /result-download/ {
+         return 200 "File was downloaded";
+     }
 
 }
