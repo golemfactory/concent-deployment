@@ -11,7 +11,7 @@ spec:
         run: nginx-proxy
     spec:
       containers:
-        - image:           {{ docker_registry }}/nginx-proxy:latest
+        - image:           {{ docker_registry }}/{{ image_prefix }}nginx-proxy:{{ image_version }}
           name:            nginx
           imagePullPolicy: Always
           resources:

@@ -1,9 +1,9 @@
 #!/bin/bash -e
 
-docker tag nginx-proxy:latest {{ docker_registry }}/nginx-proxy:latest
-docker tag concent-api:latest {{ docker_registry }}/concent-api:latest
-docker tag postgresql:latest  {{ docker_registry }}/postgresql:latest
+docker tag {{ image_prefix }}nginx-proxy:{{ image_version }} {{ docker_registry }}/{{ image_prefix }}nginx-proxy:{{ image_version }}
+docker tag {{ image_prefix }}concent-api:{{ image_version }} {{ docker_registry }}/{{ image_prefix }}concent-api:{{ image_version }}
+docker tag {{ image_prefix }}postgresql:{{ image_version }}  {{ docker_registry }}/{{ image_prefix }}postgresql:{{ image_version }}
 
-gcloud docker -- push {{ docker_registry }}/nginx-proxy:latest
-gcloud docker -- push {{ docker_registry }}/concent-api:latest
-gcloud docker -- push {{ docker_registry }}/postgresql:latest
+gcloud docker -- push {{ docker_registry }}/{{ image_prefix }}nginx-proxy:{{ image_version }}
+gcloud docker -- push {{ docker_registry }}/{{ image_prefix }}concent-api:{{ image_version }}
+gcloud docker -- push {{ docker_registry }}/{{ image_prefix }}postgresql:{{ image_version }}

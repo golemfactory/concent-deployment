@@ -22,7 +22,7 @@ spec:
             name: concent-api-settings
       initContainers:
         - name:             migrate-database
-          image:            {{ docker_registry }}/concent-api:latest
+          image:            {{ docker_registry }}/{{ image_prefix }}concent-api:{{ image_version }}
           imagePullPolicy:  Always
           command:          ["/usr/local/bin/concent-api-manage.sh", "migrate"]
           volumeMounts:

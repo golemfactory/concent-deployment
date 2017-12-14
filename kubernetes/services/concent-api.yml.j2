@@ -12,7 +12,7 @@ spec:
     spec:
       containers:
         - name:             concent-api
-          image:            {{ docker_registry }}/concent-api:latest
+          image:            {{ docker_registry }}/{{image_prefix }}concent-api:{{ image_version }}
           imagePullPolicy:  Always
           ports:
             - containerPort: 80
