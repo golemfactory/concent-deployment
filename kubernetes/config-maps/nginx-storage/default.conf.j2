@@ -1,18 +1,90 @@
 server {
     listen 80;
 
-    gzip            on;
-    gzip_min_length 1000;
-    gzip_proxied    expired no-cache no-store private auth;
-    gzip_types      text/plain text/css text/javascript application/xml;
+    gzip                     on;
+    gzip_min_length          1000;
+    gzip_proxied             expired no-cache no-store private auth;
+    gzip_types               text/plain text/css text/javascript application/xml;
+    client_max_body_size     {{ max_upload_size }};
 
 
-    location ~ ^/download/ {
-        limit_except GET { deny all; }
-        alias /srv/storage/;
+    location = /upload/ {
+        access_by_lua_block {
+            -- Make sure that Concent-Upload-Path header with path and filename were included with the request.
+            if ngx.req.get_headers()["Concent-Upload-Path"] == nil then
+                ngx.status = 400
+                ngx.header.content_type = "application/json; charset=utf-8"
+                ngx.say('{"error_message": "Concent-Upload-Path header is missing.", "error_code": "missing-header"}')
+                return ngx.exit(400)
+            end
+
+            -- Make sure that the request actually has a body.
+            if ngx.req.get_headers()["Content-Length"] == "0" then
+                ngx.status = 400
+                ngx.header.content_type = "application/json; charset=utf-8"
+                ngx.say('{"error_message": "The file to be uploaded must not be empty.", "error_code": "empty-file"}')
+                return ngx.exit(400)
+            end
+
+            -- Strip the X-Session-Id header from the request if client has provided it.
+            -- nginx-big-upload uses his header to set the name of the temporary file.
+            -- If it's empty, a random name will be generated and that's exactly what we want.
+            ngx.req.set_header("X-Session-Id", "")
+        }
+
+        try_files $uri @upload-internal;
     }
 
-    location ~ ^/upload/ {
-        alias /srv/storage/;
+    location @upload-internal {
+        lua_code_cache   on;
+        set $storage     backend_file;
+        set $bu_checksum on;
+        set $bu_sha1     off;
+
+        set $file_storage_path /srv/storage;
+        set $backend_url       /result/;
+        set $package_path      '/opt/nginx-big-upload/lib/?.lua';
+        content_by_lua_file    /opt/nginx-big-upload/lib/big-upload.lua;
+
+    }
+
+    location /result/ {
+        internal;
+        access_log off;
+
+        content_by_lua_block {
+            ngx.exec("@upload-result")
+        }
+    }
+
+    location @upload-result {
+        content_by_lua_block {
+            local lfs   = require('lfs_ffi')
+            local utils = require('pl.utils')
+            local table_utils   = require('table_utils')
+
+            data          = ngx.req.get_body_data()
+            tmp_file_name = string.match(data, 'id=(.*)&')
+
+            -- Now that the file has successfully finished uploading, we can move it to its final location.
+            -- Accept the name from Concent-Upload-Path header. We assume that this header was validated by
+            -- the gatekeeper app and is safe to use. In particular, the path must be relative.
+            header_path_with_filename = ngx.req.get_headers()["Concent-Upload-Path"]
+            path_parts                = utils.split('/srv/storage/' .. header_path_with_filename, '/')
+            path                      = ""
+            for index ,path_part in pairs(path_parts) do
+
+                -- Create all intermediate directories on the path. Ignore the last part (which is the file name)
+                local size = table_utils.length(path_parts) - 1
+                if index <= size then
+                    path = path .. path_part .. '/'
+                    lfs.mkdir(path)
+                end
+            end
+
+            os.rename("/srv/storage/" .. tmp_file_name, "/srv/storage/" .. header_path_with_filename)
+            ngx.header.content_type = "application/json; charset=utf-8"
+            ngx.say('{"message": "File was successfully uploaded", "code": "success"}')
+        }
     }
 }
