@@ -29,7 +29,7 @@ spec:
             name: concent-api-settings
       initContainers:
         - name:             create-database
-          image:            {{ docker_registry }}/postgresql:latest
+          image:            {{ docker_registry }}/{{ image_prefix }}postgresql:{{ image_version }}
           imagePullPolicy:  Always
           command:          ["/usr/local/bin/create-database.sh", "{{ database_host }}", "{{ database_name }}", "{{ database_user }}"]
           env:
@@ -44,7 +44,7 @@ spec:
                   name: db-secrets
                   key:  db_user_password
         - name:             migrate-database
-          image:            {{ docker_registry }}/concent-api:latest
+          image:            {{ docker_registry }}/{{ image_prefix }}concent-api:{{ image_version }}
           imagePullPolicy:  Always
           command:          ["/usr/local/bin/concent-api-manage.sh", "migrate"]
           volumeMounts:
@@ -55,7 +55,7 @@ spec:
               mountPath:  /srv/http/concent_api/concent_api/settings/config_map/
               readOnly:   true
         - name:             create-django-admin
-          image:            {{ docker_registry }}/concent-api:latest
+          image:            {{ docker_registry }}/{{ image_prefix }}concent-api:{{ image_version }}
           imagePullPolicy:  Always
           command:          ["/usr/local/bin/concent-api-manage.sh", "loaddata", "/srv/http/fixtures/django-admin-fixture.yaml"]
           volumeMounts:

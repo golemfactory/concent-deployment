@@ -1,4 +1,3 @@
-VERSION := 1.0.0
 NGINX_PROXY_SOURCE :=               \
     build/nginx-proxy/Dockerfile    \
     build/nginx-proxy/index.html    \
@@ -21,30 +20,41 @@ ifndef CONCENT_DIR
 endif
 $(info CONCENT_DIR=$(CONCENT_DIR))
 
+ifndef IMAGE_VERSION
+	IMAGE_VERSION := $(shell git describe --always)
+endif
+$(info IMAGE_VERSION=$(IMAGE_VERSION))
+
+ifndef IMAGE_PREFIX
+	IMAGE_PREFIX :=
+endif
+$(info IMAGE_PREFIX=$(IMAGE_PREFIX))
+
+
 all: build/ nginx-proxy concent-api postgresql
 
 nginx-proxy: $(NGINX_PROXY_SOURCE) build/nginx-proxy/concent-api-assets.tar build/nginx-proxy/concent-api-docs.tar
-	docker build -t nginx-proxy:$(VERSION) build/nginx-proxy/
-	docker tag nginx-proxy:$(VERSION) nginx-proxy:latest
+	docker build -t $(IMAGE_PREFIX)nginx-proxy:$(IMAGE_VERSION) build/nginx-proxy/
+	docker tag $(IMAGE_PREFIX)nginx-proxy:$(IMAGE_VERSION) $(IMAGE_PREFIX)nginx-proxy:latest
 
 postgresql: $(POSTGRESQL_SOURCE)
-	docker build -t postgresql:$(VERSION) build/postgresql/
-	docker tag postgresql:$(VERSION) postgresql:latest
+	docker build -t $(IMAGE_PREFIX)postgresql:$(IMAGE_VERSION) build/postgresql/
+	docker tag $(IMAGE_PREFIX)postgresql:$(IMAGE_VERSION) $(IMAGE_PREFIX)postgresql:latest
 
 concent-api: $(CONCENT_API_SOURCE) build/concent-api/concent-api.tar
-	docker build -t concent-api:$(VERSION) build/concent-api/
-	docker tag concent-api:$(VERSION) concent-api:latest
+	docker build -t $(IMAGE_PREFIX)concent-api:$(IMAGE_VERSION) build/concent-api/
+	docker tag $(IMAGE_PREFIX)concent-api:$(IMAGE_VERSION) $(IMAGE_PREFIX)concent-api:latest
 
 docker-clean: nginx-proxy-clean concent-api-clean postgresql-clean
 
 nginx-proxy-clean:
-	docker rmi nginx-proxy:$(VERSION) --force
+	docker rmi $(IMAGE_PREFIX)nginx-proxy:$(IMAGE_VERSION) --force
 
 postgresql-clean:
-	docker rmi postgresql:$(VERSION) --force
+	docker rmi $(IMAGE_PREFIX)postgresql:$(IMAGE_VERSION) --force
 
 concent-api-clean:
-	docker rmi concent-api:$(VERSION) --force
+	docker rmi $(IMAGE_PREFIX)concent-api:$(IMAGE_VERSION) --force
 
 build/concent-api/concent-api.tar: $(CONCENT_DIR)
 	mkdir --parents $(dir $@)

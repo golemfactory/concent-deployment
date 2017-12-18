@@ -21,9 +21,15 @@ CLUSTER_SCRIPTS :=                                     \
 	build/jobs/delete-database.yml
 
 ifndef CONCENT_SECRET_DIR
-	CONCENT_SECRET_DIR:= $(abspath ../../concent-secrets)
+	CONCENT_SECRET_DIR := $(abspath ../../concent-secrets)
 endif
 $(info CONCENT_SECRET_DIR=$(CONCENT_SECRET_DIR))
+
+ifndef IMAGE_VERSION
+	IMAGE_VERSION := "latest"
+endif
+$(info IMAGE_VERSION=$(IMAGE_VERSION))
+
 
 all: cluster-scripts
 
@@ -46,9 +52,11 @@ build/concent-secrets/%: $(CONCENT_SECRET_DIR)/%
 build/%: %.j2 build/vars-merged-with-secrets.yml ../tools/render-jinja-template.sh
 	../tools/render-jinja-template.sh build/vars-merged-with-secrets.yml "$<" "$@"
 
-build/vars-merged-with-secrets.yml: var.yml $(CONCENT_SECRET_DIR)/var-secret.yml ../tools/merge-yaml.py
-	../tools/merge-yaml.py "$<" $(CONCENT_SECRET_DIR)/var-secret.yml --output "$@"
+build/vars-merged-with-secrets.yml: var.yml $(CONCENT_SECRET_DIR)/var-secret.yml build/image-version.yml ../tools/merge-yaml.py
+	../tools/merge-yaml.py "$<" $(CONCENT_SECRET_DIR)/var-secret.yml build/image-version.yml --output "$@"
 
+build/image-version.yml:
+	echo "image_version: $(IMAGE_VERSION)" >> build/image-version.yml
 
 clean:
 	rm -rf build/
