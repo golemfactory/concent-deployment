@@ -2,7 +2,7 @@
     - concent-builder
   vars_files:
     - consts.yml
-    - "{{ deployment_values }}"
+    # NOTE: This playbook should not use values from concent-deployment-values
   tasks:
     - become:      yes
       become_user: root
