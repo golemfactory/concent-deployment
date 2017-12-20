@@ -7,6 +7,12 @@
     - become:      yes
       become_user: "{{ shared_user }}"
       block:
+        - name: Configure kubectl to operate on the right cluster
+          command: gcloud container clusters get-credentials \
+              "{{ gke.cluster }}"                            \
+              --project "{{ gke.project }}"                  \
+              --zone    "{{ gke.zone }}"
+
         - name:    Delete outdated secrets and config maps required by jobs
           command: "{{ build_dir }}/concent-deployment/kubernetes/build/delete-job-dependencies.sh"
           args:
