@@ -3,7 +3,8 @@
   vars_files:
     - consts.yml
     - repositories.yml
-    - "{{ deployment_values }}"
+    - "{{ deployment_values }}/var.yml"
+    - "{{ deployment_values }}/var-{{ cluster }}.yml"
   tasks:
     - become:      yes
       become_user: "{{ shared_user }}"
@@ -27,10 +28,13 @@
       block:
         - name: Install var.yml from the local machine
           copy:
-            src:   "{{ deployment_values }}"
+            src:   "{{ deployment_values }}/{{ item }}"
             dest:  "{{ build_dir }}/concent-deployment/kubernetes/"
             owner: "{{ shared_user }}"
             group: "{{ shared_user }}"
+          with_items:
+            - var.yml
+            - var-{{ cluster }}.yml
 
     - become:      yes
       become_user: "{{ shared_user }}"
