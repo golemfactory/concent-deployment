@@ -1,32 +1,32 @@
 CLUSTER_SCRIPTS :=                                     \
-	build/services/nginx-proxy.yml                     \
-	build/services/concent-api.yml                     \
-	build/services/nginx-storage.yml                   \
-	build/create-job-dependencies.sh                   \
-	build/delete-job-dependencies.sh                   \
-	build/clean-up-jobs.sh                             \
-	build/create-config-maps.sh                        \
-	build/delete-config-maps.sh                        \
-	build/create-services.sh                           \
-	build/delete-services.sh                           \
-	build/push-docker-images.sh                        \
-	build/config-maps/nginx-proxy/default.conf         \
-	build/config-maps/concent-api/local_settings.py    \
-	build/config-maps/nginx-storage/default.conf       \
-	build/concent-secrets/secrets.py                   \
-	build/secrets/db-secrets.yml                       \
-	build/secrets/django-admin-fixture.yaml            \
-	build/jobs/create-database.yml                     \
-	build/jobs/migrate-database.yml                    \
-	build/jobs/delete-database.yml
+    build/services/nginx-proxy.yml                     \
+    build/services/concent-api.yml                     \
+    build/services/nginx-storage.yml                   \
+    build/create-job-dependencies.sh                   \
+    build/delete-job-dependencies.sh                   \
+    build/clean-up-jobs.sh                             \
+    build/create-config-maps.sh                        \
+    build/delete-config-maps.sh                        \
+    build/create-services.sh                           \
+    build/delete-services.sh                           \
+    build/push-docker-images.sh                        \
+    build/config-maps/nginx-proxy/default.conf         \
+    build/config-maps/concent-api/local_settings.py    \
+    build/config-maps/nginx-storage/default.conf       \
+    build/concent-secrets/secrets.py                   \
+    build/secrets/db-secrets.yml                       \
+    build/secrets/django-admin-fixture.yaml            \
+    build/jobs/create-database.yml                     \
+    build/jobs/migrate-database.yml                    \
+    build/jobs/delete-database.yml
 
 ifndef CONCENT_SECRET_DIR
-	CONCENT_SECRET_DIR := $(abspath ../../concent-secrets)
+    CONCENT_SECRET_DIR := $(abspath ../../concent-secrets)
 endif
 $(info CONCENT_SECRET_DIR=$(CONCENT_SECRET_DIR))
 
 ifndef IMAGE_VERSION
-	IMAGE_VERSION := "latest"
+    IMAGE_VERSION := "latest"
 endif
 $(info IMAGE_VERSION=$(IMAGE_VERSION))
 

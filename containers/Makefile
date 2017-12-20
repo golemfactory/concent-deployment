@@ -16,17 +16,17 @@ CONCENT_API_SOURCE :=                           \
     build/concent-api/local_settings.py
 
 ifndef CONCENT_DIR
-	CONCENT_DIR:= $(abspath ../../concent)
+    CONCENT_DIR:= $(abspath ../../concent)
 endif
 $(info CONCENT_DIR=$(CONCENT_DIR))
 
 ifndef IMAGE_VERSION
-	IMAGE_VERSION := $(shell git describe --always)
+    IMAGE_VERSION := $(shell git describe --always)
 endif
 $(info IMAGE_VERSION=$(IMAGE_VERSION))
 
 ifndef IMAGE_PREFIX
-	IMAGE_PREFIX :=
+    IMAGE_PREFIX :=
 endif
 $(info IMAGE_PREFIX=$(IMAGE_PREFIX))
 
@@ -92,9 +92,9 @@ clean:
 
 
 .PHONY:                           \
-	all                           \
-	nginx-proxy nginx-proxy-clean \
-	postgresql  postgresql-clean  \
-	concent-api concent-api-clean \
-	docker-clean                  \
-	clean
+    all                           \
+    nginx-proxy nginx-proxy-clean \
+    postgresql  postgresql-clean  \
+    concent-api concent-api-clean \
+    docker-clean                  \
+    clean
