@@ -43,13 +43,13 @@
           make:
             chdir: "{{ build_dir }}/concent-deployment/containers"
             params:
-              CONCENT_SECRET_DIR: "{{ data_dir }}/concent-secrets"
+              CONCENT_SECRET_DIR: "{{ data_dir }}/concent-secrets/{{ cluster }}"
               IMAGE_PREFIX:       "{{ image_prefix }}"
 
         - name: Build cluster configuration
           make:
             chdir: "{{ build_dir }}/concent-deployment/kubernetes"
             params:
-              CONCENT_SECRET_DIR: "{{ data_dir }}/concent-secrets"
+              CONCENT_SECRET_DIR: "{{ data_dir }}/concent-secrets/{{ cluster }}"
               IMAGE_PREFIX:       "{{ image_prefix }}"
               CLUSTER:            "{{ cluster }}"
