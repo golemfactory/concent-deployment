@@ -33,7 +33,7 @@ spec:
       volumes:
         - name: concent-storage
           gcePersistentDisk:
-            pdName: {{ persistent_disk_name }}
+            pdName: {{ nginx_storage_disk }}
             fsType: ext4
         - name: nginx-storage-config
           configMap:
