@@ -30,6 +30,11 @@ ifndef IMAGE_VERSION
 endif
 $(info IMAGE_VERSION=$(IMAGE_VERSION))
 
+ifndef CLUSTER
+    $(error CLUSTER parameter not specified)
+endif
+$(info CLUSTER=$(CLUSTER))
+
 
 all: cluster-scripts
 
@@ -52,8 +57,13 @@ build/concent-secrets/%: $(CONCENT_SECRET_DIR)/%
 build/%: %.j2 build/vars-merged-with-secrets.yml ../tools/render-jinja-template.sh
 	../tools/render-jinja-template.sh build/vars-merged-with-secrets.yml "$<" "$@"
 
-build/vars-merged-with-secrets.yml: var.yml $(CONCENT_SECRET_DIR)/var-secret.yml build/image-version.yml ../tools/merge-yaml.py
-	../tools/merge-yaml.py "$<" $(CONCENT_SECRET_DIR)/var-secret.yml build/image-version.yml --output "$@"
+build/vars-merged-with-secrets.yml: var.yml var-$(CLUSTER).yml $(CONCENT_SECRET_DIR)/var-secret.yml build/image-version.yml ../tools/merge-yaml.py
+	../tools/merge-yaml.py                     \
+		"$<"                                   \
+		"var-$(CLUSTER).yml"                   \
+		"$(CONCENT_SECRET_DIR)/var-secret.yml" \
+		"build/image-version.yml"              \
+		--output "$@"
 
 build/image-version.yml:
 	echo "image_version: $(IMAGE_VERSION)" >> build/image-version.yml
