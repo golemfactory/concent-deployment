@@ -1,12 +1,7 @@
 repositories:
   concent:
-    url:     https://github.com/golemfactory/concent.git
-    version: dev
-
+    url: https://github.com/golemfactory/concent.git
   concent-deployment:
-    url:     https://github.com/golemfactory/concent-deployment.git
-    version: dev
-
+    url: https://github.com/golemfactory/concent-deployment.git
   concent-deployment-values:
-    url:     https://github.com/golemfactory/concent-deployment-values.git
-    version: dev
+    url: https://github.com/golemfactory/concent-deployment-values.git

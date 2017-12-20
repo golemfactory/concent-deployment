@@ -17,7 +17,7 @@
           git:
             repo:    "{{ data_dir }}/{{ item.key }}"
             dest:    "{{ build_dir }}/{{ item.key }}"
-            version: "{{ repositories[item.key].version }}"
+            version: "{{ versions[item.key] }}"
             clone:   yes
             update:  yes
           with_dict: "{{ repositories }}"
