@@ -11,7 +11,7 @@
       block:
         - name: Remove the build directory to get rid of files from previous builds
           file:
-            path:    "{{ build_dir }}/*"
+            path:    "{{ build_dir }}"
             state:   absent
 
         - name: Check out working copies of all concent repositories
