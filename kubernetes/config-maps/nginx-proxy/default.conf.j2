@@ -26,8 +26,15 @@ server {
         proxy_pass                         http://concent-api;
     }
 
-    location ~ ^/(download|upload) {
+    location ~ ^/upload {
         client_max_body_size               {{ max_upload_size }};
+        proxy_set_header X-Real-IP         $remote_addr;
+        proxy_set_header X-Forwarded-For   $remote_addr;
+        proxy_set_header Host              $http_host;
+        proxy_pass                         http://nginx-storage;
+    }
+
+    location ~ ^/download/ {
         proxy_set_header X-Real-IP         $remote_addr;
         proxy_set_header X-Forwarded-For   $remote_addr;
         proxy_set_header Host              $http_host;
