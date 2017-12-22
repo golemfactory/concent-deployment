@@ -14,3 +14,7 @@ kubectl create configmap nginx-config                               \
 kubectl create configmap concent-api-settings                                \
     --from-file=local_settings.py=config-maps/concent-api/local_settings.py  \
     --from-literal=__init__.py=
+
+kubectl create configmap gatekeeper-settings                               \
+    --from-file=local_settings.py=config-maps/gatekeeper/local_settings.py \
+    --from-literal=__init__.py=

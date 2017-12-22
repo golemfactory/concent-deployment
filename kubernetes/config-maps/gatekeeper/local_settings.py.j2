@@ -1,0 +1,37 @@
+from ..production import *
+
+# Create secrets.py and put passwords and private keys in it.
+# Don't commit it into the repository.
+from ..secrets.secrets import (
+    SECRET_KEY,
+    EMAIL_PASSWORD,
+    CONCENT_PUBLIC_KEY,
+    CONCENT_PRIVATE_KEY,
+)
+
+DATABASES = {}
+
+ALLOWED_HOSTS = [
+{% for host in allowed_hosts %}
+    "{{ host }}",
+{% endfor %}
+    "gatekeeper.default.svc.cluster.local",
+]
+
+ADMINS = [
+{% for admin in admins %}
+    ("{{ admin.name }}", "{{ admin.mail }}"),
+{% endfor %}
+]
+
+EMAIL_HOST          = "{{ email.host }}"
+EMAIL_PORT          = {{ email.port }}
+EMAIL_HOST_USER     = "{{ email.user }}"
+EMAIL_HOST_PASSWORD = EMAIL_PASSWORD
+EMAIL_USE_TLS       = {{ email.use_tls }}
+DEFAULT_FROM_EMAIL  = "{{ email.default_from_email }}"
+SERVER_EMAIL        = "{{ email.server_email }}"
+
+CONCENT_FEATURES = ["gatekeeper"]
+
+STORAGE_CLUSTER_ADDRESS = "http://{{ storage_cluster_address }}/"

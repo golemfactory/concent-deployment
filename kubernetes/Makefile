@@ -1,6 +1,7 @@
 CLUSTER_SCRIPTS :=                                     \
     build/services/nginx-proxy.yml                     \
     build/services/concent-api.yml                     \
+    build/services/gatekeeper.yml                      \
     build/services/nginx-storage.yml                   \
     build/create-job-dependencies.sh                   \
     build/delete-job-dependencies.sh                   \
@@ -11,6 +12,7 @@ CLUSTER_SCRIPTS :=                                     \
     build/delete-services.sh                           \
     build/push-docker-images.sh                        \
     build/config-maps/nginx-proxy/default.conf         \
+    build/config-maps/gatekeeper/local_settings.py     \
     build/config-maps/concent-api/local_settings.py    \
     build/config-maps/nginx-storage/default.conf       \
     build/concent-secrets/secrets.py                   \
