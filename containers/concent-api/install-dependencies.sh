@@ -15,9 +15,20 @@ dependencies=(
     libssl1.0-dev
     python3-dev
     git
+    wget
+    build-essential
+    zlib1g-dev
 )
 apt-get --assume-yes update
 apt-get --assume-yes install --no-install-recommends ${dependencies[*]}
+
+# Install python 3.6
+wget https://www.python.org/ftp/python/3.6.0/Python-3.6.0.tgz
+tar xvf Python-3.6.0.tgz
+cd Python-3.6.0
+./configure --enable-optimizations
+make -j8
+make altinstall
 
 # Clean up
 apt-get clean
