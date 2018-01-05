@@ -2,6 +2,11 @@ NGINX_PROXY_SOURCE :=               \
     build/nginx-proxy/Dockerfile    \
     build/nginx-proxy/index.html    \
 
+NGINX_STORAGE_SOURCE :=                            \
+    build/nginx-storage/Dockerfile                 \
+    build/nginx-storage/install-dependencies.sh    \
+    build/nginx-storage/table_utils.lua
+
 POSTGRESQL_SOURCE :=                          \
     build/postgresql/Dockerfile               \
     build/postgresql/delete-database.sh       \
@@ -31,11 +36,15 @@ endif
 $(info IMAGE_PREFIX=$(IMAGE_PREFIX))
 
 
-all: build/ nginx-proxy concent-api postgresql
+all: build/ nginx-proxy nginx-storage concent-api postgresql
 
 nginx-proxy: $(NGINX_PROXY_SOURCE) build/nginx-proxy/concent-api-assets.tar build/nginx-proxy/concent-api-docs.tar
 	docker build -t $(IMAGE_PREFIX)nginx-proxy:$(IMAGE_VERSION) build/nginx-proxy/
 	docker tag $(IMAGE_PREFIX)nginx-proxy:$(IMAGE_VERSION) $(IMAGE_PREFIX)nginx-proxy:latest
+
+nginx-storage: $(NGINX_STORAGE_SOURCE)
+	docker build -t $(IMAGE_PREFIX)nginx-storage:$(IMAGE_VERSION) build/nginx-storage/
+	docker tag $(IMAGE_PREFIX)nginx-storage:$(IMAGE_VERSION) $(IMAGE_PREFIX)nginx-storage:latest
 
 postgresql: $(POSTGRESQL_SOURCE)
 	docker build -t $(IMAGE_PREFIX)postgresql:$(IMAGE_VERSION) build/postgresql/
@@ -49,6 +58,9 @@ docker-clean: nginx-proxy-clean concent-api-clean postgresql-clean
 
 nginx-proxy-clean:
 	docker rmi $(IMAGE_PREFIX)nginx-proxy:$(IMAGE_VERSION) --force
+
+nginx-storage-clean:
+	docker rmi $(IMAGE_PREFIX)nginx-storage:$(IMAGE_VERSION) --force
 
 postgresql-clean:
 	docker rmi $(IMAGE_PREFIX)postgresql:$(IMAGE_VERSION) --force
@@ -91,10 +103,11 @@ clean:
 	rm -rf build/
 
 
-.PHONY:                           \
-    all                           \
-    nginx-proxy nginx-proxy-clean \
-    postgresql  postgresql-clean  \
-    concent-api concent-api-clean \
-    docker-clean                  \
+.PHONY:                                 \
+    all                                 \
+    nginx-proxy   nginx-proxy-clean     \
+    nginx-storage nginx-storage-clean   \
+    postgresql    postgresql-clean      \
+    concent-api   concent-api-clean     \
+    docker-clean                        \
     clean
