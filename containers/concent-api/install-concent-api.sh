@@ -7,7 +7,7 @@ python_version=3.5
 virtualenv --python python3 "$virtualenv_dir"
 source "$virtualenv_dir/bin/activate"
 pip install --upgrade pip
-pip install --requirement "/srv/http/concent_api/requirements.txt"
+pip install --requirement "/srv/http/concent_api/requirements.lock"
 pip install gunicorn
 
 # pyelliptic is unmaintained and does not work with OpenSSL 1.1.

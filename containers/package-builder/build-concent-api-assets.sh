@@ -13,7 +13,7 @@ cd "$build_dir/concent-api-assets/concent_api/"
 
 virtualenv --python python3 "$build_dir/virtualenv/"
 source "$build_dir/virtualenv/bin/activate"
-pip install -r "requirements.txt"
+pip install -r "requirements.lock"
 
 cp "$package_builder_dir/minimal_settings.py" "concent_api/settings/local_settings.py"
 
