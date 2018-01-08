@@ -44,7 +44,7 @@ total_download_time=0
 while ((i <= "$file_count")); do
     echo ===================== DOWNLOAD $i =====================
 
-    start_download_time="$(date +%s)"
+    download_start_time="$(date +%s)"
     content="$(
         curl                                                       \
             --connect-timeout 10                                   \
@@ -62,7 +62,6 @@ while ((i <= "$file_count")); do
     total_download_time=$(("$total_download_time" + "$download_end_time" - "$download_start_time"))
 
     echo "Downloaded file: 'a/b/c/test-file-$i' time: $(("$download_end_time" - "$download_start_time"))s"
-    echo "Downloaded file: 'a/b/c/test-file-$i' time: $(("$end_download_time" - "$start_download_time"))s"
     ((i++))
 done
 
