@@ -8,7 +8,7 @@ server {
     client_max_body_size     {{ max_upload_size }};
 
 
-    location ~ ^/download/ {
+    location /download/ {
         limit_except GET { deny all; }
         alias /srv/storage/;
     }
