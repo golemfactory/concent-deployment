@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 #
 # Uses yasha to embed variable values into a jinja2 template.
 # The rendered file is printed to the standard output.
