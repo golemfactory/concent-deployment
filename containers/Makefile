@@ -50,7 +50,7 @@ postgresql: $(POSTGRESQL_SOURCE)
 	docker build -t $(IMAGE_PREFIX)postgresql:$(IMAGE_VERSION) build/postgresql/
 	docker tag $(IMAGE_PREFIX)postgresql:$(IMAGE_VERSION) $(IMAGE_PREFIX)postgresql:latest
 
-concent-api: $(CONCENT_API_SOURCE) build/concent-api/concent-api.tar
+concent-api: $(CONCENT_API_SOURCE) build/concent-api/requirements.lock
 	docker build -t $(IMAGE_PREFIX)concent-api:$(IMAGE_VERSION) build/concent-api/
 	docker tag $(IMAGE_PREFIX)concent-api:$(IMAGE_VERSION) $(IMAGE_PREFIX)concent-api:latest
 
@@ -68,9 +68,18 @@ postgresql-clean:
 concent-api-clean:
 	docker rmi $(IMAGE_PREFIX)concent-api:$(IMAGE_VERSION) --force
 
+build/concent-api/requirements.lock: build/concent-api/concent-api.tar
+	tar                                          \
+		--extract                                \
+		--strip=1                                \
+		--file build/concent-api/concent-api.tar \
+		--directory build/concent-api/           \
+		concent_api/requirements.lock
+
 build/concent-api/concent-api.tar: $(CONCENT_DIR)
 	mkdir --parents $(dir $@)
 	package-builder/build-concent-api.sh "$(CONCENT_DIR)" "build/concent-api"
+
 
 build/nginx-proxy/concent-api-assets.tar: $(CONCENT_DIR)
 	mkdir --parents "$(dir $@)"
