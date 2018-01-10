@@ -75,7 +75,7 @@ Do this if you want to use the remote server for building and deploying.
 - Run the `configure.yml` playbook.
 
     ``` bash
-    cd ansible-playbook concent-deployment/concent-builder/
+    cd concent-deployment/concent-builder/
     ansible-playbook configure.yml                                    \
         --inventory ../../concent-deployment-values/ansible_inventory \
         --user      $user
@@ -88,7 +88,7 @@ All the instructions below assume that you're using the remote server.
 ### Uploading secrets, building containers and cluster configuration
 
 ``` bash
-cd ansible-playbook concent-deployment/concent-builder/
+cd concent-deployment/concent-builder/
 ansible-playbook install-repositories.yml                          \
     --extra-vars cluster=$cluster                                  \
     --inventory  ../../concent-deployment-values/ansible_inventory \
@@ -106,7 +106,7 @@ ansible-playbook build.yml                                         \
 To create this database, run the following steps:
 
 ``` bash
-cd ansible-playbook concent-deployment/concent-builder/
+cd concent-deployment/concent-builder/
 ansible-playbook job-cleanup.yml                                   \
     --extra-vars cluster=$cluster                                  \
     --inventory  ../../concent-deployment-values/ansible_inventory \
@@ -126,7 +126,7 @@ ansible-playbook migrate-db.yml                                    \
 ### Deploying to the cluster
 
 ``` bash
-cd ansible-playbook concent-deployment/concent-builder/
+cd concent-deployment/concent-builder/
 ansible-playbook deploy.yml                                        \
     --extra-vars cluster=$cluster                                  \
     --inventory  ../../concent-deployment-values/ansible_inventory \
