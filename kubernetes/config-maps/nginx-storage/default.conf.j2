@@ -116,7 +116,7 @@ server {
 
             os.rename("/srv/storage/" .. tmp_file_name, "/srv/storage/" .. header_path_with_filename)
             ngx.header.content_type = "application/json; charset=utf-8"
-            ngx.say('{"message": "File was successfully uploaded", "code": "success"}')
+            ngx.say('{"message": "File was successfully uploaded"}')
         }
     }
 
