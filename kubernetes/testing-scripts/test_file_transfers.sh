@@ -42,6 +42,19 @@ printf "\n\n%s\n\n\n\n" "Total upload time: ${total_upload_time}s"
 i=1
 total_download_time=0
 while ((i <= "$file_count")); do
+    http_status="$(
+        curl                                                     \
+            --head                                               \
+            --silent                                             \
+            --output    /dev/null                                \
+            --write-out "%{http_code}\n"                         \
+            "http://$server_address/download/a/b/c/test-file-$i" \
+    )"
+    if [[ "$http_status" == "404" ]]; then
+        echo "File a/b/c/test-file-$i does not exist."
+        exit 1
+    fi
+
     echo ===================== DOWNLOAD $i =====================
 
     download_start_time="$(date +%s)"
