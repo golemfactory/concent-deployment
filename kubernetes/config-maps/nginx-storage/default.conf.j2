@@ -1,3 +1,5 @@
+resolver kube-dns.kube-system.svc.cluster.local;
+
 server {
     listen 80;
 
@@ -8,12 +10,29 @@ server {
     client_max_body_size     {{ max_upload_size }};
 
 
+    set $gatekeeper_api_backend http://gatekeeper.default.svc.cluster.local;
+
     location /download/ {
-        limit_except GET { deny all; }
+        limit_except        GET { deny all; }
+        auth_request        /download-auth/;
+        if ($request_uri ~ "/download/(.*)") {
+            set $download_url $1;
+        }
+        error_page 401 = @error_401;
         alias /srv/storage/;
     }
 
+    location /download-auth/ {
+        internal;
+        proxy_pass                $gatekeeper_api_backend/gatekeeper/download-auth/$download_url;
+        proxy_pass_request_body   off;
+        proxy_set_header          Content-Length "";
+    }
+
     location = /upload/ {
+        auth_request /upload-auth/;
+        error_page 401 = @error_401;
+
         access_by_lua_block {
             -- Make sure that Concent-Upload-Path header with path and filename were included with the request.
             if ngx.req.get_headers()["Concent-Upload-Path"] == nil then
@@ -38,6 +57,14 @@ server {
         }
 
         try_files $uri @upload-internal;
+    }
+
+    location /upload-auth/ {
+          internal;
+          proxy_method      POST;
+          proxy_pass        $gatekeeper_api_backend/gatekeeper/upload-auth/$http_concent_upload_path;
+          proxy_set_header  Concent-Upload-Path "";
+          proxy_set_header  Content-Length "";
     }
 
     location @upload-internal {
@@ -89,7 +116,12 @@ server {
 
             os.rename("/srv/storage/" .. tmp_file_name, "/srv/storage/" .. header_path_with_filename)
             ngx.header.content_type = "application/json; charset=utf-8"
-            ngx.say('{"message": "File was successfully uploaded", "code": "success"}')
+            ngx.say('{"message": "File was successfully uploaded"}')
         }
+    }
+
+    location @error_401 {
+        default_type application/json;
+        return 401 '{"error_message": "Access denied.", "error_code": "unauthorized"}';
     }
 }
