@@ -27,12 +27,13 @@ ADMINS = [
 {% endfor %}
 ]
 
-EMAIL_HOST          = "{{ email.host }}"
-EMAIL_PORT          = {{ email.port }}
-EMAIL_HOST_USER     = "{{ email.user }}"
-EMAIL_HOST_PASSWORD = EMAIL_PASSWORD
-EMAIL_USE_TLS       = {{ email.use_tls }}
-DEFAULT_FROM_EMAIL  = "{{ email.default_from_email }}"
-SERVER_EMAIL        = "{{ email.server_email }}"
+EMAIL_HOST           = "{{ email.host }}"
+EMAIL_PORT           = {{ email.port }}
+EMAIL_HOST_USER      = "{{ email.user }}"
+EMAIL_SUBJECT_PREFIX = "[{{ gke.cluster }}:concent-api] "
+EMAIL_HOST_PASSWORD  = EMAIL_PASSWORD
+EMAIL_USE_TLS        = {{ email.use_tls }}
+DEFAULT_FROM_EMAIL   = "{{ email.default_from_email }}"
+SERVER_EMAIL         = "{{ email.server_email }}"
 
 CONCENT_FEATURES = ["concent-api", "admin-panel"]
