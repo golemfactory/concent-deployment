@@ -1,26 +1,29 @@
-CLUSTER_SCRIPTS :=                                     \
-    build/services/nginx-proxy.yml                     \
-    build/services/concent-api.yml                     \
-    build/services/gatekeeper.yml                      \
-    build/services/nginx-storage.yml                   \
-    build/create-job-dependencies.sh                   \
-    build/delete-job-dependencies.sh                   \
-    build/clean-up-jobs.sh                             \
-    build/create-config-maps.sh                        \
-    build/delete-config-maps.sh                        \
-    build/create-services.sh                           \
-    build/delete-services.sh                           \
-    build/push-docker-images.sh                        \
-    build/config-maps/nginx-proxy/default.conf         \
-    build/config-maps/gatekeeper/local_settings.py     \
-    build/config-maps/concent-api/local_settings.py    \
-    build/config-maps/nginx-storage/default.conf       \
-    build/concent-secrets/secrets.py                   \
-    build/secrets/db-secrets.yml                       \
-    build/secrets/django-admin-fixture.yaml            \
-    build/jobs/create-database.yml                     \
-    build/jobs/migrate-database.yml                    \
-    build/jobs/delete-database.yml
+CLUSTER_SCRIPTS :=                                                                                       \
+    build/services/nginx-proxy.yml                                                                       \
+    build/services/concent-api.yml                                                                       \
+    build/services/gatekeeper.yml                                                                        \
+    build/services/nginx-storage.yml                                                                     \
+    build/create-job-dependencies.sh                                                                     \
+    build/delete-job-dependencies.sh                                                                     \
+    build/clean-up-jobs.sh                                                                               \
+    build/create-config-maps.sh                                                                          \
+    build/delete-config-maps.sh                                                                          \
+    build/create-services.sh                                                                             \
+    build/delete-services.sh                                                                             \
+    build/push-docker-images.sh                                                                          \
+    build/config-maps/nginx-proxy/default.conf                                                           \
+    build/config-maps/gatekeeper/local_settings.py                                                       \
+    build/config-maps/concent-api/local_settings.py                                                      \
+    build/config-maps/nginx-storage/default.conf                                                         \
+    build/concent-secrets/secrets.py                                                                     \
+    build/concent-secrets/UTC--2018-01-18T10-36-50.318254820Z--f51aca2f0883520d7fd77a6cab426c57372b3fe6  \
+    build/secrets/db-secrets.yml                                                                         \
+    build/secrets/ethereum-secrets.yml                                                                   \
+    build/secrets/django-admin-fixture.yaml                                                              \
+    build/jobs/create-database.yml                                                                       \
+    build/jobs/migrate-database.yml                                                                      \
+    build/jobs/delete-database.yml                                                                       \
+    build/jobs/send-ethereum-transaction.yml
 
 ifndef CONCENT_SECRET_DIR
     CONCENT_SECRET_DIR := $(abspath ../../concent-secrets)

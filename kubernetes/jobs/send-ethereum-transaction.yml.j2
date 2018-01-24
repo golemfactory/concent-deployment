@@ -1,0 +1,39 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: send-ethereum-transaction
+spec:
+  template:
+    metadata:
+      name: send-ethereum-transaction
+    spec:
+      restartPolicy: Never
+      containers:
+        - name:            job-ok
+          image:           busybox
+          imagePullPolicy: Always
+          command:         ["sh", "-c", "echo Done."]
+      volumes:
+        - name: ethereum-secrets
+          secret:
+            secretName:  ethereum-secrets
+            defaultMode: 0600
+        - name: ethereum-keystore
+          secret:
+            secretName: ethereum-keystore
+            defaultMode: 0600
+      initContainers:
+        - name:             send-ethereum-transaction
+          image:            {{ docker_registry }}/{{ image_prefix }}ethereum-transactions:{{ image_version }}
+          imagePullPolicy:  Always
+          args:          ["--address", "{{ ethereum_receiver_account_address }}", "--ammount", "{{ ammount_of_ether }}"]
+          env:
+            - name: ETHEREUM_ACCOUNT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: ethereum-secrets
+                  key:  ethereum_sender_account_password
+          volumeMounts:
+            - name:       ethereum-keystore
+              mountPath:  /usr/keystore
+              readOnly:   true
