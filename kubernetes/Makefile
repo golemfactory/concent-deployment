@@ -22,8 +22,13 @@ CLUSTER_SCRIPTS :=                                     \
     build/jobs/migrate-database.yml                    \
     build/jobs/delete-database.yml
 
+ifndef CLUSTER
+    $(error CLUSTER parameter not specified)
+endif
+$(info CLUSTER=$(CLUSTER))
+
 ifndef CONCENT_SECRET_DIR
-    CONCENT_SECRET_DIR := $(abspath ../../concent-secrets)
+    CONCENT_SECRET_DIR := $(abspath ../../concent-secrets/$(CLUSTER))
 endif
 $(info CONCENT_SECRET_DIR=$(CONCENT_SECRET_DIR))
 
@@ -31,11 +36,6 @@ ifndef IMAGE_VERSION
     IMAGE_VERSION := "latest"
 endif
 $(info IMAGE_VERSION=$(IMAGE_VERSION))
-
-ifndef CLUSTER
-    $(error CLUSTER parameter not specified)
-endif
-$(info CLUSTER=$(CLUSTER))
 
 
 all: cluster-scripts
