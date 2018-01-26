@@ -12,7 +12,7 @@ spec:
     spec:
       containers:
         - name:             geth
-          image:            ethereum/client-go:{{ geth_version }}
+          image:            {{ docker_registry }}/{{image_prefix }}geth:{{ image_version }}
           imagePullPolicy:  Always
           args:             [
               "--rinkeby",
@@ -32,7 +32,7 @@ spec:
           ]
           livenessProbe:
             httpGet:
-              path: http://geth.default.svc.cluster.local/
+              path: /
               port: 8545
               httpHeaders:
                 - name:  Content-Type
@@ -41,7 +41,8 @@ spec:
             periodSeconds:       8
           readinessProbe:
             exec:
-              command: ["/usr/local/bin/syncing-blockchain.sh", "geth.default.svc.cluster.local:8545"]
+              command: ["/usr/local/bin/is-geth-synchronized.sh", "127.0.0.1:8545"]
+            # This is average time of geth is up and start a synchronization.
             initialDelaySeconds: 70
             periodSeconds:       10
           resources:
