@@ -12,7 +12,7 @@ spec:
     spec:
       containers:
         - name:             geth
-          image:            ethereum/client-go:{{ geth_version }}
+          image:            {{ docker_registry }}/{{image_prefix }}geth:{{ image_version }}
           imagePullPolicy:  Always
           args:             [
               "--rinkeby",
@@ -30,6 +30,20 @@ spec:
               "--rpcapi",     "eth, web3, net",
               "--ipcdisable"
           ]
+          livenessProbe:
+            httpGet:
+              path: http://geth.default.svc.cluster.local/
+              port: 8545
+              httpHeaders:
+                - name:  Content-Type
+                  value: application/json
+            initialDelaySeconds: 5
+            periodSeconds:       8
+          readinessProbe:
+            exec:
+              command: ["/usr/local/bin/syncing-blockchain.sh"]
+            initialDelaySeconds: 70
+            periodSeconds:       10
           resources:
             requests:
               # SYNC: Make sure that the memory limits for the pod include the cache size defined above.
