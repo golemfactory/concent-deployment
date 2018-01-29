@@ -8,7 +8,9 @@ server {
     gzip_proxied             expired no-cache no-store private auth;
     gzip_types               text/plain text/css text/javascript application/xml;
     client_max_body_size     {{ max_upload_size }};
-
+    #client_header_timeout    {{ limit_time_of_upload }};
+    #keepalive_timeout        {{ limit_time_of_upload }};
+    send_timeout             {{ limit_time_of_download }};
 
     set $gatekeeper_api_backend http://gatekeeper.default.svc.cluster.local;
 
@@ -68,6 +70,7 @@ server {
     }
 
     location @upload-internal {
+        client_body_timeout      {{ limit_time_of_upload }};
         lua_code_cache   on;
         set $storage     backend_file;
         set $bu_checksum on;

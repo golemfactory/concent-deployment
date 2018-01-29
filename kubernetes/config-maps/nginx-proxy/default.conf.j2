@@ -32,6 +32,12 @@ server {
     location ~ ^/(download|upload)/ {
         set $nginx_storage_backend http://nginx-storage.default.svc.cluster.local;
         client_max_body_size               {{ max_upload_size }};
+        #proxy_connect_timeout              {{ limit_time_of_connection }};
+        #proxy_send_timeout                 {{ limit_time_of_download }};
+        #proxy_read_timeout                 {{ limit_time_of_upload }};
+        client_body_timeout                {{ limit_time_of_upload }};
+        #keepalive_timeout                  {{ limit_time_of_upload }};
+        send_timeout                      {{ limit_time_of_download }};
         proxy_set_header X-Real-IP         $remote_addr;
         proxy_set_header X-Forwarded-For   $remote_addr;
         proxy_set_header Host              $http_host;
