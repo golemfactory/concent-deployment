@@ -95,8 +95,8 @@ server {
             local utils = require('pl.utils')
             local table_utils   = require('table_utils')
 
-            data          = ngx.req.get_body_data()
-            tmp_file_name = string.match(data, 'id=(.*)&')
+            nginx_big_upload_request_body  = ngx.req.get_body_data()
+            tmp_file_name                  = string.match(nginx_big_upload_request_body,'id=(.-)&')
 
             -- Now that the file has successfully finished uploading, we can move it to its final location.
             -- Accept the name from Concent-Upload-Path header. We assume that this header was validated by
