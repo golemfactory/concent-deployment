@@ -134,7 +134,13 @@ server {
             checksum_from_gatekeeper = ngx.req.get_headers()["Concent-Checksum"]
             if checksum_from_nginx_big_upload ~= checksum_from_gatekeeper then
                 ngx.status = 400
-                ngx.header.content_type = "application/json; charset=utf-8"
+                ngx.header.content_type    = "application/json; charset=utf-8"
+                -- Nginx big upload module adds headers with checksum and temporary file name to its response.
+                -- We don't want to return them to the client.
+                -- FIXME: Setting it to an empty string does not remove the headers. For now we set it to a
+                -- single space to work around this but we should really just find a way to remove those headers.
+                ngx.header["X-SHA1"]       = " "
+                ngx.header["X-Session-Id"] = " "
                 ngx.say('{"error_message": "File checksum does not match the token", "error_code": "checksum-mismatch"}')
                 os.remove("/srv/storage/" .. tmp_file_name)
                 os.remove("/srv/storage/" .. tmp_file_name .. ".shactx")
@@ -147,7 +153,13 @@ server {
            file_size_from_gatekeeper = ngx.req.get_headers()["Concent-File-Size"]
            if file_size_from_nginx_big_upload ~= file_size_from_gatekeeper then
                 ngx.status = 400
-                ngx.header.content_type = "application/json; charset=utf-8"
+                ngx.header.content_type    = "application/json; charset=utf-8"
+                -- Nginx big upload module adds headers with checksum and temporary file name to its response.
+                -- We don't want to return them to the client.
+                -- FIXME: Setting it to an empty string does not remove the headers. For now we set it to a
+                -- single space to work around this but we should really just find a way to remove those headers.
+                ngx.header["X-SHA1"]       = " "
+                ngx.header["X-Session-Id"] = " "
                 ngx.say('{"error_message": "File size does not match the token", "error_code": "file-size-mismatch"}')
                 os.remove("/srv/storage/" .. tmp_file_name)
                 os.remove("/srv/storage/" .. tmp_file_name .. ".shactx")
@@ -172,7 +184,13 @@ server {
 
             os.rename("/srv/storage/" .. tmp_file_name, "/srv/storage/" .. header_path_with_filename)
             os.remove("/srv/storage/" .. tmp_file_name .. ".shactx")
-            ngx.header.content_type = "application/json; charset=utf-8"
+            -- Nginx big upload module adds headers with checksum and temporary file name to its response.
+            -- We don't want to return them to the client.
+            -- FIXME: Setting it to an empty string does not remove the headers. For now we set it to a
+            -- single space to work around this but we should really just find a way to remove those headers.
+            ngx.header["X-SHA1"]       = " "
+            ngx.header["X-Session-Id"] = " "
+            ngx.header.content_type    = "application/json; charset=utf-8"
             ngx.say('{"message": "File was successfully uploaded"}')
         }
     }
