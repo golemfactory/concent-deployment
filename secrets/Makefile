@@ -23,6 +23,7 @@ CLUSTER_SECRETS :=                                            \
     $(CONCENT_SECRET_DIR)/nginx-proxy-dhparam.pem             \
     $(CONCENT_SECRET_DIR)/nginx-storage-ssl.crt               \
     $(CONCENT_SECRET_DIR)/nginx-storage-ssl.key               \
+    $(CONCENT_SECRET_DIR)/nginx-storage-dhparam.pem           \
     build/templates/nginx-proxy-secrets.yml                   \
     build/templates/nginx-storage-secrets.yml                 \
     build/templates/control-db-secrets.yml                    \

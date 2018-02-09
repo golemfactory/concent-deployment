@@ -38,7 +38,6 @@ CLUSTER_SCRIPTS :=                                            \
     build/config-maps/concent-api-worker/local_settings.py    \
     build/config-maps/database-jobs/local_settings.py         \
     build/config-maps/nginx-storage/default.conf              \
-    build/config-maps/nginx-storage/ssl.conf                  \
     build/config-maps/nginx-storage/file-transfer-config.lua  \
     build/jobs/create-control-database.yml                    \
     build/jobs/migrate-control-database.yml                   \
