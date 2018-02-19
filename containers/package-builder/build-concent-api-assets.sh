@@ -4,13 +4,16 @@ concent_dir=$(realpath "$1")
 package_builder_dir=$(realpath "$2")
 build_dir=$(realpath "$3")
 output_dir=$(realpath "$4")
-python_version=3.5
+python_version=3.6
 
 mkdir --parents "$build_dir/concent-api-assets/"
 cp --recursive "$concent_dir/concent_api" "$build_dir/concent-api-assets"
 
 cd "$build_dir/concent-api-assets/concent_api/"
+
+virtualenv --python python$python_version "$build_dir/virtualenv/"
 source "$build_dir/virtualenv/bin/activate"
+pip install -r "requirements.lock"
 
 cp "$package_builder_dir/minimal_settings.py" "concent_api/settings/local_settings.py"
 

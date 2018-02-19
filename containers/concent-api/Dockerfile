@@ -1,5 +1,6 @@
 FROM debian:stretch
 
+COPY testing.pref                   /etc/apt/preferences.d/
 COPY install-dependencies.sh        /tmp/
 RUN  /tmp/install-dependencies.sh
 
