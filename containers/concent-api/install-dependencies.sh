@@ -11,9 +11,8 @@ dependencies=(
 
     # Packages needed to build python extensions, dependencies of golem-messages in particular
     gcc
-    libssl1.0.2
-    libssl1.0-dev
     python3-dev
+    libssl-dev
     git
 )
 apt-get --assume-yes update
