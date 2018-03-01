@@ -128,6 +128,15 @@ ansible-playbook build.yml                                         \
     --user       $user
 ```
 
+### Running django unit tests
+
+```bash
+ansible-playbook test.yml                                          \
+    --extra-vars cluster=$cluster                                  \
+    --inventory  ../../concent-deployment-values/ansible_inventory \
+    --user       $user
+```
+
 ### Creating the database
 
 `concent-api` and other Django apps will try to connect a CloudSQL database configured in their settings.

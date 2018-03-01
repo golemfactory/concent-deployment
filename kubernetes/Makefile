@@ -13,6 +13,8 @@ CLUSTER_SCRIPTS :=                                          \
     build/delete-config-maps.sh                             \
     build/create-services.sh                                \
     build/delete-services.sh                                \
+    build/run-unit-tests.sh                                 \
+    build/docker_testing.py                                 \
     build/push-docker-images.sh                             \
     build/config-maps/nginx/error-pages.conf                \
     build/config-maps/nginx-proxy/default.conf              \
