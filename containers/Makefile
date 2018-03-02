@@ -68,6 +68,10 @@ postgresql-clean:
 concent-api-clean:
 	docker rmi $(IMAGE_PREFIX)concent-api:$(IMAGE_VERSION) --force
 
+
+build/virtualenv/: $(CONCENT_DIR)/concent_api/requirements.lock
+	package-builder/build-virtualenv.sh "$<" "build"
+
 build/concent-api/requirements.lock: build/concent-api/concent-api.tar
 	tar                                          \
 		--extract                                \
@@ -76,12 +80,12 @@ build/concent-api/requirements.lock: build/concent-api/concent-api.tar
 		--directory build/concent-api/           \
 		concent_api/requirements.lock
 
-build/concent-api/concent-api.tar: $(CONCENT_DIR)
+build/concent-api/concent-api.tar: $(CONCENT_DIR)  build/virtualenv/
 	mkdir --parents $(dir $@)
 	package-builder/build-concent-api.sh "$(CONCENT_DIR)" "build/concent-api"
 
 
-build/nginx-proxy/concent-api-assets.tar: $(CONCENT_DIR)
+build/nginx-proxy/concent-api-assets.tar: $(CONCENT_DIR) build/virtualenv/
 	mkdir --parents "$(dir $@)"
 	package-builder/build-concent-api-assets.sh \
 		"$(CONCENT_DIR)"                        \
