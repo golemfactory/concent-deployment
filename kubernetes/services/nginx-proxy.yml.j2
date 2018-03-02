@@ -29,10 +29,16 @@ spec:
             - mountPath:  /etc/nginx/conf.d/
               name:       nginx-config
               readOnly:   true
+            - mountPath:  /etc/nginx/snippets/
+              name:       nginx-config-snippets
+              readOnly:   true
       volumes:
         -  name: nginx-config
            configMap:
              name: nginx-config
+        -  name: nginx-config-snippets
+           configMap:
+             name: nginx-config-snippets
 ---
 apiVersion: v1
 kind: Service

@@ -1,5 +1,10 @@
 resolver kube-dns.kube-system.svc.cluster.local;
 
+map $http_accept $extension {
+    default html;
+    application/json json;
+}
+
 server {
     listen 80;
 
@@ -7,6 +12,7 @@ server {
     gzip_min_length 1000;
     gzip_proxied    expired no-cache no-store private auth;
     gzip_types      text/plain text/css text/javascript application/xml;
+    include         snippets/error-pages.conf;
 
     location / {
         root    /srv/http/nginx-proxy;
