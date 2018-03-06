@@ -43,6 +43,8 @@
             - "{{ gke.service_account_name }}-private-key.json"
             - nginx-proxy-ssl.crt
             - nginx-proxy-ssl.key
+            - nginx-storage-ssl.crt
+            - nginx-storage-ssl.key
 
     - become:      yes
       become_user: "{{ shared_user }}"

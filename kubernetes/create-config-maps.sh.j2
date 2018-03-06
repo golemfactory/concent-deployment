@@ -4,7 +4,16 @@
 kubectl create configmap nginx-config-snippets                          \
     --from-file=error-pages.conf=config-maps/nginx/error-pages.conf
 
-kubectl create configmap nginx-storage-config                           \
+{% if nginx_storage_ssl %}
+kubectl create secret generic nginx-storage-secrets                              \
+    --from-file=nginx-storage-ssl.crt=concent-secrets/nginx-storage-ssl.crt      \
+    --from-file=nginx-storage-ssl.key=concent-secrets/nginx-storage-ssl.key
+{% endif %}
+
+kubectl create configmap nginx-storage-configs                          \
+{% if nginx_storage_ssl %}
+    --from-file=ssl.conf=config-maps/nginx-storage/ssl.conf             \
+{% endif %}
     --from-file=default.conf=config-maps/nginx-storage/default.conf     \
 
 {% if nginx_proxy_ssl %}

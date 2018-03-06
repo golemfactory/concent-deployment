@@ -18,9 +18,12 @@ CLUSTER_SCRIPTS :=                                          \
     build/config-maps/gatekeeper/local_settings.py          \
     build/config-maps/concent-api/local_settings.py         \
     build/config-maps/nginx-storage/default.conf            \
+    build/config-maps/nginx-storage/ssl.conf                \
     build/concent-secrets/secrets.py                        \
     build/concent-secrets/nginx-proxy-ssl.crt               \
     build/concent-secrets/nginx-proxy-ssl.key               \
+    build/concent-secrets/nginx-storage-ssl.crt             \
+    build/concent-secrets/nginx-storage-ssl.key             \
     build/secrets/db-secrets.yml                            \
     build/secrets/django-admin-fixture.yaml                 \
     build/jobs/create-database.yml                          \
