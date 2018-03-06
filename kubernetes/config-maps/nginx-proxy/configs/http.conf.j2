@@ -25,6 +25,12 @@ server {
     listen 443      ssl http2 default_server;
     listen [::]:443 ssl http2 default_server;
 
+    ssl_certificate     /etc/ssl/secrets/nginx-proxy-ssl.crt;
+    ssl_certificate_key /etc/ssl/secrets/nginx-proxy-ssl.key;
+
+    # Add Diffie-Helman group
+    ssl_dhparam /etc/ssl/secrets/nginx-proxy-dhparam.pem;
+
     gzip            on;
     gzip_min_length 1000;
     gzip_proxied    expired no-cache no-store private auth;

@@ -20,6 +20,7 @@ CLUSTER_SECRETS :=                                            \
     $(CONCENT_SECRET_DIR)/var-secret.yml                      \
     $(CONCENT_SECRET_DIR)/nginx-proxy-ssl.crt                 \
     $(CONCENT_SECRET_DIR)/nginx-proxy-ssl.key                 \
+    $(CONCENT_SECRET_DIR)/nginx-proxy-dhparam.pem             \
     $(CONCENT_SECRET_DIR)/nginx-storage-ssl.crt               \
     $(CONCENT_SECRET_DIR)/nginx-storage-ssl.key               \
     build/templates/nginx-proxy-secrets.yml                   \
@@ -58,11 +59,12 @@ build/vars-merged.yml: $(DEPLOYMENT_VAR_DIR)/var-$(CLUSTER).yml $(CONCENT_SECRET
 build/%: %.j2 build/vars-merged.yml ../tools/render-jinja-template.sh
 	../tools/render-jinja-template.sh build/vars-merged.yml "$<" "$@"
 
-build/templates/nginx-%-secrets.yml: $(CONCENT_SECRET_DIR)/nginx-%-ssl.crt $(CONCENT_SECRET_DIR)/nginx-%-ssl.key
+build/templates/nginx-%-secrets.yml: $(CONCENT_SECRET_DIR)/nginx-%-ssl.crt $(CONCENT_SECRET_DIR)/nginx-%-ssl.key $(CONCENT_SECRET_DIR)/nginx-%-dhparam.pem
 	mkdir --parents $(dir $@)
 	kubectl create secret generic $(notdir $(basename $@))      \
 		--from-file=$(notdir $(word 1,$^))=$(word 1,$^)         \
 		--from-file=$(notdir $(word 2,$^))=$(word 2,$^)         \
+		--from-file=$(notdir $(word 3,$^))=$(word 3,$^)         \
 		--dry-run                                               \
 		--output yaml > $@
 
