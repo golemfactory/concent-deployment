@@ -1,5 +1,10 @@
 resolver kube-dns.kube-system.svc.cluster.local;
 
+map $http_accept $extension {
+    default html;
+    application/json json;
+}
+
 server {
     listen 80;
 
@@ -9,6 +14,9 @@ server {
     gzip_types               text/plain text/css text/javascript application/xml;
     client_max_body_size     {{ max_upload_size }};
 
+    # NOTE: OpenResty uses /usr/local/openresty/nginx/, not /etc/nginx/ as the default config location.
+    # We have to use absolute path to include files from /etc/nginx/.
+    include                  /etc/nginx/snippets/error-pages.conf;
 
     set $gatekeeper_api_backend http://gatekeeper.default.svc.cluster.local;
 
@@ -18,7 +26,6 @@ server {
         if ($request_uri ~ "/download/(.*)") {
             set $download_url $1;
         }
-        error_page 401 = @error_401;
         alias /srv/storage/;
     }
 
@@ -33,7 +40,6 @@ server {
         auth_request /upload-auth/;
         auth_request_set $checksum $upstream_http_concent_file_checksum;
         auth_request_set $size     $upstream_http_concent_file_size;
-        error_page 401 = @error_401;
 
         access_by_lua_block {
             -- Add headers from gatekeeper response
@@ -193,10 +199,5 @@ server {
             ngx.header.content_type    = "application/json; charset=utf-8"
             ngx.say('{"message": "File was successfully uploaded"}')
         }
-    }
-
-    location @error_401 {
-        default_type application/json;
-        return 401 '{"error_message": "Access denied.", "error_code": "unauthorized"}';
     }
 }

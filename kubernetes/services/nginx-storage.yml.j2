@@ -30,11 +30,17 @@ spec:
               name:       concent-storage
             - mountPath:  /etc/nginx/conf.d/
               name:       nginx-storage-config
+            - mountPath:  /etc/nginx/snippets/
+              name:       nginx-config-snippets
+              readOnly:   true
       volumes:
         - name: concent-storage
           gcePersistentDisk:
             pdName: {{ nginx_storage_disk }}
             fsType: ext4
+        - name: nginx-config-snippets
+          configMap:
+            name: nginx-config-snippets
         - name: nginx-storage-config
           configMap:
             name: nginx-storage-config

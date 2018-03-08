@@ -1,6 +1,9 @@
 #!/bin/bash -e
 
 
+kubectl create configmap nginx-config-snippets                          \
+    --from-file=error-pages.conf=config-maps/nginx/error-pages.conf
+
 kubectl create configmap nginx-storage-config                           \
     --from-file=default.conf=config-maps/nginx-storage/default.conf     \
 
