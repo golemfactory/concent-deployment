@@ -27,15 +27,26 @@ spec:
                 command: ["/usr/sbin/nginx", "-s", "quit"]
           volumeMounts:
             - mountPath:  /etc/nginx/conf.d/
-              name:       nginx-config
+              name:       nginx-configs
               readOnly:   true
             - mountPath:  /etc/nginx/snippets/
               name:       nginx-config-snippets
               readOnly:   true
+            {% if nginx_proxy_ssl %}
+            - mountPath:  /etc/ssl/secrets/
+              name:       nginx-proxy-secrets
+              readOnly:   true
+            {% endif %}
       volumes:
-        -  name: nginx-config
+        -  name: nginx-configs
            configMap:
-             name: nginx-config
+             name: nginx-configs
+        {% if nginx_proxy_ssl %}
+        - name: nginx-proxy-secrets
+          secret:
+            secretName:  nginx-proxy-secrets
+            defaultMode: 0600
+        {% endif %}
         -  name: nginx-config-snippets
            configMap:
              name: nginx-config-snippets
@@ -48,8 +59,15 @@ spec:
   type:           LoadBalancer
   loadBalancerIP: {{ external_ip }}
   ports:
-    - protocol:   TCP
+    - name:       http
+      protocol:   TCP
       port:       80
       targetPort: 80
+    {% if nginx_proxy_ssl %}
+    - name:       https
+      protocol:   TCP
+      port:       443
+      targetPort: 443
+    {% endif %}
   selector:
     run: nginx-proxy
