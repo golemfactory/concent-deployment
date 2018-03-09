@@ -1,0 +1,41 @@
+#!/bin/bash -e
+
+
+kubectl create configmap nginx-config-snippets                          \
+    --from-file=error-pages.conf=config-maps/nginx/error-pages.conf
+
+{% if nginx_storage_ssl %}
+kubectl create secret generic nginx-storage-secrets                              \
+    --from-file=nginx-storage-ssl.crt=concent-secrets/nginx-storage-ssl.crt      \
+    --from-file=nginx-storage-ssl.key=concent-secrets/nginx-storage-ssl.key
+{% endif %}
+
+kubectl create configmap nginx-storage-configs                          \
+{% if nginx_storage_ssl %}
+    --from-file=ssl.conf=config-maps/nginx-storage/ssl.conf             \
+{% endif %}
+    --from-file=default.conf=config-maps/nginx-storage/default.conf     \
+
+{% if nginx_proxy_ssl %}
+kubectl create secret generic nginx-proxy-secrets                              \
+    --from-file=nginx-proxy-ssl.crt=concent-secrets/nginx-proxy-ssl.crt        \
+    --from-file=nginx-proxy-ssl.key=concent-secrets/nginx-proxy-ssl.key
+{% endif %}
+
+kubectl create secret generic concent-api-secrets            \
+    --from-file=secrets.py=concent-secrets/secrets.py        \
+    --from-literal=__init__.py=
+
+kubectl create configmap nginx-configs                              \
+{% if nginx_proxy_ssl %}
+    --from-file=ssl.conf=config-maps/nginx-proxy/ssl.conf           \
+{% endif %}
+    --from-file=default.conf=config-maps/nginx-proxy/default.conf
+
+kubectl create configmap concent-api-settings                                \
+    --from-file=local_settings.py=config-maps/concent-api/local_settings.py  \
+    --from-literal=__init__.py=
+
+kubectl create configmap gatekeeper-settings                               \
+    --from-file=local_settings.py=config-maps/gatekeeper/local_settings.py \
+    --from-literal=__init__.py=
