@@ -54,6 +54,39 @@ To deploy you need to get access to them and put them in the following locations
 - `concent-secrets/$cluster/secrets.py`
 - `concent-secrets/$cluster/var-secret.yml`
 
+#### SSL certificates
+
+The nginx instances need certificates and private keys to be able to serve HTTPS traffic.
+Put them in the following locations:
+
+- `concent-secrets/$cluster/nginx-proxy-ssl.crt`
+- `concent-secrets/$cluster/nginx-proxy-ssl.key`
+- `concent-secrets/$cluster/nginx-storage-ssl.crt`
+- `concent-secrets/$cluster/nginx-storage-ssl.key`
+
+NOTE: These files are needed even if you disable SSL for a given cluster (by setting `nginx_proxy_ssl = false` or `nginx_storage_ssl = false` in `vars.yml`).
+If SSL is disabled for a cluster, the corresponding files can contain anything.
+They can even be empty.
+They will not be deployed to the cluster.
+
+#### Generating self-signed certificates
+
+It's best if your certificates are signed by a Certificate Authority (CA) because then it's possible for the client to verify their authenticity without having to know the public key ahead of time.
+This is not required though.
+You can generate and use a self-signed certificate.
+
+Here's an example command that generates a 2048-bit RSA certificate valid for a year:
+
+``` bash
+openssl req                     \
+    -x509                       \
+    -nodes                      \
+    -days   365                 \
+    -newkey rsa:2048            \
+    -keyout nging-proxy-ssl.key \
+    -out    nging-proxy-ssl.crt
+```
+
 ### Setting up the `concent-builder-vm` virtual machine.
 
 Do this if you want to use the virtual machine for deployment.
