@@ -7,6 +7,7 @@ from ..secrets.secrets import (
     EMAIL_PASSWORD,
     CONCENT_PUBLIC_KEY,
     CONCENT_PRIVATE_KEY,
+    SENTRY_DATA_SOURCE_NAME,
 )
 
 DATABASES = {}
@@ -23,6 +24,10 @@ ADMINS = [
     ("{{ admin.name }}", "{{ admin.mail }}"),
 {% endfor %}
 ]
+
+RAVEN_CONFIG = {
+    'dsn': SENTRY_DATA_SOURCE_NAME,
+}
 
 EMAIL_HOST           = "{{ email.host }}"
 EMAIL_PORT           = {{ email.port }}
