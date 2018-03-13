@@ -4,6 +4,7 @@ CLUSTER_SCRIPTS :=                                          \
     build/services/gatekeeper.yml                           \
     build/services/nginx-storage.yml                        \
     build/services/geth.yml                                 \
+    build/services/rabbitmq.yml                             \
     build/create-job-dependencies.sh                        \
     build/delete-job-dependencies.sh                        \
     build/clean-up-jobs.sh                                  \
