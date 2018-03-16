@@ -83,8 +83,8 @@ openssl req                     \
     -nodes                      \
     -days   365                 \
     -newkey rsa:2048            \
-    -keyout nging-proxy-ssl.key \
-    -out    nging-proxy-ssl.crt
+    -keyout nginx-proxy-ssl.key \
+    -out    nginx-proxy-ssl.crt
 ```
 
 ### Setting up the `concent-builder-vm` virtual machine.
