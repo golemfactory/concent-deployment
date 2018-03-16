@@ -59,7 +59,7 @@ SERVER_EMAIL         = "{{ email.server_email }}"
 
 CONCENT_FEATURES = ["concent-api", "admin-panel"]
 
-{% if storage_cluster_address == cluster_address and nginx_proxy_ssl or storage_cluster_address != cluster_address and nginx_storage_ssl %}
+{% if storage_cluster_address == cluster_address and not nginx_proxy_allow_http or storage_cluster_address != cluster_address and not nginx_storage_allow_http %}
 STORAGE_CLUSTER_ADDRESS = "https://{{ storage_cluster_address }}/"
 {% else %}
 STORAGE_CLUSTER_ADDRESS = "http://{{ storage_cluster_address }}/"

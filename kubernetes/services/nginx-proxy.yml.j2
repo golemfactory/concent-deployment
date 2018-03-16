@@ -32,21 +32,17 @@ spec:
             - mountPath:  /etc/nginx/snippets/
               name:       nginx-config-snippets
               readOnly:   true
-            {% if nginx_proxy_ssl %}
             - mountPath:  /etc/ssl/secrets/
               name:       nginx-proxy-secrets
               readOnly:   true
-            {% endif %}
       volumes:
         -  name: nginx-configs
            configMap:
              name: nginx-configs
-        {% if nginx_proxy_ssl %}
         - name: nginx-proxy-secrets
           secret:
             secretName:  nginx-proxy-secrets
             defaultMode: 0600
-        {% endif %}
         -  name: nginx-config-snippets
            configMap:
              name: nginx-config-snippets
@@ -63,11 +59,9 @@ spec:
       protocol:   TCP
       port:       80
       targetPort: 80
-    {% if nginx_proxy_ssl %}
     - name:       https
       protocol:   TCP
       port:       443
       targetPort: 443
-    {% endif %}
   selector:
     run: nginx-proxy

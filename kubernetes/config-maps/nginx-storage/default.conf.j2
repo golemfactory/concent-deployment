@@ -5,7 +5,8 @@ map $http_accept $extension {
     application/json json;
 }
 
-{% if nginx_storage_ssl %}
+{% if not nginx_storage_allow_http %}
+# HTTP -> HTTPS redirect
 server {
     listen 80      default_server;
     listen [::]:80 default_server;
@@ -13,14 +14,16 @@ server {
     return 302     https://$server_name$request_uri;
 
 }
+{% endif %}
 
 server {
+    {% if nginx_storage_allow_http %}
+    # HTTP
+    listen 80       default_server;
+    {% endif %}
+    # HTTPS
     listen 443      ssl http2 default_server;
     listen [::]:443 ssl http2 default_server;
-{% else %}
-server {
-    listen 80                default_server;
-{% endif %}
 
     gzip                     on;
     gzip_min_length          1000;
