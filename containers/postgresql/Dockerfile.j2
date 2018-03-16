@@ -1,4 +1,4 @@
-FROM postgres:10.1-alpine
+FROM postgres:{{ postgres_alpine_version }}-alpine
 
 COPY create-database.sh    /usr/local/bin/
 COPY delete-database.sh    /usr/local/bin/

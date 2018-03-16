@@ -2,6 +2,7 @@
     - concent-builder
   vars_files:
     - consts.yml
+    - ../containers/versions.yml
     # NOTE: This playbook should not use values from concent-deployment-values
   tasks:
     - become:      yes
@@ -65,9 +66,9 @@
             - pkg-config
             - libsecp256k1-dev
             - git
-            - kubectl
-            - docker-engine
-            - google-cloud-sdk
+            - kubectl={{ kubectl_version }}
+            - docker-engine={{ docker_version }}
+            - google-cloud-sdk={{ google_cloud_sdk_version }}
             - ansible
             - libpq-dev
             - gcc
@@ -76,8 +77,8 @@
         - name:    Install dependencies from testing
           apt:  name={{ item }} default_release=testing
           with_items:
-            - python3.6
-            - python3.6-dev
+            - python{{ python_version }}
+            - python{{ python_version }}-dev
             - virtualenv
 
         - name:     apt autoclean
