@@ -41,6 +41,13 @@ RAVEN_CONFIG = {
     'tags': {'component': 'concent-api'},
 }
 
+{% if storage_cluster_address == cluster_address and nginx_proxy_ssl %}
+STORAGE_CLUSTER_SSL_CERTIFICATE_PATH = "/srv/http/concent_api/concent_api/settings/config_map/nginx-proxy-ssl.crt"
+{% endif %}
+{% if storage_cluster_address != cluster_address and nginx_storage_ssl %}
+STORAGE_CLUSTER_SSL_CERTIFICATE_PATH = "/srv/http/concent_api/concent_api/settings/config_map/nginx-storage-ssl.crt"
+{% endif %}
+
 EMAIL_HOST           = "{{ email.host }}"
 EMAIL_PORT           = {{ email.port }}
 EMAIL_HOST_USER      = "{{ email.user }}"
