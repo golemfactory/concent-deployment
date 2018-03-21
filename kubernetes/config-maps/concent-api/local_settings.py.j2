@@ -39,6 +39,12 @@ RAVEN_CONFIG = {
     'dsn': SENTRY_DATA_SOURCE_NAME,
 }
 
+{% if storage_cluster_address == cluster_address %}
+STORAGE_CLUSTER_SSL_CERTIFICATE_FILE="nginx-proxy-ssl.crt"
+{% else %}
+STORAGE_CLUSTER_SSL_CERTIFICATE_FILE="nginx-storage-ssl.crt"
+{% endif %}
+
 EMAIL_HOST           = "{{ email.host }}"
 EMAIL_PORT           = {{ email.port }}
 EMAIL_HOST_USER      = "{{ email.user }}"
