@@ -40,9 +40,9 @@ RAVEN_CONFIG = {
 }
 
 {% if storage_cluster_address == cluster_address %}
-STORAGE_CLUSTER_SSL_CERTIFICATE_FILE = "nginx-proxy-ssl.crt"
+STORAGE_CLUSTER_SSL_CERTIFICATE_FILE = "/srv/http/concent_api/concent_api/settings/config_map/nginx-proxy-ssl.crt"
 {% else %}
-STORAGE_CLUSTER_SSL_CERTIFICATE_FILE = "nginx-storage-ssl.crt"
+STORAGE_CLUSTER_SSL_CERTIFICATE_FILE = "/srv/http/concent_api/concent_api/settings/config_map/nginx-storage-ssl.crt"
 {% endif %}
 
 EMAIL_HOST           = "{{ email.host }}"
