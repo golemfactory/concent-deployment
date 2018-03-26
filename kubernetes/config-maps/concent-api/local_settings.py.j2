@@ -39,9 +39,10 @@ RAVEN_CONFIG = {
     'dsn': SENTRY_DATA_SOURCE_NAME,
 }
 
-{% if storage_cluster_address == cluster_address %}
+{% if storage_cluster_address == cluster_address and nginx_proxy_ssl %}
 STORAGE_CLUSTER_SSL_CERTIFICATE_PATH = "/srv/http/concent_api/concent_api/settings/config_map/nginx-proxy-ssl.crt"
-{% else %}
+{% endif %}
+{% if storage_cluster_address == cluster_address and nginx_storage_ssl %}
 STORAGE_CLUSTER_SSL_CERTIFICATE_PATH = "/srv/http/concent_api/concent_api/settings/config_map/nginx-storage-ssl.crt"
 {% endif %}
 
