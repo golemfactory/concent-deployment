@@ -1,0 +1,29 @@
+from ..production import *
+
+from .email_settings import *
+from .timing_settings import *
+
+# Create secrets.py and put passwords and private keys in it.
+# Don't commit it into the repository.
+from ..secrets.secrets import (
+    SECRET_KEY,
+    CONCENT_PUBLIC_KEY,
+    SENTRY_DATA_SOURCE_NAME,
+)
+
+DATABASES = {}
+
+RAVEN_CONFIG = {
+    'dsn': SENTRY_DATA_SOURCE_NAME,
+    'environment': '{{ gke.cluster }}',
+    'tags': {'component': 'verifier'},
+}
+
+EMAIL_SUBJECT_PREFIX = "[{{ gke.cluster }}:verifier] "
+
+CELERY_BROKER_URL = 'amqp://rabbitmq.default.svc.cluster.local:5672'
+
+CONCENT_FEATURES = ["verifier"]
+
+STORAGE_SERVER_INTERNAL_ADDRESS = "http://nginx-storage.default.svc.cluster.local"
+VERIFIER_STORAGE_PATH = "/srv/storage/"

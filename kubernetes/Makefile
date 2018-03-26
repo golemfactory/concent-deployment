@@ -6,6 +6,7 @@ CLUSTER_SCRIPTS :=                                          \
     build/services/nginx-storage.yml                        \
     build/services/geth.yml                                 \
     build/services/rabbitmq.yml                             \
+    build/services/verifier.yml                             \
     build/create-job-dependencies.sh                        \
     build/delete-job-dependencies.sh                        \
     build/clean-up-jobs.sh                                  \
@@ -23,6 +24,7 @@ CLUSTER_SCRIPTS :=                                          \
     build/config-maps/concent/timing_settings.py            \
     build/config-maps/gatekeeper/local_settings.py          \
     build/config-maps/conductor/local_settings.py           \
+    build/config-maps/verifier/local_settings.py            \
     build/config-maps/concent-api/local_settings.py         \
     build/config-maps/database-jobs/local_settings.py       \
     build/config-maps/nginx-storage/default.conf            \

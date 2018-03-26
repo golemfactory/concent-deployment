@@ -45,4 +45,9 @@ kubectl create configmap conductor-settings                                \
     --from-file=local_settings.py=config-maps/conductor/local_settings.py  \
     --from-file=email_settings.py=config-maps/concent/email_settings.py    \
     --from-file=timing_settings.py=config-maps/concent/timing_settings.py  \
+
+kubectl create configmap verifier-settings                                 \
+    --from-file=local_settings.py=config-maps/verifier/local_settings.py   \
+    --from-file=email_settings.py=config-maps/concent/email_settings.py    \
+    --from-file=timing_settings.py=config-maps/concent/timing_settings.py  \
     --from-literal=__init__.py=
