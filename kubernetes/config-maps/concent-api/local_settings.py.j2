@@ -37,6 +37,8 @@ TOKEN_EXPIRATION_DEADLINE  = 30
 
 RAVEN_CONFIG = {
     'dsn': SENTRY_DATA_SOURCE_NAME,
+    'environment': '{{ gke.cluster }}',
+    'tags': {'component': 'concent-api'},
 }
 
 EMAIL_HOST           = "{{ email.host }}"
