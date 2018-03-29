@@ -4,13 +4,18 @@ from ..production import *
 # Don't commit it into the repository.
 from ..secrets.secrets import (
     SECRET_KEY,
+    DATABASE_PASSWORD,
     EMAIL_PASSWORD,
     CONCENT_PUBLIC_KEY,
     CONCENT_PRIVATE_KEY,
     SENTRY_DATA_SOURCE_NAME,
 )
 
-DATABASES = {}
+DATABASES['default']['NAME']     = '{{ database_name }}'
+DATABASES['default']['USER']     = '{{ database_user }}'
+DATABASES['default']['PASSWORD'] = DATABASE_PASSWORD
+DATABASES['default']['HOST']     = '{{ database_host }}'
+DATABASES['default']['PORT']     = '5432'
 
 ALLOWED_HOSTS = [
 {% for host in allowed_hosts %}
