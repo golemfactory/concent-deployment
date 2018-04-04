@@ -47,6 +47,8 @@ STORAGE_CLUSTER_SSL_CERTIFICATE_PATH = "/srv/http/concent_api/concent_api/settin
 STORAGE_CLUSTER_SSL_CERTIFICATE_PATH = "/srv/http/concent_api/concent_api/settings/config_map/nginx-storage-ssl.crt"
 {% endif %}
 
+CELERY_BROKER_URL = 'amqp://rabbitmq.default.svc.cluster.local:5672'
+
 EMAIL_HOST           = "{{ email.host }}"
 EMAIL_PORT           = {{ email.port }}
 EMAIL_HOST_USER      = "{{ email.user }}"
