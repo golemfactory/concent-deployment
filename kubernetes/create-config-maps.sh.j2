@@ -34,6 +34,11 @@ kubectl create configmap nginx-configs                              \
 
 kubectl create configmap concent-api-settings                                \
     --from-file=local_settings.py=config-maps/concent-api/local_settings.py  \
+{% if storage_cluster_address == cluster_address %}
+    --from-file=nginx-proxy-ssl.crt=concent-secrets/nginx-proxy-ssl.crt      \
+{% else %}
+    --from-file=nginx-storage-ssl.crt=concent-secrets/nginx-storage-ssl.crt  \
+{% endif %}
     --from-literal=__init__.py=
 
 kubectl create configmap gatekeeper-settings                               \
