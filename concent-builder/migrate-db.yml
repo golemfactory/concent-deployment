@@ -14,6 +14,16 @@
               --project "{{ gke.project }}"                  \
               --zone    "{{ gke.zone }}"
 
+        - name:    Delete outdated secrets and config maps required by jobs
+          command: "{{ build_dir }}/concent-deployment/kubernetes/build/delete-job-dependencies.sh"
+          args:
+            chdir: "{{ build_dir}}/concent-deployment/kubernetes/build/"
+
+        - name:    Create up to date secrets and config maps required by jobs
+          command: "{{ build_dir }}/concent-deployment/kubernetes/build/create-job-dependencies.sh {{ cluster_type }}"
+          args:
+            chdir: "{{ build_dir}}/concent-deployment/kubernetes/build/"
+
         - name:    Migrate the database used by concent-api
           command: kubectl create \
-            --filename "{{ build_dir }}/concent-deployment/kubernetes/build/jobs/migrate-database.yml"
+            --filename "{{ build_dir }}/concent-deployment/kubernetes/build/jobs/migrate-{{ cluster_type }}-database.yml"

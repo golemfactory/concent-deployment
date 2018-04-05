@@ -14,10 +14,10 @@ from ..secrets.secrets import (
     SENTRY_DATA_SOURCE_NAME,
 )
 
-DATABASES['default']['NAME']     = '{{ database_name }}'
-DATABASES['default']['USER']     = '{{ database_user }}'
+DATABASES['default']['NAME']     = '{{ control_database_name }}'
+DATABASES['default']['USER']     = '{{ control_database_user }}'
 DATABASES['default']['PASSWORD'] = DATABASE_PASSWORD
-DATABASES['default']['HOST']     = '{{ database_host }}'
+DATABASES['default']['HOST']     = '{{ control_database_host }}'
 DATABASES['default']['PORT']     = '5432'
 
 # Concent has two databases in its default config but only one is used at a time

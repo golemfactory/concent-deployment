@@ -20,6 +20,7 @@ CLUSTER_SCRIPTS :=                                          \
     build/config-maps/concent/timing_settings.py            \
     build/config-maps/gatekeeper/local_settings.py          \
     build/config-maps/concent-api/local_settings.py         \
+    build/config-maps/database-jobs/local_settings.py       \
     build/config-maps/nginx-storage/default.conf            \
     build/config-maps/nginx-storage/ssl.conf                \
     build/concent-secrets/secrets.py                        \
@@ -27,11 +28,17 @@ CLUSTER_SCRIPTS :=                                          \
     build/concent-secrets/nginx-proxy-ssl.key               \
     build/concent-secrets/nginx-storage-ssl.crt             \
     build/concent-secrets/nginx-storage-ssl.key             \
-    build/secrets/db-secrets.yml                            \
+    build/secrets/control-db-secrets.yml                    \
+    build/secrets/storage-db-secrets.yml                    \
     build/secrets/django-admin-fixture.yaml                 \
-    build/jobs/create-database.yml                          \
-    build/jobs/migrate-database.yml                         \
-    build/jobs/delete-database.yml
+    build/jobs/create-control-database.yml                  \
+    build/jobs/migrate-control-database.yml                 \
+    build/jobs/delete-control-database.yml                  \
+    build/jobs/create-storage-database.yml                  \
+    build/jobs/migrate-storage-database.yml                 \
+    build/jobs/delete-storage-database.yml
+
+
 
 ifndef CLUSTER
     $(error CLUSTER parameter not specified)
@@ -70,6 +77,21 @@ build/concent-secrets/%: $(CONCENT_SECRET_DIR)/%
 build/%: %.j2 build/vars-merged-with-secrets.yml ../tools/render-jinja-template.sh
 	../tools/render-jinja-template.sh build/vars-merged-with-secrets.yml "$<" "$@"
 
+build/jobs/%-control-database.yml: jobs/%-database.yml.j2 ../tools/render-jinja-template.sh build/vars-with-control-database-config-and-secrets.yml
+	../tools/render-jinja-template.sh build/vars-with-control-database-config-and-secrets.yml "$<" "$@"
+
+build/jobs/%-storage-database.yml: jobs/%-database.yml.j2 ../tools/render-jinja-template.sh build/vars-with-storage-database-config-and-secrets.yml
+	../tools/render-jinja-template.sh build/vars-with-storage-database-config-and-secrets.yml "$<" "$@"
+
+build/secrets/%-db-secrets.yml: build/vars-with-%-database-config-and-secrets.yml secrets/db-secrets.yml.j2 ../tools/render-jinja-template.sh
+	../tools/render-jinja-template.sh "$<" "secrets/db-secrets.yml.j2" "$@"
+
+build/vars-with-%-database-config-and-secrets.yml: build/%-database-configuration.yml build/vars-merged-with-secrets.yml
+	../tools/merge-yaml.py                         \
+		"$<"                                       \
+		"build/vars-merged-with-secrets.yml"       \
+		--output "$@"
+
 build/vars-merged-with-secrets.yml: var.yml var-$(CLUSTER).yml $(CONCENT_SECRET_DIR)/var-secret.yml build/image-version.yml ../containers/versions.yml ../tools/merge-yaml.py
 	../tools/merge-yaml.py                     \
 		"$<"                                   \
@@ -80,7 +102,24 @@ build/vars-merged-with-secrets.yml: var.yml var-$(CLUSTER).yml $(CONCENT_SECRET_
 		--output "$@"
 
 build/image-version.yml:
-	echo "image_version: $(IMAGE_VERSION)" >> build/image-version.yml
+	echo "image_version: $(IMAGE_VERSION)" >> "$@"
+
+build/control-database-configuration.yml:
+	echo "selected_database_id:    default"  >> "$@"
+	echo "database_name:          \"{{ control_database_name }}\"" >> "$@"
+	echo "database_user:          \"{{ control_database_user }}\"" >> "$@"
+	echo "database_host:          \"{{ control_database_host }}\"" >> "$@"
+	echo "initialize_django_admin: true" >> "$@"
+	echo "db_admin_password:      \"{{ control_db_admin_password }}\"" >> "$@"
+	echo "db_user_password:       \"{{ control_db_user_password }}\"" >> "$@"
+
+build/storage-database-configuration.yml:
+	echo "selected_database_id:   storage" >> "$@"
+	echo "database_name:         \"{{ storage_database_name }}\"" >> "$@"
+	echo "database_user:         \"{{ storage_database_user }}\"" >> "$@"
+	echo "database_host:         \"{{ storage_database_host }}\"" >> "$@"
+	echo "db_admin_password:     \"{{ storage_db_admin_password }}\"" >> "$@"
+	echo "db_user_password:      \"{{ storage_db_user_password }}\"" >> "$@"
 
 clean:
 	rm -rf build/

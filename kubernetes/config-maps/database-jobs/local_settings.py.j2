@@ -1,0 +1,21 @@
+from ..production import *
+# Create secrets.py and put passwords and private keys in it.
+# Don't commit it into the repository.
+from ..secrets.secrets import (
+    SECRET_KEY,
+    DATABASE_PASSWORD,
+    STORAGE_DATABASE_PASSWORD,
+)
+
+
+DATABASES['default']['NAME']     = '{{ control_database_name }}'
+DATABASES['default']['USER']     = '{{ control_database_user }}'
+DATABASES['default']['PASSWORD'] = DATABASE_PASSWORD
+DATABASES['default']['HOST']     = '{{ control_database_host }}'
+DATABASES['default']['PORT']     = '5432'
+
+DATABASES['storage']['NAME']     = '{{ storage_database_name }}'
+DATABASES['storage']['USER']     = '{{ storage_database_user }}'
+DATABASES['storage']['PASSWORD'] = STORAGE_DATABASE_PASSWORD
+DATABASES['storage']['HOST']     = '{{ storage_database_host }}'
+DATABASES['storage']['PORT']     = '5432'

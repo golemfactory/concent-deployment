@@ -17,18 +17,18 @@ spec:
         - name: concent-api-secrets
           secret:
             secretName: concent-api-secrets
-        - name: concent-api-settings
+        - name: database-job-settings
           configMap:
-            name: concent-api-settings
+            name: database-job-settings
       initContainers:
         - name:             migrate-database
           image:            {{ docker_registry }}/{{ image_prefix }}concent-api:{{ image_version }}
           imagePullPolicy:  Always
-          command:          ["/usr/local/bin/concent-api-manage.sh", "migrate"]
+          command:          ["/usr/local/bin/concent-api-manage.sh", "migrate", "--database={{ selected_database_id }}"]
           volumeMounts:
             - name:       concent-api-secrets
               mountPath:  /srv/http/concent_api/concent_api/settings/secrets/
               readOnly:   true
-            - name:       concent-api-settings
+            - name:       database-job-settings
               mountPath:  /srv/http/concent_api/concent_api/settings/config_map/
               readOnly:   true
