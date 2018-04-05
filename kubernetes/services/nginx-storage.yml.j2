@@ -34,18 +34,14 @@ spec:
             - mountPath:  /etc/nginx/snippets/
               name:       nginx-config-snippets
               readOnly:   true
-            {% if nginx_storage_ssl %}
             - mountPath:  /etc/ssl/secrets/
               name:       nginx-storage-secrets
               readOnly:   true
-            {% endif %}
       volumes:
-        {% if nginx_storage_ssl %}
         - name: nginx-storage-secrets
           secret:
             secretName:  nginx-storage-secrets
             defaultMode: 0600
-        {% endif %}
         - name: concent-storage
           gcePersistentDisk:
             pdName: {{ nginx_storage_disk }}
@@ -74,11 +70,9 @@ spec:
       protocol:   TCP
       port:       80
       targetPort: 80
-    {% if nginx_storage_ssl %}
     - name:       https
       protocol:   TCP
       port:       443
       targetPort: 443
-    {% endif %}
   selector:
     run: nginx-storage

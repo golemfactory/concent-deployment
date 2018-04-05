@@ -64,11 +64,6 @@ Put them in the following locations:
 - `concent-secrets/$cluster/nginx-storage-ssl.crt`
 - `concent-secrets/$cluster/nginx-storage-ssl.key`
 
-NOTE: These files are needed even if you disable SSL for a given cluster (by setting `nginx_proxy_ssl = false` or `nginx_storage_ssl = false` in `vars.yml`).
-If SSL is disabled for a cluster, the corresponding files can contain anything.
-They can even be empty.
-They will not be deployed to the cluster.
-
 #### Generating self-signed certificates
 
 It's best if your certificates are signed by a Certificate Authority (CA) because then it's possible for the client to verify their authenticity without having to know the public key ahead of time.
