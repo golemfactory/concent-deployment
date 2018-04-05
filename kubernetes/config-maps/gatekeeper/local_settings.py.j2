@@ -27,6 +27,8 @@ ADMINS = [
 
 RAVEN_CONFIG = {
     'dsn': SENTRY_DATA_SOURCE_NAME,
+    'environment': '{{ gke.cluster }}',
+    'tags': {'component': 'gatekeeper'},
 }
 
 EMAIL_HOST           = "{{ email.host }}"
