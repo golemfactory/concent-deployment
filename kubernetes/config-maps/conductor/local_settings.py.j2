@@ -1,0 +1,43 @@
+from ..production import *
+
+from .email_settings import *
+from .timing_settings import *
+
+# Create secrets.py and put passwords and private keys in it.
+# Don't commit it into the repository.
+from ..secrets.secrets import (
+    STORAGE_SECRET_KEY,
+    STORAGE_DATABASE_PASSWORD,
+    EMAIL_PASSWORD,
+    CONCENT_PUBLIC_KEY,
+    SENTRY_DATA_SOURCE_NAME,
+)
+
+SECRET_KEY = STORAGE_SECRET_KEY
+
+DATABASES['storage']['NAME']     = '{{ storage_database_name }}'
+DATABASES['storage']['USER']     = '{{ storage_database_user }}'
+DATABASES['storage']['PASSWORD'] = STORAGE_DATABASE_PASSWORD
+DATABASES['storage']['HOST']     = '{{ storage_database_host }}'
+DATABASES['storage']['PORT']     = '5432'
+
+# Concent has two databases in its default config but only one is used at a time
+# and they may not be even on the same cluster.
+# In order to work with only one we have to remove the other from the config.
+DATABASES['default'] = {}
+
+ALLOWED_HOSTS = [
+    "conductor",
+    "conductor.default",
+    "conductor.default.svc.cluster.local",
+]
+
+RAVEN_CONFIG = {
+    'dsn': SENTRY_DATA_SOURCE_NAME,
+    'environment': '{{ gke.cluster }}',
+    'tags': {'component': 'conductor'},
+}
+
+EMAIL_SUBJECT_PREFIX = "[{{ gke.cluster }}:conductor] "
+
+CONCENT_FEATURES = ["conductor-urls"]

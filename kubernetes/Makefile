@@ -2,6 +2,7 @@ CLUSTER_SCRIPTS :=                                          \
     build/services/nginx-proxy.yml                          \
     build/services/concent-api.yml                          \
     build/services/gatekeeper.yml                           \
+    build/services/conductor.yml                            \
     build/services/nginx-storage.yml                        \
     build/services/geth.yml                                 \
     build/services/rabbitmq.yml                             \
@@ -19,6 +20,7 @@ CLUSTER_SCRIPTS :=                                          \
     build/config-maps/concent/email_settings.py             \
     build/config-maps/concent/timing_settings.py            \
     build/config-maps/gatekeeper/local_settings.py          \
+    build/config-maps/conductor/local_settings.py           \
     build/config-maps/concent-api/local_settings.py         \
     build/config-maps/database-jobs/local_settings.py       \
     build/config-maps/nginx-storage/default.conf            \
