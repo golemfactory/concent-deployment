@@ -1,10 +1,13 @@
 from ..production import *
+
+from .email_settings import *
+from .timing_settings import *
+
 # Create secrets.py and put passwords and private keys in it.
 # Don't commit it into the repository.
 from ..secrets.secrets import (
     SECRET_KEY,
     DATABASE_PASSWORD,
-    EMAIL_PASSWORD,
     CONCENT_PUBLIC_KEY,
     CONCENT_PRIVATE_KEY,
     SENTRY_DATA_SOURCE_NAME,
@@ -22,19 +25,6 @@ ALLOWED_HOSTS = [
 {% endfor %}
 ]
 
-ADMINS = [
-{% for admin in admins %}
-    ("{{ admin.name }}", "{{ admin.mail }}"),
-{% endfor %}
-]
-
-{% if fast_timing %}
-CONCENT_MESSAGING_TIME     = 2
-SUBTASK_VERIFICATION_TIME  = 5
-FORCE_ACCEPTANCE_TIME      = 5
-TOKEN_EXPIRATION_DEADLINE  = 30
-{% endif %}
-
 RAVEN_CONFIG = {
     'dsn': SENTRY_DATA_SOURCE_NAME,
     'environment': '{{ gke.cluster }}',
@@ -49,14 +39,7 @@ STORAGE_CLUSTER_SSL_CERTIFICATE_PATH = "/srv/http/concent_api/concent_api/settin
 
 CELERY_BROKER_URL = 'amqp://rabbitmq.default.svc.cluster.local:5672'
 
-EMAIL_HOST           = "{{ email.host }}"
-EMAIL_PORT           = {{ email.port }}
-EMAIL_HOST_USER      = "{{ email.user }}"
 EMAIL_SUBJECT_PREFIX = "[{{ gke.cluster }}:concent-api] "
-EMAIL_HOST_PASSWORD  = EMAIL_PASSWORD
-EMAIL_USE_TLS        = {{ email.use_tls }}
-DEFAULT_FROM_EMAIL   = "{{ email.default_from_email }}"
-SERVER_EMAIL         = "{{ email.server_email }}"
 
 CONCENT_FEATURES = ["concent-api", "admin-panel"]
 

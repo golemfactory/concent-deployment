@@ -15,6 +15,8 @@ CLUSTER_SCRIPTS :=                                          \
     build/config-maps/nginx/error-pages.conf                \
     build/config-maps/nginx-proxy/default.conf              \
     build/config-maps/nginx-proxy/ssl.conf                  \
+    build/config-maps/concent/email_settings.py             \
+    build/config-maps/concent/timing_settings.py            \
     build/config-maps/gatekeeper/local_settings.py          \
     build/config-maps/concent-api/local_settings.py         \
     build/config-maps/nginx-storage/default.conf            \
