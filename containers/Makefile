@@ -69,8 +69,8 @@ concent-api-clean:
 	docker rmi $(IMAGE_PREFIX)concent-api:$(IMAGE_VERSION) --force
 
 
-build/virtualenv/: $(CONCENT_DIR)/concent_api/requirements.lock
-	package-builder/build-virtualenv.sh "$<" "build"
+build/virtualenv/: $(CONCENT_DIR)/concent_api/requirements.lock build/package-builder/build-virtualenv.sh
+	build/package-builder/build-virtualenv.sh "$<" "build"
 
 build/concent-api/requirements.lock: build/concent-api/concent-api.tar
 	tar                                          \
@@ -88,20 +88,20 @@ build/concent-api/concent-api.tar: $(CONCENT_DIR)  build/virtualenv/
 	package-builder/build-concent-api.sh "$(CONCENT_DIR)" "build/concent-api"
 
 
-build/nginx-proxy/concent-api-assets.tar: $(CONCENT_DIR) build/virtualenv/
+build/nginx-proxy/concent-api-assets.tar: $(CONCENT_DIR) build/virtualenv/ build/package-builder/build-concent-api-assets.sh
 	mkdir --parents "$(dir $@)"
-	package-builder/build-concent-api-assets.sh \
-		"$(CONCENT_DIR)"                        \
-		"$(abspath package-builder)"            \
-		"$(abspath build)"                      \
+	build/package-builder/build-concent-api-assets.sh \
+		"$(CONCENT_DIR)"                              \
+		"$(abspath package-builder)"                  \
+		"$(abspath build)"                            \
 		"$(dir $@)"
 
-build/nginx-proxy/concent-api-docs.tar: $(CONCENT_DIR)
+build/nginx-proxy/concent-api-docs.tar: $(CONCENT_DIR) build/package-builder/build-concent-api-docs.sh
 	mkdir --parents $(dir $@)
-	package-builder/build-concent-api-docs.sh   \
-		"$(CONCENT_DIR)"                        \
-		"$(abspath package-builder)"            \
-		"$(abspath build)"                      \
+	build/package-builder/build-concent-api-docs.sh   \
+		"$(CONCENT_DIR)"                              \
+		"$(abspath package-builder)"                  \
+		"$(abspath build)"                            \
 		"$(dir $@)"
 
 build/:
@@ -112,8 +112,17 @@ build/%: %
 	cp --archive --parents "$<" build/
 
 # Templates
-build/%: %.j2 config.yml ../tools/render-jinja-template.sh
-	../tools/render-jinja-template.sh config.yml "$<" "$@"
+build/%: %.j2 build/config-with-versions.yml ../tools/render-jinja-template.sh
+	../tools/render-jinja-template.sh         \
+		build/config-with-versions.yml        \
+		"$<"                                  \
+		"$@"
+
+build/config-with-versions.yml: versions.yml config.yml ../tools/merge-yaml.py
+	../tools/merge-yaml.py                     \
+		"$<"                                   \
+		"config.yml"                           \
+		--output "$@"
 
 clean:
 	rm -rf build/

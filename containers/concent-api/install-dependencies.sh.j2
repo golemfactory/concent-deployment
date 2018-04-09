@@ -17,8 +17,8 @@ dependencies=(
 
 testing_dependencies=(
     # There's no stable Python 3.6 package in Debian Stretch yet so we have to get it from testing.
-    python3.6
-    python3.6-dev
+    python{{ python_version }}
+    python{{ python_version }}-dev
     virtualenv
 )
 

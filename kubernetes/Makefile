@@ -67,12 +67,13 @@ build/concent-secrets/%: $(CONCENT_SECRET_DIR)/%
 build/%: %.j2 build/vars-merged-with-secrets.yml ../tools/render-jinja-template.sh
 	../tools/render-jinja-template.sh build/vars-merged-with-secrets.yml "$<" "$@"
 
-build/vars-merged-with-secrets.yml: var.yml var-$(CLUSTER).yml $(CONCENT_SECRET_DIR)/var-secret.yml build/image-version.yml ../tools/merge-yaml.py
+build/vars-merged-with-secrets.yml: var.yml var-$(CLUSTER).yml $(CONCENT_SECRET_DIR)/var-secret.yml build/image-version.yml ../containers/versions.yml ../tools/merge-yaml.py
 	../tools/merge-yaml.py                     \
 		"$<"                                   \
 		"var-$(CLUSTER).yml"                   \
 		"$(CONCENT_SECRET_DIR)/var-secret.yml" \
 		"build/image-version.yml"              \
+		../containers/versions.yml             \
 		--output "$@"
 
 build/image-version.yml:

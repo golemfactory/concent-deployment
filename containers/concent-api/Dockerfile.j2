@@ -1,4 +1,4 @@
-FROM debian:stretch
+FROM debian:{{ debian_version }}
 
 COPY testing.pref                   /etc/apt/preferences.d/
 COPY install-dependencies.sh        /tmp/
