@@ -3,9 +3,12 @@
 concent_dir=$1
 output_dir=$2
 
-build/virtualenv/bin/python3 "build/virtualenv/src/golem-messages/version.py"
-mv RELEASE-VERSION "$concent_dir"
+deployment_dir="../concent-deployment/containers"
 
+cd "$concent_dir/"
+"$deployment_dir/build/virtualenv/bin/python3" "$deployment_dir/build/virtualenv/src/golem-messages/version.py"
+
+cd "$deployment_dir/"
 tar                                            \
     --create                                   \
     --verbose                                  \
