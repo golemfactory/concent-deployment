@@ -1,0 +1,32 @@
+from ..production import *
+
+from .email_settings import *
+from .timing_settings import *
+
+# Create secrets.py and put passwords and private keys in it.
+# Don't commit it into the repository.
+from ..secrets.secrets import (
+    SECRET_KEY,
+    DATABASE_PASSWORD,
+    CONCENT_PUBLIC_KEY,
+    CONCENT_PRIVATE_KEY,
+    SENTRY_DATA_SOURCE_NAME,
+)
+
+DATABASES['default']['NAME']     = '{{ database_name }}'
+DATABASES['default']['USER']     = '{{ database_user }}'
+DATABASES['default']['PASSWORD'] = DATABASE_PASSWORD
+DATABASES['default']['HOST']     = '{{ database_host }}'
+DATABASES['default']['PORT']     = '5432'
+
+RAVEN_CONFIG = {
+    'dsn': SENTRY_DATA_SOURCE_NAME,
+    'environment': '{{ gke.cluster }}',
+    'tags': {'component': 'concent-api-worker'},
+}
+
+CELERY_BROKER_URL = 'amqp://rabbitmq.default.svc.cluster.local:5672'
+
+EMAIL_SUBJECT_PREFIX = "[{{ gke.cluster }}:concent-api-worker] "
+
+CONCENT_FEATURES = ["concent-worker"]

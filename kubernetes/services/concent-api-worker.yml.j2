@@ -1,0 +1,55 @@
+apiVersion: extensions/v1beta1
+kind:       Deployment
+metadata:
+  name: concent-api-worker
+spec:
+  replicas:             3
+  revisionHistoryLimit: 3
+  template:
+    metadata:
+      labels:
+        run: concent-api-worker
+    spec:
+      containers:
+        - name:             concent-api-worker
+          image:            {{ docker_registry }}/{{image_prefix }}concent-api:{{ image_version }}
+          imagePullPolicy:  Always
+          command:          ["/usr/local/bin/run-celery.sh"]
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              memory: "350Mi"
+              cpu:    "50m"
+            limits:
+              memory: "600Mi"
+              cpu:    "800m"
+          volumeMounts:
+            - name:      concent-api-secrets
+              mountPath: /srv/http/concent_api/concent_api/settings/secrets/
+              readOnly:  true
+            - name:      concent-api-worker-settings
+              mountPath: /srv/http/concent_api/concent_api/settings/config_map/
+              readOnly:  true
+      volumes:
+        - name: concent-api-secrets
+          secret:
+            secretName: concent-api-secrets
+        - name: concent-api-worker-settings
+          configMap:
+            name: concent-api-worker-settings
+---
+apiVersion: v1
+kind:       Service
+metadata:
+  name: concent-api-worker
+  labels:
+    run: concent-api-worker
+spec:
+  type: ClusterIP
+  ports:
+    - port:       80
+      targetPort: 80
+      name:       concent-api-worker-port
+  selector:
+    run: concent-api-worker

@@ -17,6 +17,7 @@ CONCENT_API_SOURCE :=                           \
     build/concent-api/install-dependencies.sh   \
     build/concent-api/Dockerfile                \
     build/concent-api/concent-api-manage.sh     \
+    build/concent-api/run-celery.sh             \
     build/concent-api/run-gunicorn.sh           \
     build/concent-api/local_settings.py
 
