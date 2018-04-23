@@ -19,6 +19,11 @@ DATABASES['default']['PASSWORD'] = DATABASE_PASSWORD
 DATABASES['default']['HOST']     = '{{ database_host }}'
 DATABASES['default']['PORT']     = '5432'
 
+# Concent has two databases in its default config but only one is used at a time
+# and they may not be even on the same cluster.
+# In order to work with only one we have to remove the other from the config.
+del DATABASES["storage"]
+
 ALLOWED_HOSTS = [
 {% for host in allowed_hosts %}
     "{{ host }}",
