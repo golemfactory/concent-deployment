@@ -1,0 +1,16 @@
+from ..secrets.secrets import EMAIL_PASSWORD
+
+ADMINS = [
+{% for admin in admins %}
+    ("{{ admin.name }}", "{{ admin.mail }}"),
+{% endfor %}
+]
+
+EMAIL_HOST = "{{ email.host }}"
+EMAIL_PORT = {{ email.port }}
+EMAIL_HOST_USER = "{{ email.user }}"
+EMAIL_HOST_PASSWORD = EMAIL_PASSWORD
+EMAIL_USE_TLS = {{ email.use_tls }}
+DEFAULT_FROM_EMAIL = "{{ email.default_from_email }}"
+SERVER_EMAIL = "{{ email.server_email }}"
+
