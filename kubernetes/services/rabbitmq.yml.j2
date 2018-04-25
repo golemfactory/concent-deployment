@@ -1,0 +1,78 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: rabbitmq
+spec:
+# RabbitMQ is stateful so we can't simply spin up several replicas without ending up with separate broker instances with separate queues.
+# For now this has to be hard-coded to 1.
+  replicas:             1
+  revisionHistoryLimit: 3
+  template:
+    metadata:
+      labels:
+        run: rabbitmq
+    spec:
+# The name of the RabbitMQ node (RABBITMQ_NODENAME) is by default the same as the hostname,
+# which in Kubernetes is the same in every container running on a single Kubernetes node (and is the same as the hostname of that node).
+# This name is random and changes when the pod is restarted or deleted and recreated.
+# This behavior results in a new, empty Mnesia database being created when we recreate the pod and messages from the previous database not being recovered.
+# For that reason we need to explicitly set the hostname for the pod and keep it unchanged between deployments
+      hostname: rabbitmq
+      containers:
+        - image:           rabbitmq:{{ rabbitmq_version }}
+          name:            rabbitmq
+          imagePullPolicy: Always
+          env:
+            - name:  RABBITMQ_MNESIA_BASE
+              value: /srv/storage/mnesia
+          resources:
+            requests:
+              memory: "1200Mi"
+              cpu:    "600m"
+            limits:
+              memory: "1600Mi"
+              cpu:    "900m"
+          volumeMounts:
+            - mountPath:  /srv/storage/mnesia/
+              name:       queue-storage
+          livenessProbe:
+            exec:
+              command:
+              - rabbitmqctl
+              - status
+            initialDelaySeconds: 120
+            timeoutSeconds:      5
+            failureThreshold:    6
+          readinessProbe:
+            exec:
+              command:
+              - rabbitmqctl
+              - status
+            initialDelaySeconds: 10
+            timeoutSeconds:      3
+            periodSeconds:       5
+      volumes:
+        - name: queue-storage
+          gcePersistentDisk:
+            pdName: {{ rabbitmq_disk }}
+            fsType: ext4
+      # securityContext allows you to add permission for pod and mounted volumes to specific group.
+      # We need this permission to create files and directories on mounted persistent disk.
+      # Rabbitmq user has reserved 999 ID and group.
+      # Warning! This ID and group depend of the image version (debian, alpine, etc.)
+      # We use this user when creating files and directories.
+      securityContext:
+        fsGroup: 999
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbitmq
+spec:
+  type:           ClusterIP
+  ports:
+    - name:       amqp
+      port:       5672
+      targetPort: 5672
+  selector:
+    run: rabbitmq
