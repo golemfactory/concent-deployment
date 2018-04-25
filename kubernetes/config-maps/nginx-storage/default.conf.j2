@@ -207,6 +207,31 @@ server {
 
             os.rename("/srv/storage/" .. tmp_file_name, "/srv/storage/" .. header_path_with_filename)
             os.remove("/srv/storage/" .. tmp_file_name .. ".shactx")
+
+            -- Send confirmation to the conductor when a file is uploaded.
+            local http = require "resty.http"
+            local httpc = http.new()
+            local conductor_response, conductor_error = httpc:request_uri("{{ upload_report_url }}" .. header_path_with_filename, {
+                method = "POST",
+            })
+
+            if conductor_response == nil then
+                ngx.status = 500
+                ngx.say('{"error_message": "HTTP request to conductor failed:' .. conductor_error .. '", "error_code": "failed-conductor-request"}')
+                return ngx.exit(ngx.status)
+            end
+
+            if not (200 <= conductor_response.status and conductor_response.status < 300) then
+                ngx.status = 502
+                error_response = '{' ..
+                    '"error_message": "Failed to report upload. Conductor responded with status {' .. conductor_response.status .. '}", ' ..
+                    '"error_code": "failed-upload-report", ' ..
+                    '"conductor_message": "' .. conductor_response.body .. '"' ..
+                '}'
+                ngx.say(error_response)
+                return ngx.exit(ngx.status)
+            end
+
             -- Nginx big upload module adds headers with checksum and temporary file name to its response.
             -- We don't want to return them to the client.
             -- FIXME: Setting it to an empty string does not remove the headers. For now we set it to a
@@ -216,5 +241,6 @@ server {
             ngx.header.content_type    = "application/json; charset=utf-8"
             ngx.say('{"message": "File was successfully uploaded"}')
         }
+
     }
 }
