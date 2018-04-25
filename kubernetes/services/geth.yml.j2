@@ -22,8 +22,9 @@ spec:
               # Also remember that geth needs significantly more memory than just cache so don't set it to the same value.
               "--cache",    "512",
               "--rpc",
-              "--rpcaddr",  "0.0.0.0",
-              "--rpcapi",   "eth",
+              "--rpcaddr",    "0.0.0.0",
+              "--rpcvhosts",  "geth, geth.default, geth.default.svc.cluster.local",
+              "--rpcapi",     "eth",
               "--ipcdisable"
           ]
           resources:
