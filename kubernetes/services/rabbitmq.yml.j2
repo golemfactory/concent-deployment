@@ -19,7 +19,7 @@ spec:
 # For that reason we need to explicitly set the hostname for the pod and keep it unchanged between deployments
       hostname: rabbitmq
       containers:
-        - image:           rabbitmq:{{ rabbitmq_version }}
+        - image:           rabbitmq:{{ rabbitmq_alpine_version }}-alpine
           name:            rabbitmq
           imagePullPolicy: Always
           env:
@@ -58,11 +58,11 @@ spec:
             fsType: ext4
       # securityContext allows you to add permission for pod and mounted volumes to specific group.
       # We need this permission to create files and directories on mounted persistent disk.
-      # Rabbitmq user has reserved 999 ID and group.
-      # Warning! This ID and group depend of the image version (debian, alpine, etc.)
+      # Rabbitmq user has reserved ID 100 and group has ID 101.
+      # Warning! The user ID and group ID depend of the image version (debian, alpine, etc.)
       # We use this user when creating files and directories.
       securityContext:
-        fsGroup: 999
+        fsGroup: 101
 ---
 apiVersion: v1
 kind: Service
