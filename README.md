@@ -130,8 +130,9 @@ ansible-playbook build.yml                                         \
 
 ### Creating the database
 
-`concent-api` will try to connect to a CloudSQL database configure in its settings.
-To create this database, run the following steps:
+`concent-api` and other Django apps will try to connect a CloudSQL database configured in their settings.
+Control and storage clusters have separate databases that need to be created and migrated individually.
+Set `$cluster_type` to `control` or `storage` before proceeding. These commands are meant to be executed on every cluster separately.
 
 ``` bash
 cd concent-deployment/concent-builder/
@@ -141,12 +142,12 @@ ansible-playbook job-cleanup.yml                                   \
     --user       $user
 
 ansible-playbook create-db.yml                                     \
-    --extra-vars cluster=$cluster                                  \
+    --extra-vars "cluster=$cluster cluster_type=$cluster_type"     \
     --inventory  ../../concent-deployment-values/ansible_inventory \
     --user       $user
 
 ansible-playbook migrate-db.yml                                    \
-    --extra-vars cluster=$cluster                                  \
+    --extra-vars "cluster=$cluster cluster_type=$cluster_type"     \
     --inventory  ../../concent-deployment-values/ansible_inventory \
     --user       $user
 ```
