@@ -10,6 +10,7 @@ from ..secrets.secrets import (
     DATABASE_PASSWORD,
     CONCENT_PUBLIC_KEY,
     CONCENT_PRIVATE_KEY,
+    CONCENT_ETHEREUM_PRIVATE_KEY,
     SENTRY_DATA_SOURCE_NAME,
 )
 
@@ -45,6 +46,10 @@ STORAGE_CLUSTER_SSL_CERTIFICATE_PATH = "/srv/http/concent_api/concent_api/settin
 CELERY_BROKER_URL = 'amqp://rabbitmq.default.svc.cluster.local:5672'
 
 EMAIL_SUBJECT_PREFIX = "[{{ gke.cluster }}:concent-api] "
+
+PAYMENT_BACKEND = 'core.payments.sci_backend'
+GETH_CONTAINER_ADDRESS = 'http://geth.default.svc.cluster.local:8545'
+CONCENT_ETHEREUM_ADDRESS = '{{ concent_ethereum_address }}'
 
 CONCENT_FEATURES = ["concent-api", "admin-panel"]
 
