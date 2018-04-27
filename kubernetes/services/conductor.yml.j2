@@ -1,0 +1,54 @@
+apiVersion: extensions/v1beta1
+kind:       Deployment
+metadata:
+  name: conductor
+spec:
+  replicas:             2
+  revisionHistoryLimit: 2
+  template:
+    metadata:
+      labels:
+        run: conductor
+    spec:
+      containers:
+        - name:             conductor
+          image:            {{ docker_registry }}/{{image_prefix }}concent-api:{{ image_version }}
+          imagePullPolicy:  Always
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              memory: "350Mi"
+              cpu:    "50m"
+            limits:
+              memory: "600Mi"
+              cpu:    "800m"
+          volumeMounts:
+            - name:      concent-api-secrets
+              mountPath: /srv/http/concent_api/concent_api/settings/secrets/
+              readOnly:  true
+            - name:      conductor-settings
+              mountPath: /srv/http/concent_api/concent_api/settings/config_map/
+              readOnly:  true
+      volumes:
+        - name: concent-api-secrets
+          secret:
+            secretName: concent-api-secrets
+        - name: conductor-settings
+          configMap:
+            name: conductor-settings
+---
+apiVersion: v1
+kind:       Service
+metadata:
+  name: conductor
+  labels:
+    run: conductor
+spec:
+  type: ClusterIP
+  ports:
+    - port:       80
+      targetPort: 80
+      name:       conductor-port
+  selector:
+    run: conductor
