@@ -1,0 +1,39 @@
+- hosts:
+    - concent-builder
+  vars_files:
+    - consts.yml
+    - "{{ deployment_values }}/var.yml"
+    - "{{ deployment_values }}/var-{{ cluster }}.yml"
+  tasks:
+    - become:      yes
+      become_user: "{{ shared_user }}"
+      block:
+        - name: Configure kubectl to operate on the right cluster
+          command: gcloud container clusters get-credentials \
+              "{{ gke.cluster }}"                            \
+              --project "{{ gke.project }}"                  \
+              --zone    "{{ gke.zone }}"
+
+        - name:    Create custom network that allows communication between django and postgres containers
+          command: docker network create {{ cluster }}-{{ image_prefix }}unittest-network
+
+        - name:    Run postgres container for django unit tests
+          command: docker run                                                                                    \
+              --rm                                                                                               \
+              --detach                                                                                           \
+              --network {{ cluster }}-{{ image_prefix }}unittest-network                                         \
+              --name {{ cluster }}-{{ image_prefix }}postgresql-unittest {{ image_prefix }}postgresql:latest
+
+        - name:    Run concent-api container and django unit tests
+          command: docker run                                                                                                                                 \
+              --rm                                                                                                                                            \
+              --volume {{ build_dir }}/concent-deployment/kubernetes/build/run-unit-tests.sh:/usr/local/bin/run-unit-tests.sh:ro                              \
+              --volume {{ build_dir }}/concent-deployment/kubernetes/build/docker_testing.py:/srv/http/concent_api/concent_api/settings/docker_testing.py:ro  \
+              --network {{ cluster }}-{{ image_prefix }}unittest-network concent-concent-api:latest /usr/local/bin/run-unit-tests.sh
+
+      always:
+        - name:  Stop postgres container
+          shell: docker stop {{ cluster }}-{{ image_prefix }}postgresql-unittest
+
+        - name:  Delete custom network
+          shell: docker network rm {{ cluster }}-{{ image_prefix }}unittest-network
