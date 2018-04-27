@@ -11,7 +11,7 @@ cd "$concent_dir/"
 # See https://github.com/golemfactory/golem-messages/issues/194.
 # As a temporary workaround, we're calling `git describe` directly here.
 #"$deployment_dir/build/virtualenv/bin/python3" "$deployment_dir/build/virtualenv/src/golem-messages/version.py"
-echo -n "git describe --tags" >> RELEASE-VERSION
+echo -n "$(git describe --tags)" > RELEASE-VERSION
 
 cd "$deployment_dir/"
 tar                                            \
