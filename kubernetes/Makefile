@@ -109,7 +109,7 @@ build/image-version.yml:
 	echo "image_version: $(IMAGE_VERSION)" >> "$@"
 
 build/control-database-configuration.yml:
-	echo "selected_database_id:    default"  >> "$@"
+	echo "selected_database_id:    control"  >> "$@"
 	echo "database_name:          \"{{ control_database_name }}\"" >> "$@"
 	echo "database_user:          \"{{ control_database_user }}\"" >> "$@"
 	echo "database_host:          \"{{ control_database_host }}\"" >> "$@"
