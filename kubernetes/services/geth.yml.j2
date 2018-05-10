@@ -24,7 +24,10 @@ spec:
               "--rpc",
               "--rpcaddr",    "0.0.0.0",
               "--rpcvhosts",  "geth, geth.default, geth.default.svc.cluster.local",
-              "--rpcapi",     "eth",
+              # These APIs are used by golem smart contract interface.
+              # First one is for basic methods with use json, second one is for basic methods with use javascript for example to connect to geth RPC,
+              # third one is used to check network status for example peer count
+              "--rpcapi",     "eth, web3, net",
               "--ipcdisable"
           ]
           resources:
