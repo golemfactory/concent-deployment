@@ -1,4 +1,5 @@
 from .testing import *
 
 DATABASES['default']['HOST']     = '{{ gke.cluster }}-{{ image_prefix }}postgresql-unittest'
+DATABASES['control']['HOST']     = '{{ gke.cluster }}-{{ image_prefix }}postgresql-unittest'
 DATABASES['storage']['HOST']     = '{{ gke.cluster }}-{{ image_prefix }}postgresql-unittest'
