@@ -53,7 +53,7 @@ CELERY_BROKER_URL = 'amqp://rabbitmq.default.svc.cluster.local:5672'
 EMAIL_SUBJECT_PREFIX = "[{{ gke.cluster }}:concent-api] "
 
 PAYMENT_BACKEND = 'core.payments.sci_backend'
-GETH_CONTAINER_ADDRESS = 'http://geth.default.svc.cluster.local:8545'
+GETH_ADDRESS = 'http://geth.default.svc.cluster.local:8545'
 CONCENT_ETHEREUM_ADDRESS = '{{ concent_ethereum_address }}'
 
 CONCENT_FEATURES = ["concent-api", "admin-panel"]
