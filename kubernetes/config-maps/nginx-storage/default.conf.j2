@@ -1,4 +1,5 @@
 resolver kube-dns.kube-system.svc.cluster.local;
+error_log logs/error.log notice;
 
 map $http_accept $extension {
     default html;
@@ -217,7 +218,9 @@ server {
 
             if conductor_response == nil then
                 ngx.status = 500
-                ngx.say('{"error_message": "HTTP request to conductor failed:' .. conductor_error .. '", "error_code": "failed-conductor-request"}')
+                conductor_connection_error = '{"error_message": "HTTP request to conductor failed:' .. conductor_error .. '", "error_code": "failed-conductor-request"}'
+                ngx.say(conductor_connection_error)
+                ngx.log(ngx.ERR, conductor_connection_error)
                 return ngx.exit(ngx.status)
             end
 
@@ -229,6 +232,8 @@ server {
                     '"conductor_message": "' .. conductor_response.body .. '"' ..
                 '}'
                 ngx.say(error_response)
+                -- Return response body in nginx log for debugging purposes
+                ngx.log(ngx.ERR, error_response)
                 return ngx.exit(ngx.status)
             end
 
@@ -239,7 +244,9 @@ server {
             ngx.header["X-SHA1"]       = " "
             ngx.header["X-Session-Id"] = " "
             ngx.header.content_type    = "application/json; charset=utf-8"
-            ngx.say('{"message": "File was successfully uploaded"}')
+            successful_response        = '{"message": "File was successfully uploaded"}'
+            ngx.say(successful_response)
+            ngx.log(ngx.NOTICE, successful_response)
         }
 
     }
