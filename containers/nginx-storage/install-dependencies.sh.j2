@@ -26,6 +26,17 @@ git clone                                            \
 
 rm -rf /opt/nginx-big-upload/.git
 
+# Github repository with lua-resty-http module
+git clone                                            \
+    https://github.com/pintsized/lua-resty-http.git  \
+    /opt/lua-resty-http                              \
+    --branch v{{ lua_resty_http_version }}           \
+    --depth  1
+
+
+cp --recursive /opt/lua-resty-http/lib/resty/ /usr/local/openresty/lualib/
+rm -rf /opt/lua-resty-http
+
 # Lua libs focusing on input data handling, functional programming and OS path management.
 /usr/local/openresty/luajit/bin/luarocks install penlight
 
