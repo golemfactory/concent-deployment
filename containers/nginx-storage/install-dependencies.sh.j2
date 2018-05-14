@@ -21,7 +21,7 @@ ln -s /usr/lib/libcrypto.so.41 /usr/lib/libcrypto.so
 git clone                                            \
     https://github.com/pgaertig/nginx-big-upload.git \
     /opt/nginx-big-upload                            \
-    --branch v1.4.0                                  \
+    --branch v{{ nginx_big_upload_version }}         \
     --depth  1
 
 rm -rf /opt/nginx-big-upload/.git
