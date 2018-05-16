@@ -21,10 +21,21 @@ ln -s /usr/lib/libcrypto.so.41 /usr/lib/libcrypto.so
 git clone                                            \
     https://github.com/pgaertig/nginx-big-upload.git \
     /opt/nginx-big-upload                            \
-    --branch v1.4.0                                  \
+    --branch v{{ nginx_big_upload_version }}         \
     --depth  1
 
 rm -rf /opt/nginx-big-upload/.git
+
+# Github repository with lua-resty-http module
+git clone                                            \
+    https://github.com/pintsized/lua-resty-http.git  \
+    /opt/lua-resty-http                              \
+    --branch v{{ lua_resty_http_version }}           \
+    --depth  1
+
+
+cp --recursive /opt/lua-resty-http/lib/resty/ /usr/local/openresty/lualib/
+rm -rf /opt/lua-resty-http
 
 # Lua libs focusing on input data handling, functional programming and OS path management.
 /usr/local/openresty/luajit/bin/luarocks install penlight
