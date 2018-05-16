@@ -12,7 +12,7 @@ cd "$build_dir/concent-api-docs/docs/"
 
 virtualenv --python "python{{ python_version }}" "$build_dir/docs-virtualenv/"
 source "$build_dir/docs-virtualenv/bin/activate"
-pip install -r "requirements.txt"
+python -m pip install -r "requirements.txt"
 
 make html
 
