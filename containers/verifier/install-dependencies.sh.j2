@@ -40,7 +40,7 @@ apt-get install              \
     --no-install-recommends  \
     ${dependencies[*]}
 
-add-apt-repository "deb http://ftp.de.debian.org/debian testing main"
+add-apt-repository "deb {{ debian_mirror }} testing main"
 apt-get update --assume-yes
 
 apt-get install              \
