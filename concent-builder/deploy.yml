@@ -19,11 +19,6 @@
           args:
             chdir: "{{ build_dir}}/concent-deployment/kubernetes/build/"
 
-        - name:    Push docker images to GKE
-          command: "{{ build_dir}}/concent-deployment/kubernetes/build/push-docker-images.sh"
-          args:
-            chdir: "{{ build_dir }}/concent-deployment/kubernetes/build/"
-
         - name:    Deploy containers to the cluster
           command: "{{ build_dir}}/concent-deployment/kubernetes/build/create-services.sh"
           args:
