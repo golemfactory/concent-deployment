@@ -1,0 +1,73 @@
+#!/bin/bash -e
+
+# Update package lists for Debian and install dependencies
+dependencies=(
+    # Required by psycopg2 python package (PostgreSQL support)
+    libpq-dev
+
+    # Packages needed to build concent(python extensions, dependencies of golem-messages in particular)
+    libssl-dev
+    git
+    pkg-config
+    libffi-dev
+    software-properties-common
+
+    # Packages needed to build Golem's imgverifier image (which our image is based on)
+    libglib2.0-0
+    libsm6
+    libxrender1
+    wget
+)
+
+testing_dependencies=(
+    # Packages needed to build python extensions, dependencies of golem-messages in particular
+    # They need to be installed from testing, because on Debian Jessie they are too old or non-existent
+    binutils
+    build-essential
+    libsecp256k1-dev
+    python3-pip
+
+    # There's no stable Python 3.6 package in Debian Jessie so we have to get it from testing.
+    python3.6
+    python3.6-dev
+    virtualenv
+    python3-setuptools
+)
+
+apt-get update --assume-yes
+apt-get install              \
+    --assume-yes             \
+    --no-install-recommends  \
+    ${dependencies[*]}
+
+add-apt-repository "deb {{ debian_mirror }} testing main"
+apt-get update --assume-yes
+
+apt-get install              \
+    --target-release testing \
+    --assume-yes             \
+    --no-install-recommends  \
+    ${testing_dependencies[*]}
+
+
+# Download and install su-exec.
+# su-exec is a small program that, unlike sudo, does not start a separate shell
+# and just runs a command with different provileges in the current shell.
+# It's not in Debian repositories.
+wget "https://github.com/golemfactory/golem/wiki/binaries/su-exec" \
+    --output-document /usr/local/bin/su-exec
+
+test "{{ su_exec_hash }}  /usr/local/bin/su-exec" = "$(sha1sum /usr/local/bin/su-exec)"
+chmod 555 /usr/local/bin/su-exec
+
+# Try to run su-exec to make sure it works. If not, our script will be interrupted thanks to `bash -e` shebang
+su-exec nobody true
+
+# Python packages needed by Golem's imgverifier and Concent's verifier
+python3 -m pip install --upgrade pip
+python3 -m pip install --no-cache-dir --requirement /golem/work/imgverifier-requirements.txt
+
+# Clean up
+apt-get clean
+apt autoremove --assume-yes
+rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* ~/.cache/pip/*
