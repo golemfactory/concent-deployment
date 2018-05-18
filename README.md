@@ -122,16 +122,7 @@ ansible-playbook install-repositories.yml                          \
     --inventory  ../../concent-deployment-values/ansible_inventory \
     --user       $user
 
-ansible-playbook build.yml                                         \
-    --extra-vars cluster=$cluster                                  \
-    --inventory  ../../concent-deployment-values/ansible_inventory \
-    --user       $user
-```
-
-### Running django unit tests
-
-```bash
-ansible-playbook test.yml                                          \
+ansible-playbook build-test-and-push.yml                           \
     --extra-vars cluster=$cluster                                  \
     --inventory  ../../concent-deployment-values/ansible_inventory \
     --user       $user
