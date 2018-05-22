@@ -24,6 +24,7 @@ CONCENT_API_SOURCE :=                           \
 VERIFIER_SOURCE_FROM_CONCENT_API :=          \
     build/verifier/install-concent-api.sh    \
     build/verifier/concent-api-manage.sh     \
+    build/verifier/run-celery.sh             \
     build/verifier/testing.pref              \
     build/verifier/requirements.lock         \
     build/verifier/concent-api.tar           \
@@ -32,7 +33,6 @@ VERIFIER_SOURCE_FROM_CONCENT_API :=          \
 VERIFIER_SOURCE :=                           \
     build/verifier/entrypoint.sh             \
     build/verifier/install-dependencies.sh   \
-    build/verifier/run-celery.sh             \
     build/verifier/Dockerfile                \
     $(VERIFIER_SOURCE_FROM_CONCENT_API)
 
