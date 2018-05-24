@@ -8,4 +8,5 @@ kubectl delete configmap nginx-configs         || true
 kubectl delete configmap gatekeeper-settings   || true
 kubectl delete configmap conductor-settings    || true
 kubectl delete configmap concent-api-settings  || true
+kubectl delete configmap verifier-settings     || true
 kubectl delete secret concent-api-secrets      || true

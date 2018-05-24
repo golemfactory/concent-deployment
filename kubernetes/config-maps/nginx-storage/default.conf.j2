@@ -9,8 +9,8 @@ map $http_accept $extension {
 {% if not nginx_storage_allow_http %}
 # HTTP -> HTTPS redirect
 server {
-    listen 80      default_server;
-    listen [::]:80 default_server;
+    listen 80
+    listen [::]:80
     server_name    {{ storage_cluster_address }};
     return 302     https://$server_name$request_uri;
 
@@ -22,6 +22,13 @@ server {
     # HTTP
     listen 80       default_server;
     {% endif %}
+
+    {% if not nginx_storage_allow_http %}
+    # When external connections over plain HTTP are blocked, we still want to allow them from inside the cluster
+    listen 80;
+    server_name nginx-storage.default.svc.cluster.local;
+    {% endif %}
+
     # HTTPS
     listen 443      ssl http2 default_server;
     listen [::]:443 ssl http2 default_server;

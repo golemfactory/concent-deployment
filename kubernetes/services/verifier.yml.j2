@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: verifier
+spec:
+  selector:
+    matchLabels:
+      run: verifier
+  serviceName: "verifier"
+  replicas: {{ replicas_count.verifier }}
+  template:
+    metadata:
+      labels:
+        run: verifier
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+        - name:             concent-api
+          image:            {{ docker_registry }}/{{image_prefix }}verifier:{{ image_version }}
+          imagePullPolicy:  Always
+          resources:
+            requests:
+              memory: "1Gi"
+              cpu:    "600m"
+            limits:
+              memory: "1.5Gi"
+              cpu:    "800m"
+          volumeMounts:
+            - name:      concent-api-secrets
+              mountPath: /srv/http/concent_api/concent_api/settings/secrets/
+              readOnly:  true
+            - name:      verifier-settings
+              mountPath: /srv/http/concent_api/concent_api/settings/config_map/
+              readOnly:  true
+            - name: verifier-storage
+              mountPath: /srv/storage/
+      volumes:
+        - name: concent-api-secrets
+          secret:
+            secretName: concent-api-secrets
+        - name: concent-api-settings
+          configMap:
+            name: concent-api-settings
+        - name: verifier-settings
+          configMap:
+            name: verifier-settings
+  volumeClaimTemplates:
+  - metadata:
+      name: verifier-storage
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 30Gi
+---
+apiVersion: v1
+kind:       Service
+metadata:
+  name: verifier
+  labels:
+    run: verifier
+spec:
+  type: ClusterIP
+  ports:
+    - port:       80
+  selector:
+    run: verifier
