@@ -73,14 +73,43 @@ You can generate and use a self-signed certificate.
 Here's an example command that generates a 2048-bit RSA certificate valid for a year:
 
 ``` bash
-openssl req                     \
-    -x509                       \
-    -nodes                      \
-    -days   365                 \
-    -newkey rsa:2048            \
-    -keyout nginx-proxy-ssl.key \
-    -out    nginx-proxy-ssl.crt
+openssl req                      \
+    -x509                        \
+    -nodes                       \
+    -sha256                      \
+    -days   365                  \
+    -newkey rsa:2048             \
+    -keyout nginx-proxy-ssl.key  \
+    -out    nginx-proxy-ssl.crt  \
+    -config extensions.cnf
 ```
+
+`extensions.cnf` file
+```
+[req]
+default_bits       = 2048
+prompt             = no
+default_md         = sha256
+x509_extensions    = x509_ext
+distinguished_name = dn
+
+[dn]
+C            = <country>
+ST           = <state>
+O            = <organization>
+OU           = <organization_unit>
+CN           = <domain_name>
+emailAddress = <email_address>
+
+[x509_ext]
+basicConstraints     = CA:FALSE
+subjectAltName       = @alt_names
+subjectKeyIdentifier = hash
+
+[alt_names]
+DNS.1 = <domain_name>
+```
+Replace `<country>`, `<state>`, `<organization>`, `<organization_unit>`, `<domain_name>`, `<email_address>` with actual values.
 
 ### Setting up the `concent-builder-vm` virtual machine.
 
