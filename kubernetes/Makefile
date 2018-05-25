@@ -13,6 +13,8 @@ CLUSTER_SCRIPTS :=                                          \
     build/create-config-maps.sh                             \
     build/delete-config-maps.sh                             \
     build/create-services.sh                                \
+    build/wait-until-ready.sh                               \
+    build/sleep-until-kubectl-status-is-ready.sh            \
     build/delete-services.sh                                \
     build/run-unit-tests.sh                                 \
     build/docker_testing.py                                 \
