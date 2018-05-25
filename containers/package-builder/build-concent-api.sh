@@ -3,7 +3,7 @@
 concent_dir=$1
 output_dir=$2
 
-deployment_dir="../concent-deployment/containers"
+deployment_dir="../../../"
 
 cd "$concent_dir/"
 

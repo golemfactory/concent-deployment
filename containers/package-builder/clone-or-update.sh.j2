@@ -1,0 +1,24 @@
+#!/bin/bash -e
+
+repository=$1
+directory=$2
+
+if [[ "$repository" == "concent" ]]; then
+    repository_path=/var/concent-data/concent/
+    repository_version="{{ concent_version }}"
+elif [[ "$repository" == "golem" ]]; then
+    repository_path=/var/concent-data/golem/
+    repository_version="{{ golem_version }}"
+else
+    echo "The '$repository' repository does not exist"
+    exit 1
+fi
+
+# Check if a directory exists
+if [ ! -d "$directory" ]; then
+    git clone "$repository_path" "$directory"
+fi
+
+cd "$directory"
+git fetch "$repository_path"
+git checkout "$repository_version"
