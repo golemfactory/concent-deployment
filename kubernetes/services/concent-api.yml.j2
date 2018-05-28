@@ -24,19 +24,19 @@ spec:
               memory: "1Gi"
               cpu:    "800m"
           volumeMounts:
-            - name:      concent-api-secrets
+            - name:      concent-api-secrets-{{ deployment_version }}
               mountPath: /srv/http/concent_api/concent_api/settings/secrets/
               readOnly:  true
-            - name:      concent-api-settings
+            - name:      concent-api-settings-{{ deployment_version }}
               mountPath: /srv/http/concent_api/concent_api/settings/config_map/
               readOnly:  true
       volumes:
-        - name: concent-api-secrets
+        - name: concent-api-secrets-{{ deployment_version }}
           secret:
-            secretName: concent-api-secrets
-        - name: concent-api-settings
+            secretName: concent-api-secrets-{{ deployment_version }}
+        - name: concent-api-settings-{{ deployment_version }}
           configMap:
-            name: concent-api-settings
+            name: concent-api-settings-{{ deployment_version }}
 ---
 apiVersion: v1
 kind:       Service

@@ -1,7 +1,6 @@
 #!/bin/bash -e
 
 
-kubectl delete configmap database-job-settings              || true
-kubectl delete --filename "secrets/control-db-secrets.yml"  || true
-kubectl delete --filename "secrets/storage-db-secrets.yml"  || true
-kubectl delete secrets django-admin-fixture                 || true
+./find-and-delete-config-maps-or-secrets.sh configmap database-job-settings    || true
+./find-and-delete-config-maps-or-secrets.sh secret db-secrets                  || true
+./find-and-delete-config-maps-or-secrets.sh secret django-admin-fixture        || true

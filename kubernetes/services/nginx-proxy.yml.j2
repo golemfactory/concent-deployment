@@ -27,25 +27,25 @@ spec:
                 command: ["/usr/sbin/nginx", "-s", "quit"]
           volumeMounts:
             - mountPath:  /etc/nginx/conf.d/
-              name:       nginx-configs
+              name:       nginx-configs-{{ deployment_version }}
               readOnly:   true
             - mountPath:  /etc/nginx/snippets/
-              name:       nginx-config-snippets
+              name:       nginx-config-snippets-{{ deployment_version }}
               readOnly:   true
             - mountPath:  /etc/ssl/secrets/
-              name:       nginx-proxy-secrets
+              name:       nginx-proxy-secrets-{{ deployment_version }}
               readOnly:   true
       volumes:
-        -  name: nginx-configs
+        -  name: nginx-configs-{{ deployment_version }}
            configMap:
-             name: nginx-configs
-        - name: nginx-proxy-secrets
+             name: nginx-configs-{{ deployment_version }}
+        - name: nginx-proxy-secrets-{{ deployment_version }}
           secret:
-            secretName:  nginx-proxy-secrets
+            secretName:  nginx-proxy-secrets-{{ deployment_version }}
             defaultMode: 0600
-        -  name: nginx-config-snippets
+        -  name: nginx-config-snippets-{{ deployment_version }}
            configMap:
-             name: nginx-config-snippets
+             name: nginx-config-snippets-{{ deployment_version }}
 ---
 apiVersion: v1
 kind: Service

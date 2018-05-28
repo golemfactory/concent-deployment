@@ -14,9 +14,9 @@ spec:
           imagePullPolicy: Always
           command:         ["sh", "-c", "echo Done."]
       volumes:
-        - name: db-secrets
+        - name: db-secrets-{{ deployment_version }}
           secret:
-            secretName:  db-secrets
+            secretName:  db-secrets-{{ deployment_version }}
             defaultMode: 0600
       initContainers:
         - name:             delete-database
@@ -27,10 +27,10 @@ spec:
             - name: PGPASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: db-secrets
+                  name: db-secrets-{{ deployment_version }}
                   key:  db_admin_password
             - name: DB_USER_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: db-secrets
+                  name: db-secrets-{{ deployment_version }}
                   key:  db_user_password
