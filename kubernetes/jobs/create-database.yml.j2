@@ -14,21 +14,21 @@ spec:
           imagePullPolicy: Always
           command:         ["sh", "-c", "echo Done."]
       volumes:
-        - name: db-secrets
+        - name: db-secrets-{{ deployment_version }}
           secret:
-            secretName:  db-secrets
+            secretName:  db-secrets-{{ deployment_version }}
             defaultMode: 0600
         {% if initialize_django_admin %}
-        - name: django-admin-fixture
+        - name: django-admin-fixture-{{ deployment_version }}
           secret:
-            secretName: django-admin-fixture
+            secretName: django-admin-fixture-{{ deployment_version }}
         {% endif %}
-        - name: concent-api-secrets
+        - name: concent-api-secrets-{{ deployment_version }}
           secret:
-            secretName: concent-api-secrets
-        - name: database-job-settings
+            secretName: concent-api-secrets-{{ deployment_version }}
+        - name: database-job-settings-{{ deployment_version }}
           configMap:
-            name: database-job-settings
+            name: database-job-settings-{{ deployment_version }}
       initContainers:
         - name:             create-database
           image:            {{ docker_registry }}/{{ image_prefix }}postgresql:{{ image_version }}
@@ -38,22 +38,22 @@ spec:
             - name: PGPASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: db-secrets
+                  name: db-secrets-{{ deployment_version }}
                   key:  db_admin_password
             - name: DB_USER_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: db-secrets
+                  name: db-secrets-{{ deployment_version }}
                   key:  db_user_password
         - name:             migrate-database
           image:            {{ docker_registry }}/{{ image_prefix }}concent-api:{{ image_version }}
           imagePullPolicy:  Always
           command:          ["/usr/local/bin/concent-api-manage.sh", "migrate", "--database={{ selected_database_id }}"]
           volumeMounts:
-            - name:       concent-api-secrets
+            - name:       concent-api-secrets-{{ deployment_version }}
               mountPath:  /srv/http/concent_api/concent_api/settings/secrets/
               readOnly:   true
-            - name:       database-job-settings
+            - name:       database-job-settings-{{ deployment_version }}
               mountPath:  /srv/http/concent_api/concent_api/settings/config_map/
               readOnly:   true
         {% if initialize_django_admin %}
@@ -62,13 +62,13 @@ spec:
           imagePullPolicy:  Always
           command:          ["/usr/local/bin/concent-api-manage.sh", "loaddata", "/srv/http/fixtures/django-admin-fixture.yaml", "--database={{ selected_database_id }}"]
           volumeMounts:
-            - name:       django-admin-fixture
+            - name:       django-admin-fixture-{{ deployment_version }}
               mountPath:  /srv/http/fixtures/
               readOnly:   true
-            - name:       concent-api-secrets
+            - name:       concent-api-secrets-{{ deployment_version }}
               mountPath:  /srv/http/concent_api/concent_api/settings/secrets/
               readOnly:   true
-            - name:       database-job-settings
+            - name:       database-job-settings-{{ deployment_version }}
               mountPath:  /srv/http/concent_api/concent_api/settings/config_map/
               readOnly:   true
         {% endif %}

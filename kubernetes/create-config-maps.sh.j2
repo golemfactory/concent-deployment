@@ -1,30 +1,30 @@
 #!/bin/bash -e
 
 
-kubectl create configmap nginx-config-snippets                          \
+kubectl create configmap nginx-config-snippets-{{ deployment_version }}   \
     --from-file=error-pages.conf=config-maps/nginx/error-pages.conf
 
-kubectl create secret generic nginx-storage-secrets                              \
+kubectl create secret generic nginx-storage-secrets-{{deployment_version}}       \
     --from-file=nginx-storage-ssl.crt=concent-secrets/nginx-storage-ssl.crt      \
     --from-file=nginx-storage-ssl.key=concent-secrets/nginx-storage-ssl.key
 
-kubectl create configmap nginx-storage-configs                          \
-    --from-file=ssl.conf=config-maps/nginx-storage/ssl.conf             \
-    --from-file=default.conf=config-maps/nginx-storage/default.conf     \
+kubectl create configmap nginx-storage-configs-{{ deployment_version }}     \
+    --from-file=ssl.conf=config-maps/nginx-storage/ssl.conf                 \
+    --from-file=default.conf=config-maps/nginx-storage/default.conf         \
 
-kubectl create secret generic nginx-proxy-secrets                              \
+kubectl create secret generic nginx-proxy-secrets-{{ deployment_version }}     \
     --from-file=nginx-proxy-ssl.crt=concent-secrets/nginx-proxy-ssl.crt        \
     --from-file=nginx-proxy-ssl.key=concent-secrets/nginx-proxy-ssl.key
 
-kubectl create secret generic concent-api-secrets            \
-    --from-file=secrets.py=concent-secrets/secrets.py        \
+kubectl create secret generic concent-api-secrets-{{ deployment_version }}      \
+    --from-file=secrets.py=concent-secrets/secrets.py                           \
     --from-literal=__init__.py=
 
-kubectl create configmap nginx-configs                              \
+kubectl create configmap nginx-configs-{{ deployment_version }}     \
     --from-file=ssl.conf=config-maps/nginx-proxy/ssl.conf           \
     --from-file=default.conf=config-maps/nginx-proxy/default.conf
 
-kubectl create configmap concent-api-settings                                \
+kubectl create configmap concent-api-settings-{{ deployment_version }}       \
     --from-file=local_settings.py=config-maps/concent-api/local_settings.py  \
     --from-file=email_settings.py=config-maps/concent/email_settings.py      \
     --from-file=timing_settings.py=config-maps/concent/timing_settings.py    \
@@ -35,18 +35,18 @@ kubectl create configmap concent-api-settings                                \
 {% endif %}
     --from-literal=__init__.py=
 
-kubectl create configmap gatekeeper-settings                               \
+kubectl create configmap gatekeeper-settings-{{ deployment_version }}      \
     --from-file=local_settings.py=config-maps/gatekeeper/local_settings.py \
     --from-file=email_settings.py=config-maps/concent/email_settings.py    \
     --from-file=timing_settings.py=config-maps/concent/timing_settings.py  \
     --from-literal=__init__.py=
 
-kubectl create configmap conductor-settings                                \
+kubectl create configmap conductor-settings-{{ deployment_version }}       \
     --from-file=local_settings.py=config-maps/conductor/local_settings.py  \
     --from-file=email_settings.py=config-maps/concent/email_settings.py    \
     --from-file=timing_settings.py=config-maps/concent/timing_settings.py  \
 
-kubectl create configmap verifier-settings                                 \
+kubectl create configmap verifier-settings-{{ deployment_version }}        \
     --from-file=local_settings.py=config-maps/verifier/local_settings.py   \
     --from-file=email_settings.py=config-maps/concent/email_settings.py    \
     --from-file=timing_settings.py=config-maps/concent/timing_settings.py  \

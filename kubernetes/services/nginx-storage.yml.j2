@@ -29,29 +29,29 @@ spec:
             - mountPath:  /srv/storage/
               name:       concent-storage
             - mountPath:  /etc/nginx/conf.d/
-              name:       nginx-storage-configs
+              name:       nginx-storage-configs-{{ deployment_version }}
               readOnly:   true
             - mountPath:  /etc/nginx/snippets/
-              name:       nginx-config-snippets
+              name:       nginx-config-snippets-{{ deployment_version }}
               readOnly:   true
             - mountPath:  /etc/ssl/secrets/
-              name:       nginx-storage-secrets
+              name:       nginx-storage-secrets-{{ deployment_version }}
               readOnly:   true
       volumes:
-        - name: nginx-storage-secrets
+        - name: nginx-storage-secrets-{{ deployment_version }}
           secret:
-            secretName:  nginx-storage-secrets
+            secretName:  nginx-storage-secrets-{{ deployment_version }}
             defaultMode: 0600
         - name: concent-storage
           gcePersistentDisk:
             pdName: {{ nginx_storage_disk }}
             fsType: ext4
-        - name: nginx-config-snippets
+        - name: nginx-config-snippets-{{ deployment_version }}
           configMap:
-            name: nginx-config-snippets
-        - name: nginx-storage-configs
+            name: nginx-config-snippets-{{ deployment_version }}
+        - name: nginx-storage-configs-{{ deployment_version }}
           configMap:
-            name: nginx-storage-configs
+            name: nginx-storage-configs-{{ deployment_version }}
       # securityContext allows you to add permission for pod and mounted volumes to specific group.
       # We need this permission to create files and directories on mounted persistent disk.
       # 65534 is the ID commonly reserved for user 'nobody' in Linux systems and our container follows this convention.

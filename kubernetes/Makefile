@@ -15,6 +15,7 @@ CLUSTER_SCRIPTS :=                                          \
     build/create-services.sh                                \
     build/wait-until-ready.sh                               \
     build/sleep-until-kubectl-status-is-ready.sh            \
+    build/find-and-delete-config-maps-or-secrets.sh         \
     build/delete-services.sh                                \
     build/run-unit-tests.sh                                 \
     build/docker_testing.py                                 \
@@ -64,6 +65,12 @@ endif
 $(info IMAGE_VERSION=$(IMAGE_VERSION))
 
 
+DEPLOYMENT_VERSION_WITH_DOT := "$(shell git describe --always)--$(DEPLOYMENT_VALUES_VERSION)"
+
+# The dot character is invalid for config maps and secrets names,
+# so We replaced it to dash
+DEPLOYMENT_VERSION := $(subst .,-,$(DEPLOYMENT_VERSION_WITH_DOT))
+
 all: cluster-scripts
 
 cluster-scripts: build/ $(CLUSTER_SCRIPTS)
@@ -100,17 +107,18 @@ build/vars-with-%-database-config-and-secrets.yml: build/%-database-configuratio
 		"build/vars-merged-with-secrets.yml"       \
 		--output "$@"
 
-build/vars-merged-with-secrets.yml: var.yml var-$(CLUSTER).yml $(CONCENT_SECRET_DIR)/var-secret.yml build/image-version.yml ../containers/versions.yml ../tools/merge-yaml.py
-	../tools/merge-yaml.py                     \
-		"$<"                                   \
-		"var-$(CLUSTER).yml"                   \
-		"$(CONCENT_SECRET_DIR)/var-secret.yml" \
-		"build/image-version.yml"              \
-		../containers/versions.yml             \
+build/vars-merged-with-secrets.yml: var.yml var-$(CLUSTER).yml $(CONCENT_SECRET_DIR)/var-secret.yml build/image-and-deployment-version.yml ../containers/versions.yml ../tools/merge-yaml.py
+	../tools/merge-yaml.py                        \
+		"$<"                                      \
+		"var-$(CLUSTER).yml"                      \
+		"$(CONCENT_SECRET_DIR)/var-secret.yml"    \
+		"build/image-and-deployment-version.yml"  \
+		../containers/versions.yml                \
 		--output "$@"
 
-build/image-version.yml:
-	echo "image_version: $(IMAGE_VERSION)" >> "$@"
+build/image-and-deployment-version.yml:
+	echo "image_version:      $(IMAGE_VERSION)"      >> "$@"
+	echo "deployment_version: $(DEPLOYMENT_VERSION)" >> "$@"
 
 build/control-database-configuration.yml:
 	echo "selected_database_id:    control"  >> "$@"

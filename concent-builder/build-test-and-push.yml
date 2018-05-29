@@ -6,6 +6,13 @@
     - "{{ deployment_values }}/var.yml"
     - "{{ deployment_values }}/var-{{ cluster }}.yml"
   tasks:
+    - name: Check version of concent-deployment-values repository
+      command: git describe --always
+      args:
+        chdir: "{{ deployment_values }}/"
+      register:    deployment_values_version
+      delegate_to: 127.0.0.1
+
     - become:      yes
       become_user: "{{ shared_user }}"
       block:
@@ -50,9 +57,10 @@
           make:
             chdir: "{{ build_dir }}/concent-deployment/kubernetes"
             params:
-              CONCENT_SECRET_DIR: "{{ data_dir }}/concent-secrets/{{ cluster }}"
-              IMAGE_PREFIX:       "{{ image_prefix }}"
-              CLUSTER:            "{{ cluster }}"
+              CONCENT_SECRET_DIR:           "{{ data_dir }}/concent-secrets/{{ cluster }}"
+              IMAGE_PREFIX:                 "{{ image_prefix }}"
+              CLUSTER:                      "{{ cluster }}"
+              DEPLOYMENT_VALUES_VERSION:    "{{ deployment_values_version.stdout }}"
 
         - name:    Create custom network that allows communication between django and postgres containers
           command: docker network create {{ cluster }}-{{ image_prefix }}unittest-network

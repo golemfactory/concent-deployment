@@ -1,12 +1,14 @@
 #!/bin/bash -e
 
-kubectl delete configmap nginx-config-snippets || true
-kubectl delete secret nginx-storage-secrets    || true
-kubectl delete configmap nginx-storage-configs || true
-kubectl delete secret nginx-proxy-secrets      || true
-kubectl delete configmap nginx-configs         || true
-kubectl delete configmap gatekeeper-settings   || true
-kubectl delete configmap conductor-settings    || true
-kubectl delete configmap concent-api-settings  || true
-kubectl delete configmap verifier-settings     || true
-kubectl delete secret concent-api-secrets      || true
+./find-and-delete-config-maps-or-secrets.sh configmap nginx-config-snippets || true
+./find-and-delete-config-maps-or-secrets.sh secret nginx-storage-secrets    || true
+./find-and-delete-config-maps-or-secrets.sh configmap nginx-storage-configs || true
+./find-and-delete-config-maps-or-secrets.sh secret nginx-proxy-secrets      || true
+./find-and-delete-config-maps-or-secrets.sh configmap nginx-configs         || true
+./find-and-delete-config-maps-or-secrets.sh configmap gatekeeper-settings   || true
+./find-and-delete-config-maps-or-secrets.sh configmap conductor-settings    || true
+./find-and-delete-config-maps-or-secrets.sh configmap concent-api-settings  || true
+./find-and-delete-config-maps-or-secrets.sh configmap verifier-settings     || true
+./find-and-delete-config-maps-or-secrets.sh secret concent-api-secrets      || true
+
+
