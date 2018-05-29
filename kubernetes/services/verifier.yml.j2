@@ -38,9 +38,6 @@ spec:
         - name: concent-api-secrets-{{ deployment_version }}
           secret:
             secretName: concent-api-secrets-{{ deployment_version }}
-        - name: concent-api-settings-{{ deployment_version }}
-          configMap:
-            name: concent-api-settings-{{ deployment_version }}
         - name: verifier-settings-{{ deployment_version }}
           configMap:
             name: verifier-settings-{{ deployment_version }}
