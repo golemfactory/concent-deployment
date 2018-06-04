@@ -17,12 +17,14 @@ CONCENT_API_SOURCE :=                           \
     build/concent-api/install-dependencies.sh   \
     build/concent-api/Dockerfile                \
     build/concent-api/concent-api-manage.sh     \
+    build/concent-api/run-celery.sh             \
     build/concent-api/run-gunicorn.sh           \
     build/concent-api/local_settings.py
 
 VERIFIER_SOURCE_FROM_CONCENT_API :=          \
     build/verifier/install-concent-api.sh    \
     build/verifier/concent-api-manage.sh     \
+    build/verifier/run-celery.sh             \
     build/verifier/testing.pref              \
     build/verifier/requirements.lock         \
     build/verifier/concent-api.tar           \
@@ -31,7 +33,6 @@ VERIFIER_SOURCE_FROM_CONCENT_API :=          \
 VERIFIER_SOURCE :=                           \
     build/verifier/entrypoint.sh             \
     build/verifier/install-dependencies.sh   \
-    build/verifier/run-celery.sh             \
     build/verifier/Dockerfile                \
     $(VERIFIER_SOURCE_FROM_CONCENT_API)
 

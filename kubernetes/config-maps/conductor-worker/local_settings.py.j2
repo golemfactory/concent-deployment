@@ -1,0 +1,33 @@
+from ..production import *
+
+from .email_settings import *
+from .timing_settings import *
+
+# Create secrets.py and put passwords and private keys in it.
+# Don't commit it into the repository.
+from ..secrets.secrets import (
+    STORAGE_SECRET_KEY,
+    STORAGE_DATABASE_PASSWORD,
+    CONCENT_PUBLIC_KEY,
+    SENTRY_DATA_SOURCE_NAME,
+)
+
+SECRET_KEY = STORAGE_SECRET_KEY
+
+DATABASES['default']['NAME']     = '{{ storage_database_name }}'
+DATABASES['default']['USER']     = '{{ storage_database_user }}'
+DATABASES['default']['PASSWORD'] = STORAGE_DATABASE_PASSWORD
+DATABASES['default']['HOST']     = '{{ storage_database_host }}'
+DATABASES['default']['PORT']     = '5432'
+
+RAVEN_CONFIG = {
+    'dsn': SENTRY_DATA_SOURCE_NAME,
+    'environment': '{{ gke.cluster }}',
+    'tags': {'component': 'conductor-worker'},
+}
+
+CELERY_BROKER_URL = 'amqp://rabbitmq.default.svc.cluster.local:5672'
+
+EMAIL_SUBJECT_PREFIX = "[{{ gke.cluster }}:conductor-worker] "
+
+CONCENT_FEATURES = ["conductor-worker"]
