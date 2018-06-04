@@ -14,7 +14,7 @@ spec:
         - name:             concent-api-worker
           image:            {{ docker_registry }}/{{image_prefix }}concent-api:{{ image_version }}
           imagePullPolicy:  Always
-          command:          ["/usr/local/bin/run-celery.sh"]
+          command:          ["/usr/local/bin/run-celery.sh", "--queues", "concent"]
           ports:
             - containerPort: 80
           resources:
