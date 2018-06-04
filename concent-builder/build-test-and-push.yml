@@ -85,6 +85,7 @@
       always:
         - name:  Stop postgres container
           shell: docker stop {{ cluster }}-{{ image_prefix }}postgresql-unittest
+          ignore_errors: yes
 
         - name:  Delete custom network
           shell: docker network rm {{ cluster }}-{{ image_prefix }}unittest-network
