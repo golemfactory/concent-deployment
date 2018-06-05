@@ -57,25 +57,25 @@ endif
 $(info IMAGE_PREFIX=$(IMAGE_PREFIX))
 
 
-all: build/ nginx-proxy nginx-storage concent-api postgresql verifier
+all: nginx-proxy nginx-storage concent-api postgresql verifier
 
-nginx-proxy: $(NGINX_PROXY_SOURCE) build/nginx-proxy/concent-api-assets.tar build/nginx-proxy/concent-api-docs.tar
+nginx-proxy: build/ $(NGINX_PROXY_SOURCE) build/nginx-proxy/concent-api-assets.tar build/nginx-proxy/concent-api-docs.tar
 	docker build --tag $(IMAGE_PREFIX)nginx-proxy:$(IMAGE_VERSION) build/nginx-proxy/
 	docker tag $(IMAGE_PREFIX)nginx-proxy:$(IMAGE_VERSION) $(IMAGE_PREFIX)nginx-proxy:latest
 
-nginx-storage: $(NGINX_STORAGE_SOURCE)
+nginx-storage: build/ $(NGINX_STORAGE_SOURCE)
 	docker build --tag $(IMAGE_PREFIX)nginx-storage:$(IMAGE_VERSION) build/nginx-storage/
 	docker tag $(IMAGE_PREFIX)nginx-storage:$(IMAGE_VERSION) $(IMAGE_PREFIX)nginx-storage:latest
 
-postgresql: $(POSTGRESQL_SOURCE)
+postgresql: build/ $(POSTGRESQL_SOURCE)
 	docker build --tag $(IMAGE_PREFIX)postgresql:$(IMAGE_VERSION) build/postgresql/
 	docker tag $(IMAGE_PREFIX)postgresql:$(IMAGE_VERSION) $(IMAGE_PREFIX)postgresql:latest
 
-concent-api: $(CONCENT_API_SOURCE) build/concent-api/requirements.lock build/concent-api/testing.pref build/repositories/concent/
+concent-api: build/ $(CONCENT_API_SOURCE) build/concent-api/requirements.lock build/concent-api/testing.pref build/repositories/concent/
 	docker build --tag $(IMAGE_PREFIX)concent-api:$(IMAGE_VERSION) build/concent-api/
 	docker tag $(IMAGE_PREFIX)concent-api:$(IMAGE_VERSION) $(IMAGE_PREFIX)concent-api:latest
 
-verifier: $(VERIFIER_SOURCE) build/repositories/golem/ build/verifier/golem/scripts/ build/verifier/golem/imgverifier-requirements.txt
+verifier: build/ $(VERIFIER_SOURCE) build/repositories/golem/ build/verifier/golem/scripts/ build/verifier/golem/imgverifier-requirements.txt
 	docker build --tag $(IMAGE_PREFIX)verifier:$(IMAGE_VERSION) build/verifier/
 	docker tag $(IMAGE_PREFIX)verifier:$(IMAGE_VERSION) $(IMAGE_PREFIX)verifier:latest
 
