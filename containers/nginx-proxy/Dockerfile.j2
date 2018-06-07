@@ -3,3 +3,4 @@ FROM nginx:{{ nginx_alpine_version }}-alpine
 ADD  concent-api-assets.tar  /srv/http/concent-api-assets/
 ADD  concent-api-docs.tar    /srv/http/concent-api-docs/
 COPY index.html              /srv/http/nginx-proxy/
+COPY error-pages.conf        /etc/nginx/snippets/

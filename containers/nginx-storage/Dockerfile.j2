@@ -3,4 +3,9 @@ FROM openresty/openresty:{{ openresty_alpine_fat_version }}-alpine-fat
 COPY install-dependencies.sh /tmp/
 RUN /tmp/install-dependencies.sh
 
-COPY table_utils.lua /usr/local/openresty/lualib/
+COPY table_utils.lua                /usr/local/openresty/lualib/
+COPY file-transfer-config.lua       /usr/local/openresty/lualib/config/
+COPY file-transfer-endpoints.lua    /usr/local/openresty/lualib/
+COPY file-transfer-endpoints.conf   /etc/nginx/snippets/
+COPY error-pages.conf               /etc/nginx/snippets/
+COPY default.conf                   /etc/nginx/conf.d/

@@ -40,4 +40,9 @@ rm -rf /opt/lua-resty-http
 # Lua libs focusing on input data handling, functional programming and OS path management.
 /usr/local/openresty/luajit/bin/luarocks install penlight
 
+# To make compatible path to uploaded file in nginx config with local build and cluster build.
+# We must create path for upload and change owner to user which is running the nginx-storage docker for local build.
+mkdir /srv/storage/
+chown -R nobody:nobody /srv/storage/
+
 rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*

@@ -1,7 +1,7 @@
 
-local file_transfer_operation = {}
+local file_transfer_endpoints = {}
 
-function file_transfer_operation.validate_upload_request()
+function file_transfer_endpoints.validate_upload_request()
 
     -- Add headers from gatekeeper response
        ngx.req.set_header("Concent-Checksum", ngx.var.checksum)
@@ -51,7 +51,7 @@ function file_transfer_operation.validate_upload_request()
     ngx.req.set_header("X-SHA1", "")
 end
 
-function file_transfer_operation.validate_uploaded_file()
+function file_transfer_endpoints.validate_uploaded_file()
 
     nginx_big_upload_request_body   = ngx.req.get_body_data()
     tmp_file_name                   = string.match(nginx_big_upload_request_body, 'id=(.-)&')
@@ -97,7 +97,7 @@ function file_transfer_operation.validate_uploaded_file()
    end
 end
 
-function file_transfer_operation.create_upload_location()
+function file_transfer_endpoints.create_upload_location()
 
     local lfs   = require('lfs_ffi')
     local utils = require('pl.utils')
@@ -124,7 +124,7 @@ function file_transfer_operation.create_upload_location()
     os.remove("/srv/storage/" .. tmp_file_name .. ".shactx")
 end
 
-function file_transfer_operation.report_upload()
+function file_transfer_endpoints.report_upload()
 
     -- Send confirmation to the conductor when a file is uploaded.
     local http = require "resty.http"
@@ -156,7 +156,7 @@ function file_transfer_operation.report_upload()
     end
 end
 
-function file_transfer_operation.return_upload_success()
+function file_transfer_endpoints.return_upload_success()
 
     -- Nginx big upload module adds headers with checksum and temporary file name to its response.
     -- We don't want to return them to the client.
@@ -170,4 +170,4 @@ function file_transfer_operation.return_upload_success()
     ngx.log(ngx.NOTICE, successful_response)
 end
 
-return file_transfer_operation
+return file_transfer_endpoints

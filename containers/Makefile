@@ -1,11 +1,20 @@
-NGINX_PROXY_SOURCE :=               \
-    build/nginx-proxy/Dockerfile    \
-    build/nginx-proxy/index.html    \
+NGINX_PROXY_SOURCE :=                    \
+    build/nginx-proxy/Dockerfile         \
+    build/nginx-proxy/index.html         \
+    build/nginx-proxy/error-pages.conf
 
-NGINX_STORAGE_SOURCE :=                            \
-    build/nginx-storage/Dockerfile                 \
-    build/nginx-storage/install-dependencies.sh    \
-    build/nginx-storage/table_utils.lua
+NGINX_STORAGE_SOURCE_FROM_NGINX_PROXY :=    \
+    build/nginx-storage/error-pages.conf
+
+NGINX_STORAGE_SOURCE :=                                 \
+    build/nginx-storage/Dockerfile                      \
+    build/nginx-storage/install-dependencies.sh         \
+    build/nginx-storage/table_utils.lua                 \
+    build/nginx-storage/file-transfer-config.lua        \
+    build/nginx-storage/file-transfer-endpoints.lua     \
+    build/nginx-storage/file-transfer-endpoints.conf    \
+    build/nginx-storage/default.conf                    \
+    $(NGINX_STORAGE_SOURCE_FROM_NGINX_PROXY)
 
 POSTGRESQL_SOURCE :=                          \
     build/postgresql/Dockerfile               \
@@ -130,6 +139,9 @@ build/verifier/golem/scripts/: build/repositories/golem/apps/rendering/resources
 	mkdir --parents "$@"
 	cp  --recursive "$<." "$@"
 
+$(NGINX_STORAGE_SOURCE_FROM_NGINX_PROXY): build/nginx-storage/%: build/nginx-proxy/%
+	mkdir --parents "build/nginx-storage/"
+	cp "$<" "$@"
 
 build/verifier/golem/imgverifier-requirements.txt: build/repositories/golem/apps/rendering/resources/images/requirements.txt
 	cp "$<" "$@"
