@@ -19,10 +19,16 @@ kubectl create --record --filename services/conductor-worker.yml
 {% endif %}
 kubectl create --record --filename services/nginx-storage.yml
 kubectl create --record --filename services/nginx-proxy.yml
-./wait-until-ready.sh geth          60
-./wait-until-ready.sh rabbitmq      60
-./wait-until-ready.sh concent-api   30
-./wait-until-ready.sh gatekeeper    30
-./wait-until-ready.sh conductor     30
-./wait-until-ready.sh nginx-storage 30
-./wait-until-ready.sh nginx-proxy   30
+./wait-until-ready.sh geth                 60
+./wait-until-ready.sh rabbitmq             60
+./wait-until-ready.sh concent-api          30
+{% if deploy_verification %}
+./wait-until-ready.sh concent-api-worker   30
+{% endif %}
+./wait-until-ready.sh gatekeeper           30
+./wait-until-ready.sh conductor            30
+{% if deploy_verification %}
+./wait-until-ready.sh conductor-worker     30
+{% endif %}
+./wait-until-ready.sh nginx-storage        30
+./wait-until-ready.sh nginx-proxy          30
