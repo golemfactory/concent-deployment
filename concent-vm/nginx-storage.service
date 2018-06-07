@@ -1,0 +1,11 @@
+[Unit]
+Description=Nginx storage Service
+After=docker.service
+Requires=docker.service
+
+[Service]
+User=builder
+Group=builder
+WorkingDirectory=/home/builder
+ExecStart=/home/builder/bin/run-nginx-storage.sh
+Restart=on-failure
