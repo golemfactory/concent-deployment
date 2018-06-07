@@ -1,0 +1,5 @@
+# Configure files created by Vagrant and VirtualBox.
+/.vagrant/
+
+# Attached disk to vagrant
+/disk/

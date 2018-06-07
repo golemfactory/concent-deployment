@@ -4,9 +4,8 @@
     - python{{ python_version }}
     - python3-pip
     - python{{ python_version }}-dev
-    # This package is need to upgrade after install python3.6
-    # that requires a newer version of python3-apt.
-    # The ansible `apt` module use this package.
+    # Packages like python3-apt contain files with paths that contain specific Python version (e.g. 3.6).
+    # We need to update them to make sure the paths match the interpreter version we have just installed.
     - python3-apt
     - virtualenv
 
