@@ -14,11 +14,20 @@ from ..secrets.secrets import (
 
 SECRET_KEY = STORAGE_SECRET_KEY
 
-DATABASES['default']['NAME']     = '{{ storage_database_name }}'
-DATABASES['default']['USER']     = '{{ storage_database_user }}'
-DATABASES['default']['PASSWORD'] = STORAGE_DATABASE_PASSWORD
-DATABASES['default']['HOST']     = '{{ storage_database_host }}'
-DATABASES['default']['PORT']     = '5432'
+DATABASES['storage']['NAME']     = '{{ storage_database_name }}'
+DATABASES['storage']['USER']     = '{{ storage_database_user }}'
+DATABASES['storage']['PASSWORD'] = STORAGE_DATABASE_PASSWORD
+DATABASES['storage']['HOST']     = '{{ storage_database_host }}'
+DATABASES['storage']['PORT']     = '5432'
+
+# The `default` database is not used by the application but Django still requires the key to be present
+# in `DATABASES` dict. Make sure it's really empty (if it's not it must be some kind of error).
+assert DATABASES['default'] == {}
+
+# Concent has two databases in its default config but only one is used at a time
+# and they may not be even on the same cluster.
+# In order to work with only one we have to remove the other from the config.
+del DATABASES["control"]
 
 RAVEN_CONFIG = {
     'dsn': SENTRY_DATA_SOURCE_NAME,
