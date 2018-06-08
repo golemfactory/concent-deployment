@@ -7,8 +7,9 @@ from ..secrets.secrets import (
     STORAGE_DATABASE_PASSWORD,
 )
 
-# Make sure that default database is empty
-DATABASES['default'] = {}
+# The `default` database is not used by the application but Django still requires the key to be present
+# in `DATABASES` dict. Make sure it's really empty (if it's not it must be some kind of error).
+assert DATABASES['default'] == {}
 
 DATABASES['control']['NAME']     = '{{ control_database_name }}'
 DATABASES['control']['USER']     = '{{ control_database_user }}'

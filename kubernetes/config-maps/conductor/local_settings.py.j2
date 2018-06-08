@@ -23,8 +23,9 @@ DATABASES['storage']['PASSWORD'] = STORAGE_DATABASE_PASSWORD
 DATABASES['storage']['HOST']     = '{{ storage_database_host }}'
 DATABASES['storage']['PORT']     = '5432'
 
-# Make sure that default database is empty
-DATABASES['default'] = {}
+# The `default` database is not used by the application but Django still requires the key to be present
+# in `DATABASES` dict. Make sure it's really empty (if it's not it must be some kind of error).
+assert DATABASES['default'] == {}
 
 # Concent has two databases in its default config but only one is used at a time
 # and they may not be even on the same cluster.
