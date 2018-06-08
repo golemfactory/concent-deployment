@@ -13,11 +13,11 @@ from ..secrets.secrets import (
     SENTRY_DATA_SOURCE_NAME,
 )
 
-DATABASES['default']['NAME']     = '{{ database_name }}'
-DATABASES['default']['USER']     = '{{ database_user }}'
-DATABASES['default']['PASSWORD'] = CONTROL_DATABASE_PASSWORD
-DATABASES['default']['HOST']     = '{{ database_host }}'
-DATABASES['default']['PORT']     = '5432'
+DATABASES['control']['NAME']     = '{{ database_name }}'
+DATABASES['control']['USER']     = '{{ database_user }}'
+DATABASES['control']['PASSWORD'] = CONTROL_DATABASE_PASSWORD
+DATABASES['control']['HOST']     = '{{ database_host }}'
+DATABASES['control']['PORT']     = '5432'
 
 RAVEN_CONFIG = {
     'dsn': SENTRY_DATA_SOURCE_NAME,
