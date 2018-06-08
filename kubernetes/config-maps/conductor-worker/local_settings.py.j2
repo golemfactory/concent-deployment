@@ -14,11 +14,12 @@ from ..secrets.secrets import (
 
 SECRET_KEY = STORAGE_SECRET_KEY
 
-DATABASES['default']['NAME']     = '{{ storage_database_name }}'
-DATABASES['default']['USER']     = '{{ storage_database_user }}'
-DATABASES['default']['PASSWORD'] = STORAGE_DATABASE_PASSWORD
-DATABASES['default']['HOST']     = '{{ storage_database_host }}'
-DATABASES['default']['PORT']     = '5432'
+DATABASES['storage']['NAME']     = '{{ storage_database_name }}'
+DATABASES['storage']['USER']     = '{{ storage_database_user }}'
+DATABASES['storage']['PASSWORD'] = STORAGE_DATABASE_PASSWORD
+DATABASES['storage']['HOST']     = '{{ storage_database_host }}'
+DATABASES['storage']['PORT']     = '5432'
+
 
 RAVEN_CONFIG = {
     'dsn': SENTRY_DATA_SOURCE_NAME,
