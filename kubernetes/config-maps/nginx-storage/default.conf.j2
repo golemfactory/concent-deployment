@@ -225,7 +225,7 @@ server {
 
             if conductor_response == nil then
                 ngx.status = 500
-                conductor_connection_error = '{"error_message": "HTTP request to conductor failed:' .. conductor_error .. '", "error_code": "failed-conductor-request"}'
+                conductor_connection_error = '{"error_message": "HTTP request to conductor failed: ' .. conductor_error .. '", "error_code": "failed-conductor-request"}'
                 ngx.say(conductor_connection_error)
                 ngx.log(ngx.ERR, conductor_connection_error)
                 return ngx.exit(ngx.status)
