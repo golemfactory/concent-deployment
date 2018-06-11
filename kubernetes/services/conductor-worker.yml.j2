@@ -14,7 +14,7 @@ spec:
         - name:             conductor-worker
           image:            {{ docker_registry }}/{{image_prefix }}concent-api:{{ image_version }}
           imagePullPolicy:  Always
-          command:          ["/usr/local/bin/run-celery.sh", "--queues", "conductor"]
+          command:          ["/usr/local/bin/run-celery.sh", "--loglevel", "info", "--queues", "conductor"]
           ports:
             - containerPort: 80
           resources:
