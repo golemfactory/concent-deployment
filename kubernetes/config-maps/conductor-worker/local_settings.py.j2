@@ -12,6 +12,8 @@ from ..secrets.secrets import (
     SENTRY_DATA_SOURCE_NAME,
 )
 
+DEBUG_INFO_IN_ERROR_RESPONSES = True
+
 SECRET_KEY = STORAGE_SECRET_KEY
 
 DATABASES['storage']['NAME']     = '{{ storage_database_name }}'

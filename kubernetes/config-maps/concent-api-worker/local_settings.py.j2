@@ -13,6 +13,8 @@ from ..secrets.secrets import (
     SENTRY_DATA_SOURCE_NAME,
 )
 
+DEBUG_INFO_IN_ERROR_RESPONSES = True
+
 DATABASES['control']['NAME']     = '{{ database_name }}'
 DATABASES['control']['USER']     = '{{ database_user }}'
 DATABASES['control']['PASSWORD'] = CONTROL_DATABASE_PASSWORD
