@@ -3,3 +3,7 @@
 
 # Attached disk to vagrant
 /disk/
+
+# Configuration files meant to be provided by the user
+/extra_settings.py
+/signing-service-env.sh
