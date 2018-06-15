@@ -37,16 +37,6 @@ VERIFIER_SOURCE :=                           \
     $(VERIFIER_SOURCE_FROM_CONCENT_API)
 
 
-ifndef CONCENT_DIR
-    CONCENT_DIR:= $(abspath ../../concent)
-endif
-$(info CONCENT_DIR=$(CONCENT_DIR))
-
-ifndef GOLEM_DIR
-    GOLEM_DIR:= $(abspath ../../golem)
-endif
-$(info GOLEM_DIR=$(GOLEM_DIR))
-
 ifndef IMAGE_VERSION
     IMAGE_VERSION := $(shell git describe --always)
 endif
@@ -72,11 +62,11 @@ postgresql: $(POSTGRESQL_SOURCE)
 	docker build --tag $(IMAGE_PREFIX)postgresql:$(IMAGE_VERSION) build/postgresql/
 	docker tag $(IMAGE_PREFIX)postgresql:$(IMAGE_VERSION) $(IMAGE_PREFIX)postgresql:latest
 
-concent-api: $(CONCENT_API_SOURCE) build/concent-api/requirements.lock build/concent-api/testing.pref
+concent-api: $(CONCENT_API_SOURCE) build/concent-api/requirements.lock build/concent-api/testing.pref build/repositories/concent/
 	docker build --tag $(IMAGE_PREFIX)concent-api:$(IMAGE_VERSION) build/concent-api/
 	docker tag $(IMAGE_PREFIX)concent-api:$(IMAGE_VERSION) $(IMAGE_PREFIX)concent-api:latest
 
-verifier: $(VERIFIER_SOURCE) build/verifier/golem/scripts/ build/verifier/golem/imgverifier-requirements.txt
+verifier: $(VERIFIER_SOURCE) build/repositories/golem/ build/verifier/golem/scripts/ build/verifier/golem/imgverifier-requirements.txt
 	docker build --tag $(IMAGE_PREFIX)verifier:$(IMAGE_VERSION) build/verifier/
 	docker tag $(IMAGE_PREFIX)verifier:$(IMAGE_VERSION) $(IMAGE_PREFIX)verifier:latest
 
@@ -97,7 +87,7 @@ concent-api-clean:
 verifier-clean:
 	docker rmi $(IMAGE_PREFIX)verifier:$(IMAGE_VERSION) --force
 
-build/virtualenv/: $(CONCENT_DIR)/concent_api/requirements.lock build/package-builder/build-virtualenv.sh
+build/virtualenv/: build/repositories/concent/concent_api/requirements.lock build/package-builder/build-virtualenv.sh
 	build/package-builder/build-virtualenv.sh "$<" "build"
 
 build/concent-api/requirements.lock: build/concent-api/concent-api.tar
@@ -111,23 +101,23 @@ build/concent-api/requirements.lock: build/concent-api/concent-api.tar
 build/concent-api/testing.pref: ../concent-builder/files/testing.pref
 	cp "$<" "$@"
 
-build/concent-api/concent-api.tar: $(CONCENT_DIR)  build/virtualenv/
+build/concent-api/concent-api.tar: build/repositories/concent/  build/virtualenv/
 	mkdir --parents $(dir $@)
-	package-builder/build-concent-api.sh "$(CONCENT_DIR)" "build/concent-api"
+	package-builder/build-concent-api.sh "build/repositories/concent/" "build/concent-api"
 
 
-build/nginx-proxy/concent-api-assets.tar: $(CONCENT_DIR) build/virtualenv/ build/package-builder/build-concent-api-assets.sh
+build/nginx-proxy/concent-api-assets.tar: build/repositories/concent/ build/virtualenv/ build/package-builder/build-concent-api-assets.sh
 	mkdir --parents "$(dir $@)"
 	build/package-builder/build-concent-api-assets.sh \
-		"$(CONCENT_DIR)"                              \
+		"build/repositories/concent/"                 \
 		"$(abspath package-builder)"                  \
 		"$(abspath build)"                            \
 		"$(dir $@)"
 
-build/nginx-proxy/concent-api-docs.tar: $(CONCENT_DIR) build/package-builder/build-concent-api-docs.sh
+build/nginx-proxy/concent-api-docs.tar: build/repositories/concent/ build/package-builder/build-concent-api-docs.sh
 	mkdir --parents $(dir $@)
 	build/package-builder/build-concent-api-docs.sh   \
-		"$(CONCENT_DIR)"                              \
+		"build/repositories/concent/"                 \
 		"$(abspath package-builder)"                  \
 		"$(abspath build)"                            \
 		"$(dir $@)"
@@ -136,13 +126,19 @@ $(VERIFIER_SOURCE_FROM_CONCENT_API): build/verifier/%: build/concent-api/%
 	mkdir --parents "build/verifier/"
 	cp "$<" "$@"
 
-build/verifier/golem/scripts/: $(GOLEM_DIR)/apps/rendering/resources/scripts/
+build/verifier/golem/scripts/: build/repositories/golem/apps/rendering/resources/scripts/
 	mkdir --parents "$@"
 	cp  --recursive "$<." "$@"
 
 
-build/verifier/golem/imgverifier-requirements.txt: $(GOLEM_DIR)/apps/rendering/resources/images/requirements.txt
+build/verifier/golem/imgverifier-requirements.txt: build/repositories/golem/apps/rendering/resources/images/requirements.txt
 	cp "$<" "$@"
+
+build/repositories/concent/: build/package-builder/clone-or-update.sh /var/concent-data/concent
+	build/package-builder/clone-or-update.sh "concent" "$@"
+
+build/repositories/golem/: build/package-builder/clone-or-update.sh /var/concent-data/golem
+	build/package-builder/clone-or-update.sh  "golem" "$@"
 
 build/:
 	mkdir --parents "$@"

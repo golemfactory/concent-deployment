@@ -63,7 +63,7 @@ endif
 $(info CONCENT_SECRET_DIR=$(CONCENT_SECRET_DIR))
 
 ifndef IMAGE_VERSION
-    IMAGE_VERSION := "latest"
+    IMAGE_VERSION := $(shell git describe --always)
 endif
 $(info IMAGE_VERSION=$(IMAGE_VERSION))
 

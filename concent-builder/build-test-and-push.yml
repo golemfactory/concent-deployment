@@ -14,14 +14,13 @@
             path:    "{{ build_dir }}"
             state:   absent
 
-        - name: Check out working copies of all concent repositories
+        - name: Check out working copy of concent-deployment repositories
           git:
-            repo:    "{{ data_dir }}/{{ item.key }}"
-            dest:    "{{ build_dir }}/{{ item.key }}"
-            version: "{{ versions[item.key] }}"
+            repo:    "{{ data_dir }}/concent-deployment"
+            dest:    "{{ build_dir }}/concent-deployment"
+            version: "{{ versions['concent-deployment'] }}"
             clone:   yes
             update:  yes
-          with_dict: "{{ repositories }}"
 
     - become:      yes
       become_user: root
