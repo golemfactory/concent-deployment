@@ -190,3 +190,54 @@ ansible-playbook deploy.yml                                        \
     --inventory  ../../concent-deployment-values/ansible_inventory \
     --user       $user
 ```
+
+### Building nginx-storage locally
+
+Step-by-step instructions to building and running `nginx-storage` locally.
+
+
+- Install dependencies:
+
+```bash
+apt-get update
+apt-get install make python3 python-pip python3-yaml docker.io
+pip install yasha
+```
+
+
+- Ensure that your user is in the `docker` group and that this group exists.
+  This is necessary to be able to run docker commands without `root` privileges.
+  Note that the change will not take effect until you log out of the current shell session.
+
+```bash
+sudo groupadd docker
+sudo usermod --all --groups docker <user>
+```
+
+
+- Go to `concent-deployment` repository and run makefile to build `nginx-storage` image:
+
+```bash
+cd <path to concent deployment repository>/containers/
+make nginx-storage
+```
+
+
+- Run nginx-storage:
+
+```bash
+docker run                         \
+   --rm                            \
+   --hostname nginx-storage-server \
+   --network  host                 \
+   --name     nginx-storage        \
+   nginx-storage
+```
+
+
+- If everything went OK, you should now be able to reach `nginx-storage` on localhost:
+
+```bash
+curl http://localhost:8001/
+```
+
