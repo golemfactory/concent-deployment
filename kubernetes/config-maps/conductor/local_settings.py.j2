@@ -17,6 +17,8 @@ SECRET_KEY = STORAGE_SECRET_KEY
 
 DEBUG_INFO_IN_ERROR_RESPONSES = {{ allow_debug_info_in_error_responses }}
 
+LOGGING['handlers']['console']['level'] = DEBUG
+
 DATABASES['storage']['NAME']     = '{{ storage_database_name }}'
 DATABASES['storage']['USER']     = '{{ storage_database_user }}'
 DATABASES['storage']['PASSWORD'] = STORAGE_DATABASE_PASSWORD

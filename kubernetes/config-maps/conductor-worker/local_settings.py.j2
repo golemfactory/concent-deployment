@@ -14,6 +14,8 @@ from ..secrets.secrets import (
 
 DEBUG_INFO_IN_ERROR_RESPONSES = {{ allow_debug_info_in_error_responses }}
 
+LOGGING['handlers']['console']['level'] = DEBUG
+
 SECRET_KEY = STORAGE_SECRET_KEY
 
 DATABASES['storage']['NAME']     = '{{ storage_database_name }}'
