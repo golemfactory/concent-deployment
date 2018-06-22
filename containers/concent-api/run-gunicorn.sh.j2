@@ -7,5 +7,5 @@ exec "/srv/http/virtualenv/bin/gunicorn" concent_api.wsgi:application  \
     --workers {{ gunicorn_workers }}       \
     --timeout {{ gunicorn_timeout }}       \
     --bind=0.0.0.0:80                      \
-    --log-level=info                       \
+    --log-level=debug                      \
     --log-file=-

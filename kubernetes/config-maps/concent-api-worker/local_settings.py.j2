@@ -15,6 +15,8 @@ from ..secrets.secrets import (
 
 DEBUG_INFO_IN_ERROR_RESPONSES = {{ allow_debug_info_in_error_responses }}
 
+LOGGING['handlers']['console']['level'] = DEBUG
+
 DATABASES['control']['NAME']     = '{{ control_database_name }}'
 DATABASES['control']['USER']     = '{{ control_database_user }}'
 DATABASES['control']['PASSWORD'] = CONTROL_DATABASE_PASSWORD
