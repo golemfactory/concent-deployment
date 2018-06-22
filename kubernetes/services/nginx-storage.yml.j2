@@ -31,8 +31,8 @@ spec:
             - mountPath:  /etc/nginx/conf.d/
               name:       nginx-storage-configs
               readOnly:   true
-            - mountPath:  /etc/nginx/snippets/
-              name:       nginx-config-snippets
+            - mountPath:  /usr/local/openresty/lualib/config/
+              name:       file-transfer-config
               readOnly:   true
             - mountPath:  /etc/ssl/secrets/
               name:       nginx-storage-secrets
@@ -46,9 +46,9 @@ spec:
           gcePersistentDisk:
             pdName: {{ nginx_storage_disk }}
             fsType: ext4
-        - name: nginx-config-snippets
+        - name: file-transfer-config
           configMap:
-            name: nginx-config-snippets
+            name: file-transfer-config
         - name: nginx-storage-configs
           configMap:
             name: nginx-storage-configs
