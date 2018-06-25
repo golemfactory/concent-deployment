@@ -46,6 +46,8 @@ RAVEN_CONFIG = {
     'tags': {'component': 'conductor'},
 }
 
+CELERY_BROKER_URL = 'amqp://rabbitmq.default.svc.cluster.local:5672'
+
 EMAIL_SUBJECT_PREFIX = "[{{ gke.cluster }}:conductor] "
 
 CONCENT_FEATURES = ["conductor-urls"]
