@@ -28,6 +28,6 @@ EMAIL_SUBJECT_PREFIX = "[{{ gke.cluster }}:verifier] "
 CELERY_BROKER_URL = 'amqp://rabbitmq.default.svc.cluster.local:5672'
 
 CONCENT_FEATURES = ["verifier"]
-
 STORAGE_SERVER_INTERNAL_ADDRESS = "http://nginx-storage.default.svc.cluster.local"
 VERIFIER_STORAGE_PATH = "/srv/storage/"
+VERIFIER_MIN_SSIM = 0.94
