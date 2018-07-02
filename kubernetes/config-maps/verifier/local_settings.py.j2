@@ -30,7 +30,7 @@ CELERY_BROKER_URL = 'amqp://rabbitmq.default.svc.cluster.local:5672'
 
 CONCENT_FEATURES = ["verifier"]
 
-STORAGE_SERVER_INTERNAL_ADDRESS = "http://nginx-storage.default.svc.cluster.local"
+STORAGE_SERVER_INTERNAL_ADDRESS = "http://nginx-storage.default.svc.cluster.local/"
 VERIFIER_STORAGE_PATH = "/srv/storage/"
 
 {% if storage_cluster_address == cluster_address and not nginx_proxy_allow_http or storage_cluster_address != cluster_address and not nginx_storage_allow_http %}
