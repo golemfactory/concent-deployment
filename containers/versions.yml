@@ -1,6 +1,6 @@
 debian_version:               "9.4"
 docker_version:               "17.05.0~ce-0~debian-stretch"
-geth_version:                 "v1.8.2"
+geth_version:                 "v1.8.11"
 golem_version:                "0.16.0"
 concent_version:              "v0.7.3"
 golemfactory_blender_version: "1.4"
