@@ -23,9 +23,9 @@ spec:
           secret:
             secretName: django-admin-fixture
         {% endif %}
-        - name: concent-api-secrets
+        - name: job-secrets
           secret:
-            secretName: concent-api-secrets
+            secretName: job-secrets
         - name: database-job-settings
           configMap:
             name: database-job-settings
@@ -50,7 +50,7 @@ spec:
           imagePullPolicy:  Always
           command:          ["/usr/local/bin/concent-api-manage.sh", "migrate", "--database={{ selected_database_id }}"]
           volumeMounts:
-            - name:       concent-api-secrets
+            - name:       job-secrets
               mountPath:  /srv/http/concent_api/concent_api/settings/secrets/
               readOnly:   true
             - name:       database-job-settings
@@ -65,7 +65,7 @@ spec:
             - name:       django-admin-fixture
               mountPath:  /srv/http/fixtures/
               readOnly:   true
-            - name:       concent-api-secrets
+            - name:       job-secrets
               mountPath:  /srv/http/concent_api/concent_api/settings/secrets/
               readOnly:   true
             - name:       database-job-settings
