@@ -1,0 +1,27 @@
+#!/bin/bash -e
+
+# Update package lists for Debian and install dependencies
+# Packages needed to build python extensions, dependencies of golem-messages in particular
+readarray dependencies < ${BASH_SOURCE%/*}/build-dependencies.txt
+
+testing_dependencies=(
+    # There's no stable Python 3.6 package in Debian Stretch yet so we have to get it from testing.
+    python{{ python_version }}
+    python{{ python_version }}-dev
+    virtualenv
+)
+
+apt-get update --assume-yes
+apt-get install              \
+    --assume-yes             \
+    --no-install-recommends  \
+    ${dependencies[*]}
+
+add-apt-repository "deb {{ debian_mirror }} testing main"
+apt-get update --assume-yes
+
+apt-get install              \
+    --target-release testing \
+    --assume-yes             \
+    --no-install-recommends  \
+    ${testing_dependencies[*]}
