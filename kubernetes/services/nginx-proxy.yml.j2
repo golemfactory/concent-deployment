@@ -28,6 +28,9 @@ spec:
           volumeMounts:
             - mountPath:  /etc/nginx/conf.d/
               name:       nginx-configs
+            - mountPath:  /etc/nginx/nginx.conf
+              subPath:    nginx.conf
+              name:       nginx-settings
               readOnly:   true
             - mountPath:  /etc/ssl/secrets/
               name:       nginx-proxy-secrets
@@ -36,6 +39,9 @@ spec:
         -  name: nginx-configs
            configMap:
              name: nginx-configs
+        -  name: nginx-settings
+           configMap:
+             name: nginx-settings
         - name: nginx-proxy-secrets
           secret:
             secretName:  nginx-proxy-secrets

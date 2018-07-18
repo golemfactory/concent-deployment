@@ -8,8 +8,10 @@ kubectl create configmap file-transfer-config                                   
     --from-file=file-transfer-config.lua=config-maps/nginx-storage/file-transfer-config.lua
 
 kubectl create configmap nginx-configs                              \
-    --from-file=ssl.conf=config-maps/nginx-proxy/ssl.conf           \
-    --from-file=default.conf=config-maps/nginx-proxy/default.conf
+    --from-file=config-maps/nginx-proxy/configs
+
+kubectl create configmap nginx-settings                              \
+    --from-file=config-maps/nginx-proxy/nginx.conf
 
 kubectl create configmap concent-api-settings                                \
     --from-file=local_settings.py=config-maps/concent-api/local_settings.py  \
