@@ -10,3 +10,4 @@ kubectl delete configmap conductor-worker-settings    || true
 kubectl delete configmap concent-api-settings         || true
 kubectl delete configmap concent-api-worker-settings  || true
 kubectl delete configmap verifier-settings            || true
+kubectl delete configmap middleman-settings           || true

@@ -1,0 +1,65 @@
+apiVersion: extensions/v1beta1
+kind:       Deployment
+metadata:
+  name: middleman
+spec:
+  replicas:             1
+  revisionHistoryLimit: 3
+  template:
+    metadata:
+      labels:
+        run: middleman
+    spec:
+      containers:
+        - name:             middleman
+          image:            {{ docker_registry }}/{{image_prefix }}concent-api:{{ image_version }}
+          imagePullPolicy:  Always
+          command:          [
+              "/usr/local/bin/concent-api-manage.sh",
+              "middleman",
+              "--bind-address", "0.0.0.0",
+              "--internal-port", "9054",
+              "--external-port", "9055"
+          ]
+          ports:
+            - containerPort: 9054
+              name:          internal-port
+            - containerPort: 9055
+              name:          external-port
+          resources:
+            requests:
+              memory: "0.1Gi"
+              cpu:    "50m"
+            limits:
+              memory: "0.4Gi"
+              cpu:    "500m"
+          volumeMounts:
+            - name:      concent-api-secrets
+              mountPath: /srv/http/concent_api/concent_api/settings/secrets/
+              readOnly:  true
+            - name:      middleman-settings
+              mountPath: /srv/http/concent_api/concent_api/settings/config_map/
+              readOnly:  true
+      volumes:
+        - name: concent-api-secrets
+          secret:
+            secretName: concent-api-secrets
+        - name: middleman-settings
+          configMap:
+            name: middleman-settings
+---
+apiVersion: v1
+kind:       Service
+metadata:
+  name: middleman
+  labels:
+    run: middleman
+spec:
+  type: ClusterIP
+  ports:
+    - port:       9054
+      name:       internal-port
+    - port:       9055
+      name:       external-port
+  selector:
+    run: middleman

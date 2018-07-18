@@ -1,0 +1,31 @@
+from ..production import *
+
+from .email_settings import *
+from .timing_settings import *
+
+# Create secrets.py and put passwords and private keys in it.
+# Don't commit it into the repository.
+from ..secrets.secrets import (
+    SECRET_KEY,
+    CONCENT_PUBLIC_KEY,
+    CONCENT_PRIVATE_KEY,
+    SENTRY_DATA_SOURCE_NAME,
+)
+
+DEBUG_INFO_IN_ERROR_RESPONSES = {{ allow_debug_info_in_error_responses }}
+
+LOGGING['handlers']['console']['level'] = DEBUG
+
+DATABASES = {}
+
+ALLOWED_HOSTS = []
+
+RAVEN_CONFIG = {
+    'dsn': SENTRY_DATA_SOURCE_NAME,
+    'environment': '{{ gke.cluster }}',
+    'tags': {'component': 'middleman'},
+}
+
+EMAIL_SUBJECT_PREFIX = "[{{ gke.cluster }}:middleman] "
+
+CONCENT_FEATURES = ["middleman"]

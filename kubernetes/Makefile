@@ -9,6 +9,7 @@ CLUSTER_SCRIPTS :=                                            \
     build/services/geth.yml                                   \
     build/services/rabbitmq.yml                               \
     build/services/verifier.yml                               \
+    build/services/middleman.yml                              \
     build/create-job-dependencies.sh                          \
     build/delete-job-dependencies.sh                          \
     build/clean-up-jobs.sh                                    \
@@ -29,6 +30,7 @@ CLUSTER_SCRIPTS :=                                            \
     build/config-maps/conductor-worker/local_settings.py      \
     build/config-maps/conductor/local_settings.py             \
     build/config-maps/verifier/local_settings.py              \
+    build/config-maps/middleman/local_settings.py             \
     build/config-maps/concent-api/local_settings.py           \
     build/config-maps/concent-api-worker/local_settings.py    \
     build/config-maps/database-jobs/local_settings.py         \
