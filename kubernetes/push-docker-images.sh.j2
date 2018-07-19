@@ -5,9 +5,15 @@ docker tag {{ image_prefix }}nginx-proxy:{{ image_version }}    {{ docker_regist
 docker tag {{ image_prefix }}concent-api:{{ image_version }}    {{ docker_registry }}/{{ image_prefix }}concent-api:{{ image_version }}
 docker tag {{ image_prefix }}postgresql:{{ image_version }}     {{ docker_registry }}/{{ image_prefix }}postgresql:{{ image_version }}
 docker tag {{ image_prefix }}nginx-storage:{{ image_version }}  {{ docker_registry }}/{{ image_prefix }}nginx-storage:{{ image_version }}
+{% if signing_service_on_the_cluster %}
+docker tag {{ image_prefix }}signing-service:{{ image_version }}  {{ docker_registry }}/{{ image_prefix }}signing-service:{{ image_version }}
+{% endif %}
 
 gcloud docker -- push {{ docker_registry }}/{{ image_prefix }}verifier:{{ image_version }}
 gcloud docker -- push {{ docker_registry }}/{{ image_prefix }}nginx-proxy:{{ image_version }}
 gcloud docker -- push {{ docker_registry }}/{{ image_prefix }}concent-api:{{ image_version }}
 gcloud docker -- push {{ docker_registry }}/{{ image_prefix }}postgresql:{{ image_version }}
 gcloud docker -- push {{ docker_registry }}/{{ image_prefix }}nginx-storage:{{ image_version }}
+{% if signing_service_on_the_cluster %}
+gcloud docker -- push {{ docker_registry }}/{{ image_prefix }}signing-service:{{ image_version }}
+{% endif %}

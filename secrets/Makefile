@@ -9,6 +9,11 @@ ifndef CONCENT_SECRET_DIR
 endif
 $(info CONCENT_SECRET_DIR=$(CONCENT_SECRET_DIR))
 
+ifndef DEPLOYMENT_VAR_DIR
+    DEPLOYMENT_VAR_DIR := $(abspath ../kubernetes)
+endif
+$(info CONCENT_SECRET_DIR=$(CONCENT_SECRET_DIR))
+
 
 CLUSTER_SECRETS :=                                            \
     $(CONCENT_SECRET_DIR)/secrets.py                          \
@@ -26,6 +31,11 @@ CLUSTER_SECRETS :=                                            \
     build/apply-secrets.sh                                    \
     build/delete-secrets.sh
 
+ifeq ($(CLUSTER),$(filter $(CLUSTER), concent-dev concent-staging))
+    CLUSTER_SECRETS :=                               \
+        $(CLUSTER_SECRETS)                           \
+        build/templates/signing-service-secrets.yml
+endif
 
 all: cluster-secrets
 
@@ -38,9 +48,15 @@ build/:
 build/%: %
 	cp --archive --parents "$<" build/
 
+build/vars-merged.yml: $(DEPLOYMENT_VAR_DIR)/var-$(CLUSTER).yml $(CONCENT_SECRET_DIR)/var-secret.yml ../tools/merge-yaml.py
+	../tools/merge-yaml.py           \
+		"$(word 1,$^)"               \
+		"$(word 2,$^)"               \
+		--output "$@"
+
 # Templates
-build/%: %.j2 $(CONCENT_SECRET_DIR)/var-secret.yml ../tools/render-jinja-template.sh
-	../tools/render-jinja-template.sh $(CONCENT_SECRET_DIR)/var-secret.yml "$<" "$@"
+build/%: %.j2 build/vars-merged.yml ../tools/render-jinja-template.sh
+	../tools/render-jinja-template.sh build/vars-merged.yml "$<" "$@"
 
 build/templates/nginx-%-secrets.yml: $(CONCENT_SECRET_DIR)/nginx-%-ssl.crt $(CONCENT_SECRET_DIR)/nginx-%-ssl.key
 	mkdir --parents $(dir $@)

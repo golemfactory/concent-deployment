@@ -1,0 +1,56 @@
+apiVersion: extensions/v1beta1
+kind:       Deployment
+metadata:
+  name: signing-service
+spec:
+  replicas:             1
+  revisionHistoryLimit: 3
+  template:
+    metadata:
+      labels:
+        run: signing-service
+    spec:
+      containers:
+        - name:             concent-signing-service
+          image:            {{ docker_registry }}/{{image_prefix }}signing-service:{{ image_version }}
+          imagePullPolicy:  Always
+          args:             [
+              "{{ cluster_address }}",
+              "{{ concent_public_key }}",
+              "--concent-cluster-port", "9055",
+              "--sentry-dsn-from-env",
+              "--ethereum-private-key-from-env",
+              "--signing-service-private-key-from-env",
+              "--sentry-environment {{ gke.cluster }}"
+          ]
+          ports:
+            - containerPort: 9055
+              name: external-port
+          env:
+            - name: SENTRY_DSN
+              valueFrom:
+                secretKeyRef:
+                  name: signing-service-secrets
+                  key:  sentry_data_source_name
+            - name: ETHEREUM_PRIVATE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: signing-service-secrets
+                  key:  ethereum_private_key
+            - name: SIGNING_SERVICE_PRIVATE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: signing-service-secrets
+                  key:  signing_service_private_key
+          resources:
+            requests:
+              memory: "0.1Gi"
+              cpu:    "50m"
+            limits:
+              memory: "0.4Gi"
+              cpu:    "500m"
+      volumes:
+        - name: signing-service-secrets
+          secret:
+            secretName:  signing-service-secrets
+            defaultMode: 0600
