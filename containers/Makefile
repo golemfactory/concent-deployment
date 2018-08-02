@@ -67,7 +67,7 @@ endif
 $(info IMAGE_PREFIX=$(IMAGE_PREFIX))
 
 
-all: nginx-proxy nginx-storage concent-api postgresql verifier signing-service
+all: nginx-proxy nginx-storage concent-api postgresql verifier signing-service concent-signing-service-package
 
 nginx-proxy: build/ $(NGINX_PROXY_SOURCE) build/nginx-proxy/concent-api-assets.tar build/nginx-proxy/concent-api-docs.tar
 	docker build --tag $(IMAGE_PREFIX)nginx-proxy:$(IMAGE_VERSION) build/nginx-proxy/
@@ -92,6 +92,18 @@ verifier: build/ $(VERIFIER_SOURCE) build/repositories/golem/ build/verifier/gol
 signing-service: build/ $(SIGNING_SERVICE_SOURCE) build/signing-service/signing-service/ build/signing-service/middleman_protocol/ build/signing-service/signing-service/RELEASE-VERSION
 	docker build --tag $(IMAGE_PREFIX)signing-service:$(IMAGE_VERSION) build/signing-service/
 	docker tag $(IMAGE_PREFIX)signing-service:$(IMAGE_VERSION) $(IMAGE_PREFIX)signing-service:latest
+
+concent-signing-service-package: build/ $(SIGNING_SERVICE_SOURCE) dist/concent-signing-service-%.tar.xz
+
+dist/concent-signing-service-%.tar.xz: build/signing-service/signing-service/ build/signing-service/middleman_protocol/ build/signing-service/signing-service/RELEASE-VERSION
+	mkdir dist || true
+	tar                                                                                                                    \
+		--create                                                                                                           \
+		--verbose                                                                                                          \
+		--xz                                                                                                               \
+		--file="dist/concent-signing-service-$(shell cat build/signing-service/signing-service/RELEASE-VERSION).tar.xz"    \
+		--directory="build/"                                                                                               \
+		signing-service/
 
 docker-clean: nginx-proxy-clean concent-api-clean postgresql-clean verifier-clean signing-service-clean
 
@@ -203,7 +215,10 @@ build/config-with-versions.yml: versions.yml config.yml ../tools/merge-yaml.py
 
 
 clean:
-	rm -rf build/ dist/
+	rm -rf build/
+
+distclean:
+	rm -rf dist/
 
 
 .PHONY:                                   \
@@ -214,5 +229,7 @@ clean:
     concent-api     concent-api-clean     \
     verifier        verifier-clean        \
     signing-service signing-service-clean \
+    concent-signing-service-package       \
     docker-clean                          \
+    distclean                             \
     clean
