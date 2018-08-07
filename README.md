@@ -225,6 +225,27 @@ ansible-playbook cluster-remove-secrets.yml                        \
     --user       $user
 ```
 
+## Deployment by using helm package(in_progress)
+
+### Installation and initialization of helm package
+
+``` bash
+cd concent-deployment/concent-builder/
+ansible-playbook helm-init.yml                                     \
+    --extra-vars cluster=$cluster                                  \
+    --inventory  ../../concent-deployment-values/ansible_inventory \
+    --user       $user
+```
+
+### Uninstall tiller from the cluster and helm package from the `concent-builder` server
+
+``` bash
+cd concent-deployment/concent-builder/
+ansible-playbook uninstall-tiller.yml                              \
+    --extra-vars cluster=$cluster                                  \
+    --inventory  ../../concent-deployment-values/ansible_inventory \
+    --user       $user
+```
 
 ### Building nginx-storage locally
 
