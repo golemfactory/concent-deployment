@@ -1,0 +1,29 @@
+- hosts:
+    - concent-builder
+  vars_files:
+    - consts.yml
+    - "{{ deployment_values }}/var.yml"
+    - "{{ deployment_values }}/var-{{ cluster }}.yml"
+  tasks:
+    - become:      yes
+      become_user: "{{ shared_user }}"
+      block:
+        - name: Configure kubectl to operate on the right cluster
+          command: gcloud container clusters get-credentials \
+              "{{ gke.cluster }}"                            \
+              --project "{{ gke.project }}"                  \
+              --zone    "{{ gke.zone }}"
+
+        - name:     Check if charts exist
+          shell:    '[ -z "$(helm list --short --tiller-namespace tiller)" ] && echo "Empty"'
+          register: result
+
+        - name:   Uninstall charts
+          shell:  helm delete $(helm list --short --tiller-namespace tiller)  \
+               --tiller-namespace tiller
+          when:   result.stdout != "Empty"
+
+        - name:    Uninstall tiller
+          command: helm reset             \
+              --remove-helm-home          \
+              --tiller-namespace tiller
