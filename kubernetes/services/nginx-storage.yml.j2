@@ -12,7 +12,7 @@ spec:
     spec:
       containers:
         - image:           {{ docker_registry }}/{{ image_prefix }}nginx-storage:{{ image_version }}
-          name:            nginx
+          name:            nginx-storage
           imagePullPolicy: Always
           resources:
             requests:

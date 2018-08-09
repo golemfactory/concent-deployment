@@ -15,7 +15,7 @@ spec:
     spec:
       terminationGracePeriodSeconds: 10
       containers:
-        - name:             concent-api
+        - name:             verifier
           image:            {{ docker_registry }}/{{image_prefix }}verifier:{{ image_version }}
           imagePullPolicy:  Always
           command:          ["/usr/local/bin/run-celery.sh", "--loglevel", "info", "--queues", "verifier"]
