@@ -45,6 +45,11 @@ VERIFIER_SOURCE :=                           \
     build/verifier/Dockerfile                \
     $(VERIFIER_SOURCE_FROM_CONCENT_API)
 
+DOCKER_BUILD :=															\
+		docker build --tag $(IMAGE_PREFIX)$@:$(IMAGE_VERSION) build/$@/
+
+DOCKER_TAG :=																\
+		docker tag $(IMAGE_PREFIX)$@:$(IMAGE_VERSION) $(IMAGE_PREFIX)$@:latest
 
 ifndef IMAGE_VERSION
     IMAGE_VERSION := $(shell git describe --always --abbrev=16)
@@ -59,42 +64,30 @@ $(info IMAGE_PREFIX=$(IMAGE_PREFIX))
 
 all: nginx-proxy nginx-storage concent-api postgresql verifier
 
-nginx-proxy: build/ $(NGINX_PROXY_SOURCE) build/nginx-proxy/concent-api-assets.tar build/nginx-proxy/concent-api-docs.tar
-	docker build --tag $(IMAGE_PREFIX)nginx-proxy:$(IMAGE_VERSION) build/nginx-proxy/
-	docker tag $(IMAGE_PREFIX)nginx-proxy:$(IMAGE_VERSION) $(IMAGE_PREFIX)nginx-proxy:latest
+nginx-proxy: $(NGINX_PROXY_SOURCE) build/nginx-proxy/concent-api-assets.tar build/nginx-proxy/concent-api-docs.tar | build/
+	$(DOCKER_BUILD)
+	$(DOCKER_TAG)
 
-nginx-storage: build/ $(NGINX_STORAGE_SOURCE)
-	docker build --tag $(IMAGE_PREFIX)nginx-storage:$(IMAGE_VERSION) build/nginx-storage/
-	docker tag $(IMAGE_PREFIX)nginx-storage:$(IMAGE_VERSION) $(IMAGE_PREFIX)nginx-storage:latest
+nginx-storage: $(NGINX_STORAGE_SOURCE) | build/
+	$(DOCKER_BUILD)
+	$(DOCKER_TAG)
 
-postgresql: build/ $(POSTGRESQL_SOURCE)
-	docker build --tag $(IMAGE_PREFIX)postgresql:$(IMAGE_VERSION) build/postgresql/
-	docker tag $(IMAGE_PREFIX)postgresql:$(IMAGE_VERSION) $(IMAGE_PREFIX)postgresql:latest
+postgresql: $(POSTGRESQL_SOURCE) | build/
+	$(DOCKER_BUILD)
+	$(DOCKER_TAG)
 
-concent-api: build/ $(CONCENT_API_SOURCE) build/concent-api/requirements.lock build/concent-api/testing.pref build/repositories/concent/
-	docker build --tag $(IMAGE_PREFIX)concent-api:$(IMAGE_VERSION) build/concent-api/
-	docker tag $(IMAGE_PREFIX)concent-api:$(IMAGE_VERSION) $(IMAGE_PREFIX)concent-api:latest
+concent-api: $(CONCENT_API_SOURCE) build/concent-api/requirements.lock build/concent-api/testing.pref build/repositories/concent/ | build/
+	$(DOCKER_BUILD)
+	$(DOCKER_TAG)
 
-verifier: build/ $(VERIFIER_SOURCE) build/repositories/golem/ build/verifier/golem/scripts/ build/verifier/golem/imgverifier-requirements.txt
-	docker build --tag $(IMAGE_PREFIX)verifier:$(IMAGE_VERSION) build/verifier/
-	docker tag $(IMAGE_PREFIX)verifier:$(IMAGE_VERSION) $(IMAGE_PREFIX)verifier:latest
+verifier: $(VERIFIER_SOURCE) build/repositories/golem/ build/verifier/golem/scripts/ build/verifier/golem/imgverifier-requirements.txt | build/
+	$(DOCKER_BUILD)
+	$(DOCKER_TAG)
 
-docker-clean: nginx-proxy-clean concent-api-clean postgresql-clean verifier-clean
+docker-clean: nginx-proxy-rmi nginx-storage-rmi postgresql-rmi concent-api-rmi  verifier-rmi
 
-nginx-proxy-clean:
-	docker rmi $(IMAGE_PREFIX)nginx-proxy:$(IMAGE_VERSION) --force
-
-nginx-storage-clean:
-	docker rmi $(IMAGE_PREFIX)nginx-storage:$(IMAGE_VERSION) --force
-
-postgresql-clean:
-	docker rmi $(IMAGE_PREFIX)postgresql:$(IMAGE_VERSION) --force
-
-concent-api-clean:
-	docker rmi $(IMAGE_PREFIX)concent-api:$(IMAGE_VERSION) --force
-
-verifier-clean:
-	docker rmi $(IMAGE_PREFIX)verifier:$(IMAGE_VERSION) --force
+%-rmi:
+	docker rmi $(IMAGE_PREFIX)$*:$(IMAGE_VERSION) --force
 
 build/virtualenv/: build/repositories/concent/concent_api/requirements.lock build/package-builder/build-virtualenv.sh
 	build/package-builder/build-virtualenv.sh "$<" "build"
