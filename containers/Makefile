@@ -95,6 +95,7 @@ $(IMAGE_TARGETS): %: %!dependencies build/
 
 docker-clean: nginx-proxy-rmi nginx-storage-rmi postgresql-rmi concent-api-rmi verifier-rmi
 
+.PHONY: %-rmi
 %-rmi:
 		docker rmi $(IMAGE_PREFIX)$*:$(IMAGE_VERSION) --force
 
