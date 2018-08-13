@@ -79,22 +79,10 @@ verifier: build/ $(VERIFIER_SOURCE) build/repositories/golem/ build/verifier/gol
 	docker build --tag $(IMAGE_PREFIX)verifier:$(IMAGE_VERSION) build/verifier/
 	docker tag $(IMAGE_PREFIX)verifier:$(IMAGE_VERSION) $(IMAGE_PREFIX)verifier:latest
 
-docker-clean: nginx-proxy-clean concent-api-clean postgresql-clean verifier-clean
+docker-clean: nginx-proxy-rmi nginx-storage-rmi postgresql-rmi concent-api-rmi verifier-rmi
 
-nginx-proxy-clean:
-	docker rmi $(IMAGE_PREFIX)nginx-proxy:$(IMAGE_VERSION) --force
-
-nginx-storage-clean:
-	docker rmi $(IMAGE_PREFIX)nginx-storage:$(IMAGE_VERSION) --force
-
-postgresql-clean:
-	docker rmi $(IMAGE_PREFIX)postgresql:$(IMAGE_VERSION) --force
-
-concent-api-clean:
-	docker rmi $(IMAGE_PREFIX)concent-api:$(IMAGE_VERSION) --force
-
-verifier-clean:
-	docker rmi $(IMAGE_PREFIX)verifier:$(IMAGE_VERSION) --force
+%-rmi:
+		docker rmi $(IMAGE_PREFIX)$*:$(IMAGE_VERSION) --force
 
 build/virtualenv/: build/repositories/concent/concent_api/requirements.lock build/package-builder/build-virtualenv.sh
 	build/package-builder/build-virtualenv.sh "$<" "build"
