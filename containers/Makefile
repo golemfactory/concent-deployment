@@ -101,11 +101,11 @@ build/virtualenv/: build/repositories/concent/concent_api/requirements.lock buil
 
 build/concent-api/requirements.lock: build/concent-api/concent-api.tar
 	tar                                        \
-		--extract                                \
-		--strip=1                                \
-		--file build/concent-api/concent-api.tar \
-		--directory build/concent-api/           \
-		concent_api/requirements.lock
+	  --extract                                \
+	  --strip=1                                \
+	  --file build/concent-api/concent-api.tar \
+	  --directory build/concent-api/           \
+	  concent_api/requirements.lock
 
 build/concent-api/testing.pref: ../concent-builder/files/testing.pref
 	cp "$<" "$@"
@@ -117,18 +117,18 @@ build/concent-api/concent-api.tar: build/repositories/concent/  build/virtualenv
 build/nginx-proxy/concent-api-assets.tar: build/repositories/concent/ build/virtualenv/ build/package-builder/build-concent-api-assets.sh
 	mkdir --parents "$(dir $@)"
 	build/package-builder/build-concent-api-assets.sh\
-		"build/repositories/concent/"                  \
-		"$(abspath package-builder)"                   \
-		"$(abspath build)"                             \
-		"$(dir $@)"
+	  "build/repositories/concent/"                  \
+	  "$(abspath package-builder)"                   \
+	  "$(abspath build)"                             \
+	  "$(dir $@)"
 
 build/nginx-proxy/concent-api-docs.tar: build/repositories/concent/ build/package-builder/build-concent-api-docs.sh
 	mkdir --parents $(dir $@)
 	build/package-builder/build-concent-api-docs.sh\
-		"build/repositories/concent/"                \
-		"$(abspath package-builder)"                 \
-		"$(abspath build)"                           \
-		"$(dir $@)"
+	  "build/repositories/concent/"                \
+	  "$(abspath package-builder)"                 \
+	  "$(abspath build)"                           \
+	  "$(dir $@)"
 
 $(VERIFIER_SOURCE_FROM_CONCENT_API): build/verifier/%: build/concent-api/%
 	mkdir --parents "build/verifier/"
@@ -161,15 +161,15 @@ build/%: %
 # Templates
 build/%: %.j2 build/config-with-versions.yml ../tools/render-jinja-template.sh
 	../tools/render-jinja-template.sh\
-		build/config-with-versions.yml \
-		"$<"                           \
-		"$@"
+	  build/config-with-versions.yml \
+	  "$<"                           \
+	  "$@"
 
 build/config-with-versions.yml: versions.yml config.yml ../tools/merge-yaml.py
 	../tools/merge-yaml.py\
-		"$<"                \
-		"config.yml"        \
-		--output "$@"
+	  "$<"                \
+	  "config.yml"        \
+	  --output "$@"
 
 clean:
 	rm -rf build/
