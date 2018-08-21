@@ -174,13 +174,17 @@ build/config-with-versions.yml: versions.yml config.yml ../tools/merge-yaml.py
 clean:
 	rm -rf build/
 
-.PHONY:         \
-	all           \
-	nginx-proxy   \
-	nginx-storage \
-	postgresql    \
-	concent-api   \
-	verifier      \
-	docker-clean  \
-	clean         \
-	%-rmi
+.PHONY:             \
+	all               \
+	nginx-proxy       \
+	nginx-storage     \
+	postgresql        \
+	concent-api       \
+	verifier          \
+	docker-clean      \
+	clean             \
+	nginx-proxy-rmi   \
+	nginx-storage-rmi \
+	postgresql-rmi    \
+	concent-api-rmi   \
+	verifier-rmi      \
