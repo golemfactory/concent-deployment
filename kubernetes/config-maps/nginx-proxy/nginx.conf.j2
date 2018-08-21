@@ -23,7 +23,19 @@ http {
     sendfile           on;
     keepalive_timeout  65;
 
-
     include /etc/nginx/configs/http.conf;
     include /etc/nginx/configs/ssl.conf;
+}
+
+
+# TCP connection
+stream {
+
+    log_format basic '$remote_addr [$time_local] '
+                     '$protocol $status $bytes_sent $bytes_received '
+                     '$session_time';
+
+    access_log /var/log/nginx/access.log basic buffer=32k;
+
+    include /etc/nginx/configs/tcp.conf;
 }
