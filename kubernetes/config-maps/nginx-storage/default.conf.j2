@@ -9,8 +9,8 @@ map $http_accept $extension {
 {% if not nginx_storage_allow_http %}
 # HTTP -> HTTPS redirect
 server {
-    listen 80
-    listen [::]:80
+    listen 80;
+    listen [::]:80;
     server_name    {{ storage_cluster_address }};
     return 302     https://$server_name$request_uri;
 
