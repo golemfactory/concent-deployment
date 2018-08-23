@@ -53,7 +53,11 @@ server {
     }
 
     location ~ ^/(download|upload)/ {
+        {% if nginx_storage_allow_http %}
         set $nginx_storage_backend http://nginx-storage.default.svc.cluster.local;
+        {% else %}
+        set $nginx_storage_backend https://nginx-storage.default.svc.cluster.local;
+        {% endif %}
         client_max_body_size               {{ max_upload_size }};
         proxy_set_header X-Real-IP         $remote_addr;
         proxy_set_header X-Forwarded-For   $remote_addr;
