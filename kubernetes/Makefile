@@ -35,14 +35,6 @@ CLUSTER_SCRIPTS :=                                            \
     build/config-maps/nginx-storage/default.conf              \
     build/config-maps/nginx-storage/ssl.conf                  \
     build/config-maps/nginx-storage/file-transfer-config.lua  \
-    build/concent-secrets/secrets.py                          \
-    build/concent-secrets/nginx-proxy-ssl.crt                 \
-    build/concent-secrets/nginx-proxy-ssl.key                 \
-    build/concent-secrets/nginx-storage-ssl.crt               \
-    build/concent-secrets/nginx-storage-ssl.key               \
-    build/secrets/control-db-secrets.yml                      \
-    build/secrets/storage-db-secrets.yml                      \
-    build/secrets/django-admin-fixture.yaml                   \
     build/jobs/create-control-database.yml                    \
     build/jobs/migrate-control-database.yml                   \
     build/jobs/delete-control-database.yml                    \
@@ -56,11 +48,6 @@ ifndef CLUSTER
     $(error CLUSTER parameter not specified)
 endif
 $(info CLUSTER=$(CLUSTER))
-
-ifndef CONCENT_SECRET_DIR
-    CONCENT_SECRET_DIR := $(abspath ../../concent-secrets/$(CLUSTER))
-endif
-$(info CONCENT_SECRET_DIR=$(CONCENT_SECRET_DIR))
 
 ifndef IMAGE_VERSION
     IMAGE_VERSION := $(shell git describe --always --abbrev=16)
@@ -79,59 +66,41 @@ build/:
 build/%: %
 	cp --archive --parents "$<" build/
 
-# Secret file
-build/concent-secrets/%: $(CONCENT_SECRET_DIR)/%
-	mkdir --parents $(dir $@)
-	cp --archive "$<" $(dir $@)
-
-
 # Templates
-build/%: %.j2 build/vars-merged-with-secrets.yml ../tools/render-jinja-template.sh
-	../tools/render-jinja-template.sh build/vars-merged-with-secrets.yml "$<" "$@"
+build/%: %.j2 build/vars-merged.yml ../tools/render-jinja-template.sh
+	../tools/render-jinja-template.sh build/vars-merged.yml "$<" "$@"
 
-build/jobs/%-control-database.yml: jobs/%-database.yml.j2 ../tools/render-jinja-template.sh build/vars-with-control-database-config-and-secrets.yml
-	../tools/render-jinja-template.sh build/vars-with-control-database-config-and-secrets.yml "$<" "$@"
+build/jobs/%-control-database.yml: jobs/%-database.yml.j2 ../tools/render-jinja-template.sh build/vars-with-control-database-config.yml
+	../tools/render-jinja-template.sh build/vars-with-control-database-config.yml "$<" "$@"
 
-build/jobs/%-storage-database.yml: jobs/%-database.yml.j2 ../tools/render-jinja-template.sh build/vars-with-storage-database-config-and-secrets.yml
-	../tools/render-jinja-template.sh build/vars-with-storage-database-config-and-secrets.yml "$<" "$@"
+build/jobs/%-storage-database.yml: jobs/%-database.yml.j2 ../tools/render-jinja-template.sh build/vars-with-storage-database-config.yml
+	../tools/render-jinja-template.sh build/vars-with-storage-database-config.yml "$<" "$@"
 
-build/secrets/%-db-secrets.yml: build/vars-with-%-database-config-and-secrets.yml secrets/db-secrets.yml.j2 ../tools/render-jinja-template.sh
-	../tools/render-jinja-template.sh "$<" "secrets/db-secrets.yml.j2" "$@"
-
-build/vars-with-%-database-config-and-secrets.yml: build/%-database-configuration.yml build/vars-merged-with-secrets.yml
+build/vars-with-%-database-config.yml: build/%-database-configuration.yml build/vars-merged.yml
 	../tools/merge-yaml.py                         \
 		"$<"                                       \
-		"build/vars-merged-with-secrets.yml"       \
+		"build/vars-merged.yml"                    \
 		--output "$@"
 
-build/vars-merged-with-secrets.yml: var.yml var-$(CLUSTER).yml $(CONCENT_SECRET_DIR)/var-secret.yml build/image-version.yml ../containers/versions.yml ../tools/merge-yaml.py
+build/vars-merged.yml: var.yml var-$(CLUSTER).yml build/image-version.yml ../containers/versions.yml ../tools/merge-yaml.py
 	../tools/merge-yaml.py                     \
 		"$<"                                   \
 		"var-$(CLUSTER).yml"                   \
-		"$(CONCENT_SECRET_DIR)/var-secret.yml" \
 		"build/image-version.yml"              \
 		../containers/versions.yml             \
 		--output "$@"
 
+build/%-database-configuration.yml:
+	echo "selected_database_id:    $*"  >> "$@"
+	echo "database_name:          \"{{ $*_database_name }}\"" >> "$@"
+	echo "database_user:          \"{{ $*_database_user }}\"" >> "$@"
+	echo "database_host:          \"{{ $*_database_host }}\"" >> "$@"
+	if [[ '$*' == 'control' ]]; then \
+	    echo "initialize_django_admin: true" >> "$@"; \
+	fi
+
 build/image-version.yml:
 	echo "image_version: $(IMAGE_VERSION)" >> "$@"
-
-build/control-database-configuration.yml:
-	echo "selected_database_id:    control"  >> "$@"
-	echo "database_name:          \"{{ control_database_name }}\"" >> "$@"
-	echo "database_user:          \"{{ control_database_user }}\"" >> "$@"
-	echo "database_host:          \"{{ control_database_host }}\"" >> "$@"
-	echo "initialize_django_admin: true" >> "$@"
-	echo "db_admin_password:      \"{{ control_db_admin_password }}\"" >> "$@"
-	echo "db_user_password:       \"{{ control_db_user_password }}\"" >> "$@"
-
-build/storage-database-configuration.yml:
-	echo "selected_database_id:   storage" >> "$@"
-	echo "database_name:         \"{{ storage_database_name }}\"" >> "$@"
-	echo "database_user:         \"{{ storage_database_user }}\"" >> "$@"
-	echo "database_host:         \"{{ storage_database_host }}\"" >> "$@"
-	echo "db_admin_password:     \"{{ storage_db_admin_password }}\"" >> "$@"
-	echo "db_user_password:      \"{{ storage_db_user_password }}\"" >> "$@"
 
 clean:
 	rm -rf build/
