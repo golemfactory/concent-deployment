@@ -46,9 +46,9 @@ RAVEN_CONFIG = {
 }
 
 {% if storage_cluster_address == cluster_address %}
-STORAGE_CLUSTER_SSL_CERTIFICATE_PATH = "/srv/http/concent_api/concent_api/settings/config_map/nginx-proxy-ssl.crt"
+STORAGE_CLUSTER_SSL_CERTIFICATE_PATH = "/srv/http/concent_api/concent_api/settings/secrets/nginx-proxy-ssl.crt"
 {% else %}
-STORAGE_CLUSTER_SSL_CERTIFICATE_PATH = "/srv/http/concent_api/concent_api/settings/config_map/nginx-storage-ssl.crt"
+STORAGE_CLUSTER_SSL_CERTIFICATE_PATH = "/srv/http/concent_api/concent_api/settings/secrets/nginx-storage-ssl.crt"
 {% endif %}
 
 CELERY_BROKER_URL = 'amqp://rabbitmq.default.svc.cluster.local:5672'

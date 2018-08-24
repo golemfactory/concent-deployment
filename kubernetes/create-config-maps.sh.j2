@@ -1,24 +1,11 @@
 #!/bin/bash -e
 
-
-kubectl create secret generic nginx-storage-secrets                              \
-    --from-file=nginx-storage-ssl.crt=concent-secrets/nginx-storage-ssl.crt      \
-    --from-file=nginx-storage-ssl.key=concent-secrets/nginx-storage-ssl.key
-
 kubectl create configmap nginx-storage-configs                                              \
     --from-file=ssl.conf=config-maps/nginx-storage/ssl.conf                                 \
     --from-file=default.conf=config-maps/nginx-storage/default.conf                         \
 
 kubectl create configmap file-transfer-config                                               \
     --from-file=file-transfer-config.lua=config-maps/nginx-storage/file-transfer-config.lua
-
-kubectl create secret generic nginx-proxy-secrets                              \
-    --from-file=nginx-proxy-ssl.crt=concent-secrets/nginx-proxy-ssl.crt        \
-    --from-file=nginx-proxy-ssl.key=concent-secrets/nginx-proxy-ssl.key
-
-kubectl create secret generic concent-api-secrets            \
-    --from-file=secrets.py=concent-secrets/secrets.py        \
-    --from-literal=__init__.py=
 
 kubectl create configmap nginx-configs                              \
     --from-file=ssl.conf=config-maps/nginx-proxy/ssl.conf           \
@@ -28,11 +15,6 @@ kubectl create configmap concent-api-settings                                \
     --from-file=local_settings.py=config-maps/concent-api/local_settings.py  \
     --from-file=email_settings.py=config-maps/concent/email_settings.py      \
     --from-file=timing_settings.py=config-maps/concent/timing_settings.py    \
-{% if storage_cluster_address == cluster_address %}
-    --from-file=nginx-proxy-ssl.crt=concent-secrets/nginx-proxy-ssl.crt      \
-{% else %}
-    --from-file=nginx-storage-ssl.crt=concent-secrets/nginx-storage-ssl.crt  \
-{% endif %}
     --from-literal=__init__.py=
 
 {% if deploy_verification %}
