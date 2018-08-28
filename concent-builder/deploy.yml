@@ -6,21 +6,18 @@
     - "{{ deployment_values }}/var.yml"
     - "{{ deployment_values }}/var-{{ cluster }}.yml"
   tasks:
-    - become:      yes
-      become_user: "{{ shared_user }}"
-      block:
-        - name: Configure kubectl to operate on the right cluster
-          command: gcloud container clusters get-credentials         \
-              "{{ concent_versions[concent_version].gke.cluster }}"  \
-              --project "{{ gke.project }}"                          \
-              --zone    "{{ gke.zone }}"
+    - name: Configure kubectl to operate on the right cluster
+      command: gcloud container clusters get-credentials         \
+          "{{ concent_versions[concent_version].gke.cluster }}"  \
+          --project "{{ gke.project }}"                          \
+          --zone    "{{ gke.zone }}"
 
-        - name:    Clear the cluster
-          command: "{{ build_dir}}/concent-deployment/kubernetes/build/delete-services.sh"
-          args:
-            chdir: "{{ build_dir}}/concent-deployment/kubernetes/build/"
+    - name:    Clear the cluster
+      command: "{{ build_dir}}/concent-deployment/kubernetes/build/delete-services.sh"
+      args:
+        chdir: "{{ build_dir}}/concent-deployment/kubernetes/build/"
 
-        - name:    Deploy containers to the cluster
-          command: "{{ build_dir}}/concent-deployment/kubernetes/build/create-services.sh"
-          args:
-            chdir: "{{ build_dir}}/concent-deployment/kubernetes/build/"
+    - name:    Deploy containers to the cluster
+      command: "{{ build_dir}}/concent-deployment/kubernetes/build/create-services.sh"
+      args:
+        chdir: "{{ build_dir}}/concent-deployment/kubernetes/build/"
