@@ -155,10 +155,33 @@ ansible-playbook build-test-and-push.yml                           \
     --user       $user
 ```
 
-### Creating the database
+### Deploying to the cluster
 
-`concent-api` and other Django apps will try to connect a CloudSQL database configured in their settings.
-Control and storage clusters have separate databases that need to be created and migrated individually.
+``` bash
+cd concent-deployment/concent-builder/
+ansible-playbook deploy.yml                                        \
+    --extra-vars cluster=$cluster                                  \
+    --inventory  ../../concent-deployment-values/ansible_inventory \
+    --user       $user
+```
+
+### Create or delete the database
+This is a separate step that require access to the whole Google Cloud project to modify CloudSQL database.
+In normal scenario, we don't needed to create or delete database. Normal cluster deployment only involves a reset or a migration.
+
+```bash
+cd concent-deployment/cloud/
+ansible-playbook create-databases.yml                              \
+    --extra-vars cluster=$cluster                                  \
+    --inventory  ../../concent-deployment-values/ansible_inventory \
+    --user       $user
+
+ansible-playbook drop-databases.yml                                \
+    --extra-vars cluster=$cluster                                  \
+    --inventory  ../../concent-deployment-values/ansible_inventory \
+    --user       $user
+```
+
 Set `$cluster_type` to `control` or `storage` before proceeding. These commands are meant to be executed on every cluster separately.
 
 ``` bash
