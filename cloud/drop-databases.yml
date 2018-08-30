@@ -1,0 +1,13 @@
+- hosts:
+    - concent-builder
+  vars_files:
+    - ../concent-builder/consts.yml
+    - "{{ deployment_values }}/var.yml"
+    - "{{ deployment_values }}/var-{{ cluster }}.yml"
+    - "{{ local_secret_dir }}/{{ cluster }}/cluster-secrets.yml"
+    - "{{ local_secret_dir }}/cloud/cloud-secrets.yml"
+  vars:
+    choose_database_option: delete
+  roles:
+    - { role: postgres_connection, cluster_type: control }
+    - { role: postgres_connection, cluster_type: storage }

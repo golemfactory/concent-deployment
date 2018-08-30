@@ -1,0 +1,5 @@
+- include_tasks: create-database.yml
+  when: choose_database_option == 'create'
+
+- include_tasks: delete-database.yml
+  when: choose_database_option == 'delete'
