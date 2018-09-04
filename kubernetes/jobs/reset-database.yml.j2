@@ -1,11 +1,11 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: create-database
+  name: reset-database
 spec:
   template:
     metadata:
-      name: create-database
+      name: reset-database
     spec:
       restartPolicy: Never
       containers:
@@ -30,17 +30,12 @@ spec:
           configMap:
             name: database-job-settings
       initContainers:
-        - name:             create-database
+        - name:             reset-database
           image:            {{ docker_registry }}/{{ image_prefix }}postgresql:{{ image_version }}
           imagePullPolicy:  Always
-          command:          ["/usr/local/bin/create-database.sh", "{{ database_host }}", "{{ database_name }}", "{{ database_user }}"]
+          command:          ["/usr/local/bin/reset-database.sh", "{{ database_host }}", "{{ database_name }}", "{{ database_user }}"]
           env:
             - name: PGPASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ selected_database_id }}-db-secrets
-                  key:  db_admin_password
-            - name: DB_USER_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ selected_database_id }}-db-secrets
