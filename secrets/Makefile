@@ -16,8 +16,7 @@ $(info CONCENT_SECRET_DIR=$(CONCENT_SECRET_DIR))
 
 
 CLUSTER_SECRETS :=                                            \
-    $(CONCENT_SECRET_DIR)/secrets.py                          \
-    $(CONCENT_SECRET_DIR)/var-secret.yml                      \
+    $(CONCENT_SECRET_DIR)/cluster-secrets.yml                 \
     $(CONCENT_SECRET_DIR)/nginx-proxy-ssl.crt                 \
     $(CONCENT_SECRET_DIR)/nginx-proxy-ssl.key                 \
     $(CONCENT_SECRET_DIR)/nginx-storage-ssl.crt               \
@@ -66,7 +65,7 @@ build/templates/nginx-%-secrets.yml: $(CONCENT_SECRET_DIR)/nginx-%-ssl.crt $(CON
 		--dry-run                                               \
 		--output yaml > $@
 
-build/templates/concent-api-secrets.yml: $(CONCENT_SECRET_DIR)/secrets.py $(CONCENT_SECRET_DIR)/nginx-proxy-ssl.crt $(CONCENT_SECRET_DIR)/nginx-storage-ssl.crt
+build/templates/concent-api-secrets.yml: build/secrets/secrets.py $(CONCENT_SECRET_DIR)/nginx-proxy-ssl.crt $(CONCENT_SECRET_DIR)/nginx-storage-ssl.crt
 	kubectl create secret generic $(notdir $(basename $@))      \
 		--from-file=$(notdir $(word 1,$^))=$(word 1,$^)         \
 		--from-file=$(notdir $(word 2,$^))=$(word 2,$^)         \
