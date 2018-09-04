@@ -182,6 +182,10 @@ ansible-playbook drop-databases.yml                                \
     --user       $user
 ```
 
+### Migrate or reset the database
+
+Control and storage clusters have separate databases that need to be migrated individually.
+In some case, we can also reset database to clear all table information.
 Set `$cluster_type` to `control` or `storage` before proceeding. These commands are meant to be executed on every cluster separately.
 
 ``` bash
@@ -191,23 +195,13 @@ ansible-playbook job-cleanup.yml                                   \
     --inventory  ../../concent-deployment-values/ansible_inventory \
     --user       $user
 
-ansible-playbook create-db.yml                                     \
+ansible-playbook reset-db.yml                                      \
     --extra-vars "cluster=$cluster cluster_type=$cluster_type"     \
     --inventory  ../../concent-deployment-values/ansible_inventory \
     --user       $user
 
 ansible-playbook migrate-db.yml                                    \
     --extra-vars "cluster=$cluster cluster_type=$cluster_type"     \
-    --inventory  ../../concent-deployment-values/ansible_inventory \
-    --user       $user
-```
-
-### Deploying to the cluster
-
-``` bash
-cd concent-deployment/concent-builder/
-ansible-playbook deploy.yml                                        \
-    --extra-vars cluster=$cluster                                  \
     --inventory  ../../concent-deployment-values/ansible_inventory \
     --user       $user
 ```

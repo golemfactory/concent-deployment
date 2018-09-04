@@ -38,9 +38,8 @@
             owner: "{{ shared_user }}"
             group: "{{ shared_user }}"
           with_items:
-            - secrets.py
-            - var-secret.yml
-            - "{{ gke.service_account_name }}-private-key.json"
+            - cluster-secrets.yml
+            - "../cloud/{{ gke.service_account_name }}-private-key.json"
             - nginx-proxy-ssl.crt
             - nginx-proxy-ssl.key
             - nginx-storage-ssl.crt
