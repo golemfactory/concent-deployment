@@ -18,8 +18,7 @@ NGINX_STORAGE_SOURCE :=                                 \
 
 POSTGRESQL_SOURCE :=                          \
     build/postgresql/Dockerfile               \
-    build/postgresql/delete-database.sh       \
-    build/postgresql/create-database.sh
+    build/postgresql/reset-database.sh
 
 CONCENT_API_SOURCE :=                           \
     build/concent-api/install-concent-api.sh    \
