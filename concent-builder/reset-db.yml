@@ -20,10 +20,10 @@
             chdir: "{{ build_dir}}/concent-deployment/kubernetes/build/"
 
         - name:    Create up to date secrets and config maps required by jobs
-          command: "{{ build_dir }}/concent-deployment/kubernetes/build/create-job-dependencies.sh {{ cluster_type }}"
+          command: "{{ build_dir }}/concent-deployment/kubernetes/build/create-job-dependencies.sh"
           args:
             chdir: "{{ build_dir}}/concent-deployment/kubernetes/build/"
 
         - name:    Create and initialize the database for concent-api
           command: kubectl create \
-            --filename "{{ build_dir }}/concent-deployment/kubernetes/build/jobs/create-{{ cluster_type }}-database.yml"
+            --filename "{{ build_dir }}/concent-deployment/kubernetes/build/jobs/reset-{{ cluster_type }}-database.yml"

@@ -73,6 +73,8 @@
             - libpq-dev
             - gcc
             - python3-yaml
+            - postgresql-9.6
+            - python-psycopg2
 
         - name:    Install dependencies from testing
           apt:  name={{ item }} default_release=testing
