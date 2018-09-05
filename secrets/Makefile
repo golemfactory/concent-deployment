@@ -15,25 +15,27 @@ endif
 $(info CONCENT_SECRET_DIR=$(CONCENT_SECRET_DIR))
 
 
-CLUSTER_SECRETS :=                                            \
-    $(CONCENT_SECRET_DIR)/cluster-secrets.yml                 \
-    $(CONCENT_SECRET_DIR)/nginx-proxy-ssl.crt                 \
-    $(CONCENT_SECRET_DIR)/nginx-proxy-ssl.key                 \
-    $(CONCENT_SECRET_DIR)/nginx-storage-ssl.crt               \
-    $(CONCENT_SECRET_DIR)/nginx-storage-ssl.key               \
-    build/templates/nginx-proxy-secrets.yml                   \
-    build/templates/nginx-storage-secrets.yml                 \
-    build/templates/control-db-secrets.yml                    \
-    build/templates/storage-db-secrets.yml                    \
-    build/templates/django-admin-fixture.yml                  \
-    build/templates/concent-api-secrets.yml                   \
-    build/apply-secrets.sh                                    \
-    build/delete-secrets.sh
+CLUSTER_SECRETS :=                                                \
+    build/concent-api-secrets/static-files/secrets.py             \
+    build/concent-api-secrets/static-files/var-secret.yml         \
+    build/concent-api-secrets/static-files/nginx-proxy-ssl.crt    \
+    build/concent-api-secrets/static-files/nginx-proxy-ssl.key    \
+    build/concent-api-secrets/static-files/nginx-storage-ssl.crt  \
+    build/concent-api-secrets/static-files/nginx-storage-ssl.key  \
+    build/concent-api-secrets/templates/nginx-proxy-secrets.yml   \
+    build/concent-api-secrets/templates/nginx-storage-secrets.yml \
+    build/concent-api-secrets/templates/control-db-secrets.yml    \
+    build/concent-api-secrets/templates/storage-db-secrets.yml    \
+    build/concent-api-secrets/templates/django-admin-fixture.yml  \
+    build/concent-api-secrets/templates/concent-api-secrets.yml   \
+    build/concent-api-secrets/secrets/django-admin-fixture.yaml   \
+    build/concent-api-secrets/apply-secrets.sh                    \
+    build/concent-api-secrets/delete-secrets.sh
 
 ifeq ($(CLUSTER),$(filter $(CLUSTER), concent-dev concent-staging))
-    CLUSTER_SECRETS :=                               \
-        $(CLUSTER_SECRETS)                           \
-        build/templates/signing-service-secrets.yml
+    CLUSTER_SECRETS :=                                                     \
+        $(CLUSTER_SECRETS)                                                 \
+        build/concent-api-secrets/templates/signing-service-secrets.yml
 endif
 
 all: cluster-secrets
@@ -44,8 +46,8 @@ build/:
 	mkdir --parents "$@"
 
 # Static file
-build/%: %
-	cp --archive --parents "$<" build/
+build/concent-api-secrets/%: %
+	cp --archive --parents "$<" build/concent-api-secrets/
 
 build/vars-merged.yml: $(DEPLOYMENT_VAR_DIR)/var-$(CLUSTER).yml $(CONCENT_SECRET_DIR)/cluster-secrets.yml ../tools/merge-yaml.py
 	../tools/merge-yaml.py           \
@@ -54,10 +56,15 @@ build/vars-merged.yml: $(DEPLOYMENT_VAR_DIR)/var-$(CLUSTER).yml $(CONCENT_SECRET
 		--output "$@"
 
 # Templates
-build/%: %.j2 build/vars-merged.yml ../tools/render-jinja-template.sh
+build/concent-api-secrets/%: %.j2 build/vars-merged.yml ../tools/render-jinja-template.sh
 	../tools/render-jinja-template.sh build/vars-merged.yml "$<" "$@"
 
-build/templates/nginx-%-secrets.yml: $(CONCENT_SECRET_DIR)/nginx-%-ssl.crt $(CONCENT_SECRET_DIR)/nginx-%-ssl.key
+# Secret file
+build/concent-api-secrets/static-files/%: $(CONCENT_SECRET_DIR)/%
+	mkdir --parents $(dir $@)
+	cp --archive "$<" $(dir $@)
+
+build/concent-api-secrets/templates/nginx-%-secrets.yml: build/concent-api-secrets/static-files/nginx-%-ssl.crt build/concent-api-secrets/static-files/nginx-%-ssl.key
 	mkdir --parents $(dir $@)
 	kubectl create secret generic $(notdir $(basename $@))      \
 		--from-file=$(notdir $(word 1,$^))=$(word 1,$^)         \
@@ -65,7 +72,7 @@ build/templates/nginx-%-secrets.yml: $(CONCENT_SECRET_DIR)/nginx-%-ssl.crt $(CON
 		--dry-run                                               \
 		--output yaml > $@
 
-build/templates/concent-api-secrets.yml: build/secrets/secrets.py $(CONCENT_SECRET_DIR)/nginx-proxy-ssl.crt $(CONCENT_SECRET_DIR)/nginx-storage-ssl.crt
+build/concent-api-secrets/templates/concent-api-secrets.yml: build/concent-api-secrets/static-files/secrets.py build/concent-api-secrets/static-files/nginx-proxy-ssl.crt build/concent-api-secrets/static-files/nginx-storage-ssl.crt
 	kubectl create secret generic $(notdir $(basename $@))      \
 		--from-file=$(notdir $(word 1,$^))=$(word 1,$^)         \
 		--from-file=$(notdir $(word 2,$^))=$(word 2,$^)         \
@@ -73,7 +80,7 @@ build/templates/concent-api-secrets.yml: build/secrets/secrets.py $(CONCENT_SECR
 		--dry-run                                               \
 		--output yaml > $@
 
-build/templates/django-admin-fixture.yml: build/secrets/django-admin-fixture.yaml
+build/concent-api-secrets/templates/django-admin-fixture.yml: build/concent-api-secrets/secrets/django-admin-fixture.yaml
 	kubectl create secret generic $(notdir $(basename $@))      \
 		--from-file=$(notdir $<)=$<                             \
 		--dry-run                                               \
@@ -83,3 +90,4 @@ clean:
 	rm -rf build/
 
 .PHONY: all cluster-secrets clean
+
