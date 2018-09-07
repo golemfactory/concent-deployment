@@ -20,12 +20,9 @@ http {
 
     access_log  /var/log/nginx/access.log  main;
 
-    sendfile        on;
-    #tcp_nopush     on;
-
+    sendfile           on;
     keepalive_timeout  65;
 
-    #gzip  on;
 
     include /etc/nginx/configs/http.conf;
     include /etc/nginx/configs/ssl.conf;
