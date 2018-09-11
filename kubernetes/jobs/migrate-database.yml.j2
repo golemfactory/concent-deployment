@@ -14,9 +14,9 @@ spec:
           imagePullPolicy: Always
           command:         ["sh", "-c", "echo Done."]
       volumes:
-        - name: job-secrets
+        - name: concent-api-secrets
           secret:
-            secretName: job-secrets
+            secretName: concent-api-secrets
         - name: database-job-settings
           configMap:
             name: database-job-settings
@@ -26,7 +26,7 @@ spec:
           imagePullPolicy:  Always
           command:          ["/usr/local/bin/concent-api-manage.sh", "migrate", "--database={{ selected_database_id }}"]
           volumeMounts:
-            - name:       job-secrets
+            - name:       concent-api-secrets
               mountPath:  /srv/http/concent_api/concent_api/settings/secrets/
               readOnly:   true
             - name:       database-job-settings

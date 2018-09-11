@@ -14,18 +14,18 @@ spec:
           imagePullPolicy: Always
           command:         ["sh", "-c", "echo Done."]
       volumes:
-        - name: db-secrets
+        - name: {{ selected_database_id }}-db-secrets
           secret:
-            secretName:  db-secrets
+            secretName:  {{ selected_database_id }}-db-secrets
             defaultMode: 0600
         {% if initialize_django_admin %}
         - name: django-admin-fixture
           secret:
             secretName: django-admin-fixture
         {% endif %}
-        - name: job-secrets
+        - name: concent-api-secrets
           secret:
-            secretName: job-secrets
+            secretName: concent-api-secrets
         - name: database-job-settings
           configMap:
             name: database-job-settings
@@ -38,19 +38,19 @@ spec:
             - name: PGPASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: db-secrets
+                  name: {{ selected_database_id }}-db-secrets
                   key:  db_admin_password
             - name: DB_USER_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: db-secrets
+                  name: {{ selected_database_id }}-db-secrets
                   key:  db_user_password
         - name:             migrate-database
           image:            {{ docker_registry }}/{{ image_prefix }}concent-api:{{ image_version }}
           imagePullPolicy:  Always
           command:          ["/usr/local/bin/concent-api-manage.sh", "migrate", "--database={{ selected_database_id }}"]
           volumeMounts:
-            - name:       job-secrets
+            - name:       concent-api-secrets
               mountPath:  /srv/http/concent_api/concent_api/settings/secrets/
               readOnly:   true
             - name:       database-job-settings
@@ -65,7 +65,7 @@ spec:
             - name:       django-admin-fixture
               mountPath:  /srv/http/fixtures/
               readOnly:   true
-            - name:       job-secrets
+            - name:       concent-api-secrets
               mountPath:  /srv/http/concent_api/concent_api/settings/secrets/
               readOnly:   true
             - name:       database-job-settings
