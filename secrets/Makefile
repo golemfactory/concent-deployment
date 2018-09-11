@@ -12,11 +12,17 @@ CLUSTER_SECRETS :=                                                \
     build/concent-api-secrets/templates/django-admin-fixture.yml  \
     build/concent-api-secrets/templates/concent-api-secrets.yml   \
     build/concent-api-secrets/apply-secrets.sh                    \
-    build/concent-api-secrets/delete-secrets.sh
+    build/concent-api-secrets/delete-secrets.sh                   \
+    build/concent-api-secrets/Chart.yaml
+
 
 
 ifndef CLUSTER
     $(error CLUSTER parameter not specified)
+endif
+
+ifndef SECRET_VERSION
+    $(error SECRET_VERSION parameter not specified)
 endif
 
 $(info CLUSTER=$(CLUSTER))
@@ -25,7 +31,10 @@ ifndef CONCENT_SECRET_DIR
 endif
 $(info CONCENT_SECRET_DIR=$(CONCENT_SECRET_DIR))
 
-all: cluster-secrets
+all: cluster-secrets concent-api-secrets-$(SECRET_VERSION).tgz
+
+concent-api-secrets-$(SECRET_VERSION).tgz: cluster-secrets
+	cd build && helm package concent-api-secrets/
 
 cluster-secrets: build/ $(CLUSTER_SECRETS)
 
