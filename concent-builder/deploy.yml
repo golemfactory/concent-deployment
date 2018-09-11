@@ -19,6 +19,11 @@
           args:
             chdir: "{{ build_dir}}/concent-deployment/kubernetes/build/"
 
+        - name:    Deploy secrets to the cluster
+          command: "{{ build_dir}}/concent-deployment/secrets/build/install-or-upgrade-secrets.sh"
+          args:
+            chdir: "{{ build_dir}}/concent-deployment/secrets/build/"
+
         - name:    Deploy containers to the cluster
           command: "{{ build_dir}}/concent-deployment/kubernetes/build/create-services.sh"
           args:
