@@ -11,8 +11,8 @@ CLUSTER_SECRETS :=                                                \
     build/concent-api-secrets/templates/storage-db-secrets.yml    \
     build/concent-api-secrets/templates/django-admin-fixture.yml  \
     build/concent-api-secrets/templates/concent-api-secrets.yml   \
-    build/concent-api-secrets/apply-secrets.sh                    \
-    build/concent-api-secrets/delete-secrets.sh                   \
+    build/install-or-upgrade-secrets.sh                           \
+    build/delete-secrets.sh                                       \
     build/concent-api-secrets/Chart.yaml
 
 
