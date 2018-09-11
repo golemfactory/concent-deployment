@@ -56,7 +56,7 @@ build/concent-api-secrets/static-files/%: $(CONCENT_SECRET_DIR)/%
 
 build/concent-api-secrets/templates/nginx-%-secrets.yml: build/concent-api-secrets/static-files/nginx-%-ssl.crt build/concent-api-secrets/static-files/nginx-%-ssl.key
 	mkdir --parents $(dir $@)
-	kubectl create secret generic $(notdir $(basename $@))      \
+	kubectl create secret generic $(notdir $(basename $@))          \
 		--from-file=$(notdir $<)=$<                             \
 		--from-file=$(notdir $(word 2,$^))=$(word 2,$^)         \
 		--dry-run                                               \
@@ -64,14 +64,14 @@ build/concent-api-secrets/templates/nginx-%-secrets.yml: build/concent-api-secre
 
 # Need update to `nginx-storage.crt` after separate to cluster control and storage
 build/concent-api-secrets/templates/concent-api-secrets.yml: build/concent-api-secrets/static-files/secrets.py build/concent-api-secrets/static-files/nginx-proxy-ssl.crt
-	kubectl create secret generic $(notdir $(basename $@))      \
+	kubectl create secret generic $(notdir $(basename $@))          \
 		--from-file=$(notdir $<)=$<                             \
 		--from-file=$(notdir $(word 2,$^))=$(word 2,$^)         \
 		--dry-run                                               \
 		-o yaml > $@
 
 build/concent-api-secrets/templates/django-admin-fixture.yml: build/secrets/django-admin-fixture.yaml
-	kubectl create secret generic $(notdir $(basename $@))      \
+	kubectl create secret generic $(notdir $(basename $@))          \
 		--from-file=$(notdir $<)=$<                             \
 		--dry-run                                               \
 		-o yaml > $@
@@ -81,8 +81,8 @@ build/concent-api-secrets/templates/%-db-secrets.yml: build/vars-with-%-database
 	../tools/render-jinja-template.sh "$<" "templates/db-secrets.yml.j2" "$@"
 
 build/vars-with-%-database-config-and-secrets.yml: build/%-database-configuration.yml build/concent-api-secrets/static-files/var-secret.yml
-	../tools/merge-yaml.py                              \
-		"$<"                                            \
+	../tools/merge-yaml.py                                                   \
+		"$<"                                                             \
 		"build/concent-api-secrets/static-files/var-secret.yml"          \
 		--output "$@"
 
