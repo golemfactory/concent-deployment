@@ -9,6 +9,10 @@ ifndef CONCENT_SECRET_DIR
 endif
 $(info CONCENT_SECRET_DIR=$(CONCENT_SECRET_DIR))
 
+ifndef SECRET_VERSION
+    $(error SECRET_VERSION parameter not specified)
+endif
+
 ifndef DEPLOYMENT_VAR_DIR
     DEPLOYMENT_VAR_DIR := $(abspath ../kubernetes)
 endif
@@ -30,7 +34,8 @@ CLUSTER_SECRETS :=                                                \
     build/concent-api-secrets/templates/concent-api-secrets.yml   \
     build/concent-api-secrets/secrets/django-admin-fixture.yaml   \
     build/concent-api-secrets/apply-secrets.sh                    \
-    build/concent-api-secrets/delete-secrets.sh
+    build/concent-api-secrets/delete-secrets.sh                   \
+    build/concent-api-secrets/Chart.yaml
 
 ifeq ($(CLUSTER),$(filter $(CLUSTER), concent-dev concent-staging))
     CLUSTER_SECRETS :=                                                     \
@@ -38,7 +43,10 @@ ifeq ($(CLUSTER),$(filter $(CLUSTER), concent-dev concent-staging))
         build/concent-api-secrets/templates/signing-service-secrets.yml
 endif
 
-all: cluster-secrets
+all: cluster-secrets concent-api-secrets-$(SECRET_VERSION).tgz
+
+concent-api-secrets-$(SECRET_VERSION).tgz: cluster-secrets
+	cd build && helm package concent-api-secrets/
 
 cluster-secrets: $(CLUSTER_SECRETS) | build/
 
