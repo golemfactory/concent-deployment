@@ -165,23 +165,6 @@ ansible-playbook deploy.yml                                        \
     --user       $user
 ```
 
-### Create or delete the database
-This is a separate step that require access to the whole Google Cloud project to modify CloudSQL database.
-In normal scenario, we don't needed to create or delete database. Normal cluster deployment only involves a reset or a migration.
-
-```bash
-cd concent-deployment/cloud/
-ansible-playbook create-databases.yml                              \
-    --extra-vars cluster=$cluster                                  \
-    --inventory  ../../concent-deployment-values/ansible_inventory \
-    --user       $user
-
-ansible-playbook drop-databases.yml                                \
-    --extra-vars cluster=$cluster                                  \
-    --inventory  ../../concent-deployment-values/ansible_inventory \
-    --user       $user
-```
-
 ### Migrate or reset the database
 
 Control and storage clusters have separate databases that need to be migrated individually.
@@ -205,6 +188,43 @@ ansible-playbook migrate-db.yml                                    \
     --inventory  ../../concent-deployment-values/ansible_inventory \
     --user       $user
 ```
+
+## Cloud Management
+
+### Create or delete the database
+This is a separate step that require access to the whole Google Cloud project to modify CloudSQL database.
+In normal scenario, we don't needed to create or delete database. Normal cluster deployment only involves a reset or a migration.
+
+```bash
+cd concent-deployment/cloud/
+ansible-playbook create-databases.yml                              \
+    --extra-vars cluster=$cluster                                  \
+    --inventory  ../../concent-deployment-values/ansible_inventory \
+    --user       $user
+
+ansible-playbook drop-databases.yml                                \
+    --extra-vars cluster=$cluster                                  \
+    --inventory  ../../concent-deployment-values/ansible_inventory \
+    --user       $user
+```
+
+### Deploy or delete the secrets
+This is a step that allows to modify kubernetes secrets.
+In normal scenario, we don't needed to use them, only when secrets are updated or clear all component on the cluster.
+
+```bash
+cd concent-deployment/cloud/
+ansible-playbook cluster-deploy-secrets.yml                        \
+    --extra-vars cluster=$cluster                                  \
+    --inventory  ../../concent-deployment-values/ansible_inventory \
+    --user       $user
+
+ansible-playbook cluster-remove-secrets.yml                        \
+    --extra-vars cluster=$cluster                                  \
+    --inventory  ../../concent-deployment-values/ansible_inventory \
+    --user       $user
+```
+
 
 ### Building nginx-storage locally
 

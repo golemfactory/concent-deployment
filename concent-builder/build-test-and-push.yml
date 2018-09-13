@@ -44,13 +44,6 @@
             params:
               IMAGE_PREFIX:       "{{ image_prefix }}"
 
-        - name: Build secrets
-          make:
-            chdir: "{{ build_dir }}/concent-deployment/secrets"
-            params:
-              CONCENT_SECRET_DIR: "{{ data_dir }}/concent-secrets/{{ cluster }}"
-              CLUSTER:            "{{ cluster }}"
-
         - name: Build cluster configuration
           make:
             chdir: "{{ build_dir }}/concent-deployment/kubernetes"
