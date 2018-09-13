@@ -1,4 +1,5 @@
 ### NEXT
+- Separated secret deployment from cluster deployment (#204).
 - The concent-builder server now only uses python 3 (#249).
 - Separated cloud management from cluster deployment (#226).
 - Added possibility to use an external Signing Service (#246).
