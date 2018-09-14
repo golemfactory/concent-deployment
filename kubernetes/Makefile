@@ -95,8 +95,8 @@ build/%-database-configuration.yml:
 	echo "database_name:          \"{{ $*_database_name }}\"" >> "$@"
 	echo "database_user:          \"{{ $*_database_user }}\"" >> "$@"
 	echo "database_host:          \"{{ $*_database_host }}\"" >> "$@"
-	if [[ '$*' == 'control' ]]; then \
-	    echo "initialize_django_admin: true" >> "$@"; \
+	if [ '$*' = 'control' ]; then                      \
+	    echo "initialize_django_admin: true" >> "$@";  \
 	fi
 
 build/image-version.yml:
