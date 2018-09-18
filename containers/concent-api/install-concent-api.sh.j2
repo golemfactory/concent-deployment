@@ -6,5 +6,8 @@ virtualenv_dir=/srv/http/virtualenv
 virtualenv --python "python{{ python_version }}" "$virtualenv_dir"
 source "$virtualenv_dir/bin/activate"
 python -m pip install --upgrade pip
-python -m pip install --requirement "/srv/http/concent_api/requirements.lock"
-python -m pip install gunicorn=="{{ gunicorn_version }}"
+python -m pip install --no-cache-dir --requirement "/srv/http/concent_api/requirements.lock"
+python -m pip install --no-cache-dir gunicorn=="{{ gunicorn_version }}"
+
+# Clean up
+rm -rf ~/.cache/pip/*
