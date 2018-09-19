@@ -5,6 +5,7 @@ COPY install-dependencies.sh        /tmp/
 RUN  /tmp/install-dependencies.sh
 
 COPY requirements.lock              /srv/http/concent_api/
+COPY middleman_protocol             /srv/http/middleman_protocol/
 COPY install-concent-api.sh         /tmp/
 RUN  /tmp/install-concent-api.sh
 ADD concent-api.tar                 /srv/http/

@@ -71,11 +71,11 @@ postgresql: build/ $(POSTGRESQL_SOURCE)
 	docker build --tag $(IMAGE_PREFIX)postgresql:$(IMAGE_VERSION) build/postgresql/
 	docker tag $(IMAGE_PREFIX)postgresql:$(IMAGE_VERSION) $(IMAGE_PREFIX)postgresql:latest
 
-concent-api: build/ $(CONCENT_API_SOURCE) build/concent-api/requirements.lock build/concent-api/testing.pref build/repositories/concent
+concent-api: build/ $(CONCENT_API_SOURCE) build/concent-api/requirements.lock build/concent-api/testing.pref build/repositories/concent build/concent-api/middleman_protocol/
 	docker build --tag $(IMAGE_PREFIX)concent-api:$(IMAGE_VERSION) build/concent-api/
 	docker tag $(IMAGE_PREFIX)concent-api:$(IMAGE_VERSION) $(IMAGE_PREFIX)concent-api:latest
 
-verifier: build/ $(VERIFIER_SOURCE) build/repositories/golem/ build/verifier/golem/scripts/ build/verifier/golem/imgverifier-requirements.txt
+verifier: build/ $(VERIFIER_SOURCE) build/repositories/golem/ build/verifier/golem/scripts/ build/verifier/golem/imgverifier-requirements.txt build/verifier/middleman_protocol/
 	docker build --tag $(IMAGE_PREFIX)verifier:$(IMAGE_VERSION) build/verifier/
 	docker tag $(IMAGE_PREFIX)verifier:$(IMAGE_VERSION) $(IMAGE_PREFIX)verifier:latest
 
@@ -151,6 +151,9 @@ build/repositories/concent: build/package-builder/clone-or-update.sh /var/concen
 
 build/repositories/golem/: build/package-builder/clone-or-update.sh /var/concent-data/golem
 	build/package-builder/clone-or-update.sh  "golem" "$@"
+
+build/%/middleman_protocol/: build/repositories/concent
+	cp --recursive "$</middleman_protocol/." "$@"
 
 build/:
 	mkdir --parents "$@"
