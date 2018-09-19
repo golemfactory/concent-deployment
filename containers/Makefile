@@ -71,11 +71,11 @@ postgresql: build/ $(POSTGRESQL_SOURCE)
 	docker build --tag $(IMAGE_PREFIX)postgresql:$(IMAGE_VERSION) build/postgresql/
 	docker tag $(IMAGE_PREFIX)postgresql:$(IMAGE_VERSION) $(IMAGE_PREFIX)postgresql:latest
 
-concent-api: build/ $(CONCENT_API_SOURCE) build/concent-api/requirements.lock build/concent-api/testing.pref build/repositories/concent/
+concent-api: build/ $(CONCENT_API_SOURCE) build/concent-api/requirements.lock build/concent-api/testing.pref build/repositories/concent build/concent-api/middleman_protocol/
 	docker build --tag $(IMAGE_PREFIX)concent-api:$(IMAGE_VERSION) build/concent-api/
 	docker tag $(IMAGE_PREFIX)concent-api:$(IMAGE_VERSION) $(IMAGE_PREFIX)concent-api:latest
 
-verifier: build/ $(VERIFIER_SOURCE) build/repositories/golem/ build/verifier/golem/scripts/ build/verifier/golem/imgverifier-requirements.txt
+verifier: build/ $(VERIFIER_SOURCE) build/repositories/golem/ build/verifier/golem/scripts/ build/verifier/golem/imgverifier-requirements.txt build/verifier/middleman_protocol/
 	docker build --tag $(IMAGE_PREFIX)verifier:$(IMAGE_VERSION) build/verifier/
 	docker tag $(IMAGE_PREFIX)verifier:$(IMAGE_VERSION) $(IMAGE_PREFIX)verifier:latest
 
@@ -110,12 +110,12 @@ build/concent-api/requirements.lock: build/concent-api/concent-api.tar
 build/concent-api/testing.pref: ../concent-builder/files/testing.pref
 	cp "$<" "$@"
 
-build/concent-api/concent-api.tar: build/repositories/concent/  build/virtualenv/
+build/concent-api/concent-api.tar: build/repositories/concent  build/virtualenv/
 	mkdir --parents $(dir $@)
 	package-builder/build-concent-api.sh "build/repositories/concent/" "build/concent-api"
 
 
-build/nginx-proxy/concent-api-assets.tar: build/repositories/concent/ build/virtualenv/ build/package-builder/build-concent-api-assets.sh
+build/nginx-proxy/concent-api-assets.tar: build/repositories/concent build/virtualenv/ build/package-builder/build-concent-api-assets.sh
 	mkdir --parents "$(dir $@)"
 	build/package-builder/build-concent-api-assets.sh \
 		"build/repositories/concent/"                 \
@@ -123,7 +123,7 @@ build/nginx-proxy/concent-api-assets.tar: build/repositories/concent/ build/virt
 		"$(abspath build)"                            \
 		"$(dir $@)"
 
-build/nginx-proxy/concent-api-docs.tar: build/repositories/concent/ build/package-builder/build-concent-api-docs.sh
+build/nginx-proxy/concent-api-docs.tar: build/repositories/concent build/package-builder/build-concent-api-docs.sh
 	mkdir --parents $(dir $@)
 	build/package-builder/build-concent-api-docs.sh   \
 		"build/repositories/concent/"                 \
@@ -146,11 +146,14 @@ $(NGINX_STORAGE_SOURCE_FROM_NGINX_PROXY): build/nginx-storage/%: build/nginx-pro
 build/verifier/golem/imgverifier-requirements.txt: build/repositories/golem/apps/rendering/resources/images/requirements.txt
 	cp "$<" "$@"
 
-build/repositories/concent/: build/package-builder/clone-or-update.sh /var/concent-data/concent
+build/repositories/concent: build/package-builder/clone-or-update.sh /var/concent-data/concent
 	build/package-builder/clone-or-update.sh "concent" "$@"
 
 build/repositories/golem/: build/package-builder/clone-or-update.sh /var/concent-data/golem
 	build/package-builder/clone-or-update.sh  "golem" "$@"
+
+build/%/middleman_protocol/: build/repositories/concent
+	cp --recursive "$</middleman_protocol/." "$@"
 
 build/:
 	mkdir --parents "$@"
