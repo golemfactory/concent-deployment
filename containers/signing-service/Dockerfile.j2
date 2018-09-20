@@ -1,0 +1,21 @@
+FROM debian:{{ debian_version }}
+
+COPY create-user.sh                     /tmp/
+RUN  /tmp/create-user.sh
+
+COPY signing-service/RELEASE-VERSION    /usr/lib/signing_service/RELEASE-VERSION
+COPY signing-service/requirements.lock  /usr/lib/signing_service/signing-service/
+COPY testing.pref                       /etc/apt/preferences.d/
+COPY build-dependencies.txt             /tmp/
+COPY install-dependencies.sh            /tmp/
+COPY install-signing-service.sh         /tmp/
+COPY clean-container.sh                 /tmp/
+COPY middleman_protocol/                /usr/lib/signing_service/middleman_protocol/
+COPY signing-service/RELEASE-VERSION    /usr/lib/signing_service/middleman_protocol/RELEASE-VERSION
+RUN  /tmp/install-signing-service.sh
+
+USER signing-service
+COPY signing-service/                   /usr/lib/signing_service/signing-service/
+COPY run-signing-service.sh             /usr/local/bin/
+
+ENTRYPOINT ["/usr/local/bin/run-signing-service.sh"]

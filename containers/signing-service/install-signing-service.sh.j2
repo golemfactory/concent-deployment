@@ -1,0 +1,15 @@
+#!/bin/bash -e
+
+# Install signing-service dependencies
+${BASH_SOURCE%/*}/install-dependencies.sh
+
+virtualenv_dir=/usr/lib/signing_service/virtualenv
+# Create virtualenv and Django app's dependencies
+virtualenv --python "python{{ python_version }}" "$virtualenv_dir"
+source "$virtualenv_dir/bin/activate"
+cd /usr/lib/signing_service/signing-service/
+python -m pip install --upgrade pip
+python -m pip install --requirement requirements.lock
+
+# Clean container and temporary packages needed to build requirements
+${BASH_SOURCE%/*}/clean-container.sh

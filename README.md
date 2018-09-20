@@ -241,3 +241,90 @@ docker run                         \
 curl http://localhost:8001/
 ```
 
+## Concent Signing Service
+In addition to Concent itself, this repository contains files necessary to build the Concent Signing Service.
+`Makefile` builds a Docker container but also produces a source package that includes `Dockerfile` and all source files needed to build it.
+The package can be used to build the container without having to set up `concent-deployment`.
+
+### Building the Signing Service package
+This is only needed if you want to build the package yourself.
+If you have received the package and only want to build and run the docker container, you can skip this section.
+
+1. Install dependencies needed to build containers and render configuration files from templates.
+
+    Example for Ubuntu:
+
+    ``` bash
+    apt-get update
+    apt-get install make python3 python-pip python3-yaml
+    apt-get install docker.io
+    pip install yasha
+    ```
+
+2. Ensure that you can start docker containers.
+    It's recommended to add your user to the `docker` group (make sure that this group exists) so that you don't have to do this as root.
+    Note that the change will not take effect until you log out of the current shell session.
+
+    Example for Ubuntu:
+
+    ``` bash
+    sudo groupadd docker
+    sudo usermod --all --groups docker <your user name>
+    ```
+
+3. Run make
+
+    ```bash
+    cd containers/
+    make concent-signing-service-package
+    ```
+
+### Building the Signing Service from the package
+1. Extract the package
+2. Go to `signing_service/` directory inside the package and build the Docker image
+
+    ``` bash
+    cd signing_service/
+    docker build --tag concent-signing-service:$(cat signing-service/RELEASE-VERSION) .
+    docker tag                                                         \
+        concent-signing-service:$(cat signing-service/RELEASE-VERSION) \
+        concent-signing-service:latest
+    ```
+
+### Running the Signing Service
+To run it in a docker container with access to your local network interface, run:
+
+```bash
+docker run                                                  \
+    --detach                                                \
+    --env         ETHEREUM_PRIVATE_KEY                      \
+    --env         SIGNING_SERVICE_PRIVATE_KEY               \
+    --env         SENTRY_DSN                                \
+    --network     host                                      \
+    --hostname    signing-service                           \
+    --name        signing-service                           \
+    --restart     on-failure                                \
+    concent-signing-service                                 \
+        concent.golem.network                               \
+        85cZzVjahnRpUBwm0zlNnqTdYom1LF1P1WNShLg17cmhN2Us    \
+        --concent-cluster-port                  9055        \
+        --ethereum-private-key-from-env                     \
+        --signing-service-private-key-from-env              \
+        --sentry-dsn-from-env                               \
+        --sentry-environment                    mainnet
+```
+
+This assumes that:
+- The service can connect to a Concent cluster at `concent.golem.network:9055`.
+- `85cZzVjahnRpUBwm0zlNnqTdYom1LF1P1WNShLg17cmhN2Us` is Concent's public key encoded in base64.
+- There's a shell variable called `ETHEREUM_RPIVATE_KEY` and it contains base64-encoded private key of the Concent contract.
+- There's a shell variable called `SIGNING_SERVICE_PRIVATE_KEY` and it contains base64-encoded private key for signing Golem Messages created by the Signing Service.
+- There's a shell variable called `SENTRY_DSN` that contains the secret ID that allows submitting crash report to a [Sentry](https://sentry.io) project.
+    The one given above is just an example.
+    If so, you need to provide a valid DSN for the project that should receive the reports.
+    Otherwise just skip the `--sentry-dsn-from-env` parameter and the `SENTRY_DSN` variable.
+- `mainnet` is the name of the Sentry environment that should be included in error reports.
+
+Note that the service will crash on errors.
+The host system is responsible for restarting it in that case.
+If it's running in a Docker container you can easily achieve this with the `--restart on-failure` option.
