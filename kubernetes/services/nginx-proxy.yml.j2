@@ -26,8 +26,11 @@ spec:
               exec:
                 command: ["/usr/sbin/nginx", "-s", "quit"]
           volumeMounts:
-            - mountPath:  /etc/nginx/conf.d/
+            - mountPath:  /etc/nginx/configs/
               name:       nginx-configs
+            - mountPath:  /etc/nginx/nginx.conf
+              subPath:    nginx.conf
+              name:       nginx-settings
               readOnly:   true
             - mountPath:  /etc/ssl/secrets/
               name:       nginx-proxy-secrets
@@ -36,6 +39,9 @@ spec:
         -  name: nginx-configs
            configMap:
              name: nginx-configs
+        -  name: nginx-settings
+           configMap:
+             name: nginx-settings
         - name: nginx-proxy-secrets
           secret:
             secretName:  nginx-proxy-secrets
@@ -57,5 +63,9 @@ spec:
       protocol:   TCP
       port:       443
       targetPort: 443
+    - name:       middleman-external-port
+      protocol:   TCP
+      port:       9055
+      targetPort: 9055
   selector:
     run: nginx-proxy
