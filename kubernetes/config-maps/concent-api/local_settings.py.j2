@@ -18,7 +18,9 @@ DEBUG_INFO_IN_ERROR_RESPONSES = {{ allow_debug_info_in_error_responses }}
 
 LOGGING['handlers']['console']['level'] = DEBUG
 
+{% if signing_service_on_the_cluster %}
 USE_SIGNING_SERVICE = True
+{% endif %}
 
 DATABASES['control']['NAME']     = '{{ control_database_name }}'
 DATABASES['control']['USER']     = '{{ control_database_user }}'
