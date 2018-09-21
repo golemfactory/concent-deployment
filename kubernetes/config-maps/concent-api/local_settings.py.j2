@@ -10,13 +10,15 @@ from ..secrets.secrets import (
     CONTROL_DATABASE_PASSWORD,
     CONCENT_PUBLIC_KEY,
     CONCENT_PRIVATE_KEY,
-    CONCENT_ETHEREUM_PRIVATE_KEY,
     SENTRY_DATA_SOURCE_NAME,
+    SIGNING_SERVICE_PUBLIC_KEY,
 )
 
 DEBUG_INFO_IN_ERROR_RESPONSES = {{ allow_debug_info_in_error_responses }}
 
 LOGGING['handlers']['console']['level'] = DEBUG
+
+USE_SIGNING_SERVICE = True
 
 DATABASES['control']['NAME']     = '{{ control_database_name }}'
 DATABASES['control']['USER']     = '{{ control_database_user }}'
