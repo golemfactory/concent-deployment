@@ -59,6 +59,9 @@ PAYMENT_BACKEND = 'core.payments.backends.sci_backend'
 GETH_ADDRESS = 'http://geth.default.svc.cluster.local:8545'
 CONCENT_ETHEREUM_PUBLIC_KEY = '{{ concent_ethereum_public_key }}'
 
+MIDDLEMAN_ADDRESS = 'middleman.default.svc.cluster.local'
+MIDDLEMAN_PORT = 9054
+
 CONCENT_FEATURES = ["concent-api", "admin-panel"]
 
 {% if storage_cluster_address == cluster_address and not nginx_proxy_allow_http or storage_cluster_address != cluster_address and not nginx_storage_allow_http %}

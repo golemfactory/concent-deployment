@@ -8,6 +8,7 @@ kubectl create --record --filename services/verifier.yml
 {% endif %}
 kubectl create --record --filename services/geth.yml
 kubectl create --record --filename services/rabbitmq.yml
+kubectl create --record --filename services/middleman.yml
 kubectl create --record --filename services/concent-api.yml
 {% if deploy_verification %}
 kubectl create --record --filename services/concent-api-worker.yml
@@ -21,6 +22,7 @@ kubectl create --record --filename services/nginx-storage.yml
 kubectl create --record --filename services/nginx-proxy.yml
 ./wait-until-ready.sh geth                 60
 ./wait-until-ready.sh rabbitmq             60
+./wait-until-ready.sh middleman            30
 ./wait-until-ready.sh concent-api          30
 {% if deploy_verification %}
 ./wait-until-ready.sh concent-api-worker   30
