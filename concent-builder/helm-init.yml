@@ -22,7 +22,7 @@
               --project "{{ gke.project }}"                  \
               --zone    "{{ gke.zone }}"
 
-        - name:    Initialized helm and install tiller
+        - name:    Initialize helm and install tiller
           command: helm init                                                       \
               --service-account tiller                                             \
               --tiller-image gcr.io/kubernetes-helm/tiller:v"{{ tiller_version }}" \
