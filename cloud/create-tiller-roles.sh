@@ -1,4 +1,4 @@
-#! / bin/bash -e
+#! /bin/bash -e
 
 # Confirm executing script
 read -p "Make sure your kubectl is set in properly environment(cluster)[y/n]" -n 1 -r

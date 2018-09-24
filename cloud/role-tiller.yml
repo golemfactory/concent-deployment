@@ -2,17 +2,17 @@
 kind: Role
 apiVersion: rbac.authorization.k8s.io/v1beta1
 metadata:
-  name: default-namespace-manager
+  name:      default-namespace-manager
   namespace: default
 rules:
 - apiGroups: ["", "extensions", "apps"]
   resources: ["*"]
-  verbs: ["*"]
+  verbs:     ["*"]
 ---
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1beta1
 metadata:
-  name: default-namespace-manager-to-tiller
+  name:      default-namespace-manager-to-tiller
   namespace: default
 subjects:
 - kind: ServiceAccount
@@ -28,16 +28,16 @@ kind: Role
 apiVersion: rbac.authorization.k8s.io/v1beta1
 metadata:
   namespace: tiller
-  name: tiller-namespace-config-manager
+  name:      tiller-namespace-config-manager
 rules:
 - apiGroups: ["", "extensions", "apps"]
   resources: ["configmaps"]
-  verbs: ["*"]
+  verbs:     ["*"]
 ---
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1beta1
 metadata:
-  name: default-namespace-config-manager-to-tiller
+  name:      default-namespace-config-manager-to-tiller
   namespace: tiller
 subjects:
 - kind: ServiceAccount
