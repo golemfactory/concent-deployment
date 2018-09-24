@@ -15,13 +15,13 @@
               --zone    "{{ gke.zone }}"
 
         - name:     Check if charts exist
-          shell:    '[ -z "$(helm list --short --tiller-namespace tiller)" ] && echo "Empty"'
+          command:  helm list --short --tiller-namespace tiller
           register: result
 
         - name:   Uninstall charts
           shell:  helm delete $(helm list --short --tiller-namespace tiller)  \
                --tiller-namespace tiller
-          when:   result.stdout != "Empty"
+          when:   result.stdout != ""
 
         - name:    Uninstall tiller
           command: helm reset             \
