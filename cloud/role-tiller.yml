@@ -2,7 +2,7 @@
 kind: Role
 apiVersion: rbac.authorization.k8s.io/v1beta1
 metadata:
-  name: tiller-manager
+  name: default-namespace-manager
   namespace: default
 rules:
 - apiGroups: ["", "extensions", "apps"]
@@ -20,7 +20,7 @@ subjects:
   namespace: tiller
 roleRef:
   kind: Role
-  name: tiller-manager
+  name: default-namespace-manager
   apiGroup: rbac.authorization.k8s.io
 ---
 # Tiller permission to configmaps in namespace when it is deploying, to allow storing release information
@@ -28,7 +28,7 @@ kind: Role
 apiVersion: rbac.authorization.k8s.io/v1beta1
 metadata:
   namespace: tiller
-  name: tiller-manager
+  name: tiller-namespace-config-manager
 rules:
 - apiGroups: ["", "extensions", "apps"]
   resources: ["configmaps"]
@@ -45,5 +45,5 @@ subjects:
   namespace: tiller
 roleRef:
   kind: Role
-  name: tiller-manager
+  name: tiller-namespace-config-manager
   apiGroup: rbac.authorization.k8s.io
