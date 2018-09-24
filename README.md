@@ -39,8 +39,6 @@ In every scenario you need local copies of `concent-deployment` and `concent-dep
 git clone git@github.com:golemfactory/concent-deployment.git
 git clone git@github.com:golemfactory/concent-deployment-values.git
 
-ln --symbolic ../../concent-deployment-values/var.yml          concent-deployment/kubernetes/var.yml
-ln --symbolic ../../concent-deployment-values/var-$cluster.yml concent-deployment/kubernetes/var-$cluster.yml
 ```
 
 The above assumes that the `$cluster` shell variable is set to the name of the cluster you're deploying to and that `concent-deployment-values` contains the configuration for that cluster.

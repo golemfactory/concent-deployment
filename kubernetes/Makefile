@@ -54,6 +54,11 @@ ifndef CLUSTER
 endif
 $(info CLUSTER=$(CLUSTER))
 
+ifndef DEPLOYMENT_VALUES_DIR
+    DEPLOYMENT_VALUES_DIR := $(abspath .)
+endif
+$(info DEPLOYMENT_VALUES_DIR=$(DEPLOYMENT_VALUES_DIR))
+
 ifndef IMAGE_VERSION
     IMAGE_VERSION := $(shell git describe --always --abbrev=16)
 endif
@@ -87,12 +92,12 @@ build/vars-with-%-database-config.yml: build/%-database-configuration.yml build/
 		"build/vars-merged.yml"                    \
 		--output "$@"
 
-build/vars-merged.yml: var.yml var-$(CLUSTER).yml build/image-version.yml ../containers/versions.yml ../tools/merge-yaml.py
-	../tools/merge-yaml.py                     \
-		"$<"                                   \
-		"var-$(CLUSTER).yml"                   \
-		"build/image-version.yml"              \
-		../containers/versions.yml             \
+build/vars-merged.yml: $(DEPLOYMENT_VALUES_DIR)/var.yml $(DEPLOYMENT_VALUES_DIR)/var-$(CLUSTER).yml build/image-version.yml ../containers/versions.yml ../tools/merge-yaml.py
+	../tools/merge-yaml.py                                \
+		"$<"                                              \
+		"$(DEPLOYMENT_VALUES_DIR)/var-$(CLUSTER).yml"     \
+		"build/image-version.yml"                         \
+		../containers/versions.yml                        \
 		--output "$@"
 
 build/%-database-configuration.yml:
