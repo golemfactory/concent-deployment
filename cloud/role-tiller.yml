@@ -12,7 +12,7 @@ rules:
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1beta1
 metadata:
-  name: tiller-binding
+  name: default-namespace-manager-to-tiller
   namespace: default
 subjects:
 - kind: ServiceAccount
@@ -37,7 +37,7 @@ rules:
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1beta1
 metadata:
-  name: tiller-binding
+  name: default-namespace-config-manager-to-tiller
   namespace: tiller
 subjects:
 - kind: ServiceAccount
