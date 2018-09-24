@@ -1,4 +1,4 @@
-# Tiller permission to all resources in default namespace
+# Give tiller complete control over the default namespace
 kind: Role
 apiVersion: rbac.authorization.k8s.io/v1beta1
 metadata:
