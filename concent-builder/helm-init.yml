@@ -1,10 +1,3 @@
-# Before initialized helm you must create properly roles which is in `role-tiller.yml` file
-# and create tiller namespace by using:
-#kubectl create namespace tiller
-#kubectl create serviceaccount tiller --namespace tiller
-# To create role, you must add to your user cluster-admin role by using:
-#kubectl create clusterrolebinding user-admin-binding --clusterrole=cluster-admin --user=$(gcloud config get-value account)
-#kubectl create -f role-tiller.yml
 - hosts:
     - concent-builder
   vars_files:

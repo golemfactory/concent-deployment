@@ -227,6 +227,21 @@ ansible-playbook cluster-remove-secrets.yml                        \
 
 ## Deployment by using helm package(in_progress)
 
+Before initialized helm you must create properly roles which is in `role-tiller.yml` file
+and create tiller namespace by using:
+
+```bash
+kubectl create namespace tiller
+kubectl create serviceaccount tiller --namespace tiller
+```
+
+To create role, you must add to your user cluster-admin role by using:
+
+```bash
+kubectl create clusterrolebinding user-admin-binding --clusterrole=cluster-admin --user=$(gcloud config get-value account)
+kubectl create -f role-tiller.yml
+```
+
 ### Installation and initialization of helm package
 
 ``` bash
