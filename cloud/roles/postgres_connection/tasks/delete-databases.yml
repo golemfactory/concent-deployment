@@ -6,7 +6,7 @@
     name:            "{{ vars[cluster_type + '_database_name'] }}"
     owner:           postgres
 
-- name: Delete the "{{ vars[cluster_type + '_database_user'] }}" role for manage "{{ vars[cluster_type + '_database_name'] }}" database
+- name: Delete the "{{ vars[cluster_type + '_database_user'] }}" role
   postgresql_user:
     login_host:      "{{ control_database_host }}"
     login_password:  "{{ control_db_admin_password | b64decode }}"
