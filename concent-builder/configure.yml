@@ -73,7 +73,7 @@
             - libpq-dev
             - gcc
             - python3-yaml
-            - postgresql-9.6
+            - postgresql-{{ postgres_version }}
             - python-psycopg2
 
         - name:    Install dependencies from testing
