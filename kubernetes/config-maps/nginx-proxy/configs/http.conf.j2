@@ -31,6 +31,9 @@ server {
     # Add Diffie-Hellman group
     ssl_dhparam /etc/ssl/secrets/nginx-proxy-dhparam.pem;
 
+    # Disable emitting nginx version on error pages and in the “Server” response header field.
+    server_tokens off;
+
     gzip            on;
     gzip_min_length 1000;
     gzip_proxied    expired no-cache no-store private auth;
