@@ -9,7 +9,7 @@ kubectl create configmap file-transfer-config                                   
 
 kubectl create configmap nginx-configs                              \
     --from-file=config-maps/nginx-proxy/configs                     \
-    --from-file=ssl.conf=config-maps/nginx/ssl.conf
+    --from-file=config-maps/nginx
 
 kubectl create configmap nginx-settings                              \
     --from-file=config-maps/nginx-proxy/nginx.conf                   \

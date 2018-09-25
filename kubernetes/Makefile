@@ -24,6 +24,7 @@ CLUSTER_SCRIPTS :=                                            \
     build/docker_testing.py                                   \
     build/push-docker-images.sh                               \
     build/config-maps/nginx/ssl.conf                          \
+    build/config-maps/nginx/global.conf                       \
     build/config-maps/nginx-proxy/configs/http.conf           \
     build/config-maps/nginx-proxy/configs/tcp.conf            \
     build/config-maps/nginx-proxy/nginx.conf                  \
