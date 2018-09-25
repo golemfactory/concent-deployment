@@ -1,7 +1,7 @@
 - name: Delete the "{{ vars[cluster_type + '_database_name'] }}" database
   postgresql_db:
     login_host:      "{{ control_database_host }}"
-    login_password:  "{{ control_db_admin_password | b64decode }}"
+    login_password:  "{{ vars[cluster_type + '_db_admin_password'] | b64decode }}"
     state:           absent
     name:            "{{ vars[cluster_type + '_database_name'] }}"
     owner:           postgres
@@ -9,7 +9,7 @@
 - name: Delete the "{{ vars[cluster_type + '_database_user'] }}" role
   postgresql_user:
     login_host:      "{{ control_database_host }}"
-    login_password:  "{{ control_db_admin_password | b64decode }}"
+    login_password:  "{{ vars[cluster_type + '_db_admin_password'] | b64decode }}"
     state:           absent
     name:            "{{ vars[cluster_type + '_database_user'] }}"
     password:        "{{ vars[cluster_type + '_db_user_password'] | b64decode }}"
