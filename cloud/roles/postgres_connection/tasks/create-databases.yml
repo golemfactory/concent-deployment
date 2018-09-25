@@ -23,7 +23,7 @@
     objs:            "{{ vars[cluster_type + '_database_name'] }}"
     privs:           ALL
 
-- name: Add postgres to role "{{ vars[cluster_type + '_database_user'] }}"
+- name: Grant postgres all the privileges of the "{{ vars[cluster_type + '_database_user'] }}" role
   postgresql_privs:
     login_host:      "{{ control_database_host }}"
     login_password:  "{{ control_db_admin_password | b64decode }}"
