@@ -13,7 +13,7 @@
     name:            "{{ vars[cluster_type + '_database_name'] }}"
     owner:           postgres
 
-- name: Add privileges for the "{{ vars[cluster_type + '_database_user'] }}" role to the "{{ vars[cluster_type + '_database_name'] }}" database
+- name: Grant "{{ vars[ cluster_type + '_database_user'] }}" role all privileges for the "{{ vars[ cluster_type + '_database_name'] }}" database
   postgresql_privs:
     login_host:      "{{ control_database_host }}"
     login_password:  "{{ control_db_admin_password | b64decode }}"
