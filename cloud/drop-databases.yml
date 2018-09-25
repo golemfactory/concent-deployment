@@ -9,11 +9,5 @@
   vars:
     choose_database_option: delete
   roles:
-    - {
-        role: postgres_connection,
-        cluster_type: control,
-      }
-    - {
-        role: postgres_connection,
-        cluster_type: storage,
-      }
+    - { role: postgres_connection, cluster_type: control }
+    - { role: postgres_connection, cluster_type: storage }
