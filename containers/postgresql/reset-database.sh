@@ -30,7 +30,7 @@ fi
 
 schema_names_stripped=${schema_names// }
 
-# Create an array containing lines from $schema_count_stripped.
+# Create an array containing lines from $schema_names_stripped.
 readarray -t schema_names  <<< "$schema_names_stripped"
 
 # Create variable which is contain sql commands for dropping all schemas.
