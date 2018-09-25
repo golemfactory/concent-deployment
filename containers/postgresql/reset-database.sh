@@ -21,10 +21,9 @@ schema_names="$(
         --tuples-only                    \
         --command "$database_query"      \
 )"
-result=$?
+query_success=$?
 
-if [[ $result != 0 ]]; then
-    # Check if query has failed
+if [[ $query_success != 0 ]]; then
     exit 1
 fi
 
