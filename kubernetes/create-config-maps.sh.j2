@@ -1,7 +1,7 @@
 #!/bin/bash -e
 
-kubectl create configmap nginx-storage-configs                                              \
-    --from-file=ssl.conf=config-maps/nginx/ssl.conf                     \
+kubectl create configmap nginx-storage-configs                          \
+    --from-file=config-maps/nginx                                       \
     --from-file=default.conf=config-maps/nginx-storage/default.conf                         \
 
 kubectl create configmap file-transfer-config                                               \
