@@ -14,12 +14,12 @@ database_query="SELECT DISTINCT schema_name
                 WHERE schema_owner = '"$db_user"';"
 
 schema_names="$(
-        psql                                 \
-            "$db_name"                       \
-            --host "$db_host"                \
-            --username $db_user              \
-            --tuples-only                    \
-            --command "$database_query"      \
+    psql                                 \
+        "$db_name"                       \
+        --host "$db_host"                \
+        --username $db_user              \
+        --tuples-only                    \
+        --command "$database_query"      \
 )"
 result=$?
 
