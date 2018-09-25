@@ -1,7 +1,7 @@
 - name: Create the "{{ vars[cluster_type + '_database_user'] }}" role
   postgresql_user:
     login_host:      "{{ control_database_host }}"
-    login_password:  "{{ control_db_admin_password | b64decode }}"
+    login_password:  "{{ vars[cluster_type + '_db_admin_password'] | b64decode }}"
     name:            "{{ vars[cluster_type + '_database_user'] }}"
     password:        "{{ vars[cluster_type + '_db_user_password'] | b64decode }}"
     role_attr_flags: CREATEROLE
@@ -9,14 +9,14 @@
 - name: Create the "{{ vars[cluster_type + '_database_name'] }}" database
   postgresql_db:
     login_host:      "{{ control_database_host }}"
-    login_password:  "{{ control_db_admin_password | b64decode }}"
+    login_password:  "{{ vars[cluster_type + '_db_admin_password'] | b64decode }}"
     name:            "{{ vars[cluster_type + '_database_name'] }}"
     owner:           postgres
 
-- name: Grant "{{ vars[ cluster_type + '_database_user'] }}" role all privileges for the "{{ vars[ cluster_type + '_database_name'] }}" database
+- name: Grant "{{ vars[cluster_type + '_database_user'] }}" role all privileges for the "{{ vars[ cluster_type + '_database_name'] }}" database
   postgresql_privs:
     login_host:      "{{ control_database_host }}"
-    login_password:  "{{ control_db_admin_password | b64decode }}"
+    login_password:  "{{ vars[cluster_type + '_db_admin_password'] | b64decode }}"
     db:              "{{ vars[cluster_type + '_database_name'] }}"
     role:            "{{ vars[cluster_type + '_database_user'] }}"
     type:            database
@@ -26,7 +26,7 @@
 - name: Grant postgres all the privileges of the "{{ vars[cluster_type + '_database_user'] }}" role
   postgresql_privs:
     login_host:      "{{ control_database_host }}"
-    login_password:  "{{ control_db_admin_password | b64decode }}"
+    login_password:  "{{ vars[cluster_type + '_db_admin_password'] | b64decode }}"
     db:              "{{ vars[cluster_type + '_database_name'] }}"
     type:            group
     objs:            "{{ vars[cluster_type + '_database_user'] }}"
@@ -36,7 +36,7 @@
   postgresql_schema:
     login_user:      postgres
     login_host:      "{{ control_database_host }}"
-    login_password:  "{{ control_db_admin_password | b64decode }}"
+    login_password:  "{{ vars[cluster_type + '_db_admin_password'] | b64decode }}"
     database:        "{{ vars[cluster_type + '_database_name'] }}"
     name:            public
     owner:           "{{ vars[cluster_type + '_database_user'] }}"
