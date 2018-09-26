@@ -47,7 +47,7 @@ build/:
 build/%: %
 	cp --archive --parents "$<" build/
 
-build/vars-merged.yml: $(DEPLOYMENT_VAR_DIR)/var-$(CLUSTER).yml $(CONCENT_SECRET_DIR)/var-secret.yml ../tools/merge-yaml.py
+build/vars-merged.yml: $(DEPLOYMENT_VAR_DIR)/var-$(CLUSTER).yml $(CONCENT_SECRET_DIR)/cluster-secrets.yml ../tools/merge-yaml.py
 	../tools/merge-yaml.py           \
 		"$(word 1,$^)"               \
 		"$(word 2,$^)"               \
