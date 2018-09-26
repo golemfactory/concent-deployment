@@ -3,7 +3,7 @@ from base64 import b64decode
 class NotAString(Exception):
     pass
 
-class NotSupportedDataType(Exception):
+class UnsupportedDataType(Exception):
     pass
 
 def filter_b64decode(encoded_value, return_type = "string"):
@@ -17,4 +17,4 @@ def filter_b64decode(encoded_value, return_type = "string"):
     if return_type == "bytes":
         return b64decode(encoded_value, validate = True)
     else:
-        raise NotSupportedDataType
+        raise UnsupportedDataType
