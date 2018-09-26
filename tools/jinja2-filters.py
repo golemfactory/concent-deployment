@@ -10,9 +10,9 @@ def filter_b64decode(encoded_value, return_type = "string"):
     if not isinstance(encoded_value, str):
         raise NotAString
     if return_type == "string":
-        # The code above return exception:
-        # binascii.Error if encoded_value is not correct base64 data
-        # UnicodeDecodeError if you try decode bytes to utf-8 format
+        # If the input is invalid, decoding can result in the following exceptions:
+        # - binascii.Error     - if the input is not base64 encoded
+        # - UnicodeDecodeError - if the encoded value is not a valid UTF-8 string
         return b64decode(encoded_value).decode("utf-8")
     if return_type == "bytes":
         return b64decode(encoded_value)
