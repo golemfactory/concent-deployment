@@ -8,7 +8,7 @@ class UnsupportedDataType(Exception):
 
 def filter_b64decode(encoded_value, return_type = "string"):
     if not isinstance(encoded_value, str):
-        raise NotAString
+        raise NotAString("The encoded value does not a string")
     if return_type == "string":
         # If the input is invalid, decoding can result in the following exceptions:
         # - binascii.Error     - if the input is not base64 encoded
@@ -17,4 +17,4 @@ def filter_b64decode(encoded_value, return_type = "string"):
     if return_type == "bytes":
         return b64decode(encoded_value, validate = True)
     else:
-        raise UnsupportedDataType
+        raise UnsupportedDataType("The encoded value is an unsupported data type")
