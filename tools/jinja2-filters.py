@@ -16,4 +16,5 @@ def filter_b64decode(secret_value, data_type = "string"):
         return base64.b64decode(secret_value).decode("utf-8")
     if data_type == "bytes":
         return base64.b64decode(secret_value)
-    raise NotSupportedDataType
+    else:
+        raise NotSupportedDataType
