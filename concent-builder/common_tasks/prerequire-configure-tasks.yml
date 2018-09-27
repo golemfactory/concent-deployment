@@ -1,0 +1,29 @@
+- name:   Install required packages for apt_key and apt_repository
+  apt:    name={{ item }}
+  with_items:
+    - apt-transport-https
+    - ca-certificates
+    - curl
+
+- name:   Use pinning to ensure that packages from testing are installed only of stable packages are not available
+  copy:
+    src:  ../concent-builder/files/testing.pref
+    dest: /etc/apt/preferences.d/testing.pref
+
+- name:   Enable the testing repository
+  apt_repository:
+    repo:  "deb http://ftp.de.debian.org/debian testing main"
+    state: present
+
+- name:   Add Docker repository key
+  apt_key:
+    url:   https://apt.dockerproject.org/gpg
+    state: present
+
+- name:   Add Docker.io apt repository
+  apt_repository:
+    repo:  "deb https://apt.dockerproject.org/repo {{ ansible_distribution|lower }}-{{ ansible_distribution_release }} main"
+    state: present
+
+- name:   Install system updates for Debian
+  apt:  update_cache=yes

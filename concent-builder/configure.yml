@@ -8,45 +8,8 @@
     - become:      yes
       become_user: root
       block:
-        - name:    Install required packages for apt_key and apt_repository
-          apt:  name={{ item }}
-          with_items:
-            - apt-transport-https
-            - ca-certificates
-            - curl
-
-        - name:    Use pinning to ensure that packages from testing are installed only of stable packages are not available
-          copy:
-            src:  files/testing.pref
-            dest: /etc/apt/preferences.d/testing.pref
-
-        - name:    Enable the testing repository
-          apt_repository:
-            repo:  "deb http://ftp.de.debian.org/debian testing main"
-            state: present
-
-        - name:    Add Google SDK repository key
-          apt_key:
-            url:   https://packages.cloud.google.com/apt/doc/apt-key.gpg
-            state: present
-
-        - name:    Add Google Cloud SDK repository
-          apt_repository:
-            repo:  "deb http://packages.cloud.google.com/apt cloud-sdk-{{ ansible_distribution_release }} main"
-            state: present
-
-        - name:    Add Docker repository key
-          apt_key:
-            url:   https://apt.dockerproject.org/gpg
-            state: present
-
-        - name:    Add Docker.io apt repository
-          apt_repository:
-            repo:  "deb https://apt.dockerproject.org/repo {{ ansible_distribution|lower }}-{{ ansible_distribution_release }} main"
-            state: present
-
-        - name:    Install system updates for Debian
-          apt:  update_cache=yes
+        - name:   include common prerequire tasks from `prerequire-configure-tasks.yml` file
+          include_tasks: ../concent-builder/common_tasks/prerequire-configure-tasks.yml
 
         - name:    Install basic packages
           apt:     name={{ item }}
@@ -73,31 +36,8 @@
             - postgresql-{{ postgres_version }}
             - python3-psycopg2
 
-        - name:    Install dependencies from testing
-          apt:  name={{ item }} default_release=testing
-          with_items:
-            - python{{ python_version }}
-            - python3-pip
-            - python{{ python_version }}-dev
-            # This package is need to upgrade after install python3.6
-            # that requires a newer version of python3-apt.
-            # The ansible `apt` module use this package.
-            - python3-apt
-            - virtualenv
-
-        - name:     apt autoclean
-          command:  apt autoclean
-
-        - name:     apt autoremove
-          command:  apt autoremove --assume-yes
-
-        - name:    Install yasha in global python environment using pip
-          pip:
-            executable: pip3
-            name:       "{{ item }}"
-          with_items:
-            - yasha
-            - ansible
+        - name:   include common postrequire tasks from `postrequire-configure-tasks.yml` file
+          include_tasks: common_tasks/postrequire-configure-tasks.yml
 
         - name:    Create user that will be used for building stuff
           user:
