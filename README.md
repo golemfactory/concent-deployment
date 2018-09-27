@@ -152,7 +152,22 @@ Do this if you want to use the remote server for building and deploying.
 
     Where the `$user` shell variable contains the name of your shell account on the remote machine.
 
-All the instructions below assume that you're using the remote server.
+
+### Uploading secrets and access to deploy on specific gcloud environment
+This is a separate step that is needed on the new server and in the case of changes in secrets
+
+```bash
+cd concent-deployment/concent-builder/
+ansible-playbook install-secrets.yml                               \
+    --extra-vars cluster=$cluster                                  \
+    --inventory  ../../concent-deployment-values/ansible_inventory \
+    --user       $user
+```
+
+All the instructions below assume that you're using local playbooks to run build and deployment commands on the remote server.
+
+Note that if you're running the playbooks themselves from within that server too, you need to add `--connection=local` to your `ansible-playbook` calls.
+Otherwise Ansible will run its commands over SSH (rather than directly) using the public IP specified in `ansible_inventory`, which will likely fail because you're not supposed to have your private SSH key on the remote server you're connecting to.
 
 ### Building containers and cluster configuration
 Before following these instructions, please make sure that the Concent version you're building (i.e. `concent_version` in `containers/versions.yml`) is listed in `concent_versions` dictionary in `var-concent-<cluster>.yml` file.
@@ -162,7 +177,6 @@ Without providing configuration values there you won't be able to generate Kuber
 ``` bash
 cd concent-deployment/concent-builder/
 ansible-playbook install-repositories.yml                          \
-    --extra-vars cluster=$cluster                                  \
     --inventory  ../../concent-deployment-values/ansible_inventory \
     --user       $user
 
