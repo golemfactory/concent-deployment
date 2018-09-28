@@ -1,3 +1,19 @@
+### 0.9.0
+- Middleman is now reachable over TCP from outside the cluster (#212).
+- Added Signing Service container which can also be packaged for deployment outside of Concent (#189).
+- Signing Service can now be configured to run inside the cluster in test environments (#188).
+- Middleman is now a part of the cluster (#187).
+- Makefiles now accept the path to a directory containing cluster configuration (`vars.yml`) and don't require linking or copying it (#195).
+- Clearing pip cache in concent-api container (#239).
+- Secrets are now deployed separately and not a part of the deployment package (203).
+- Verification is now always enabled (#216).
+- Bugfix: Removed the assumption that nginx-storage always allows plain HTTP (#81).
+- Bugfix: nginx containers had the same, conflicting names in Kubernetes (#209).
+
+Compatibility:
+- Golem: 0.17.x
+- Concent: 0.9.x
+
 ### 0.8.0
 - All containers and packages updated to the latest versions (#164, #178, #107).
 - Changes for compatibility with latest Concent (#183).
