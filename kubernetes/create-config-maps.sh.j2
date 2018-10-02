@@ -19,13 +19,11 @@ kubectl create configmap concent-api-settings                                \
     --from-file=timing_settings.py=config-maps/concent/timing_settings.py    \
     --from-literal=__init__.py=
 
-{% if deploy_verification %}
 kubectl create configmap concent-api-worker-settings                                \
     --from-file=local_settings.py=config-maps/concent-api-worker/local_settings.py  \
     --from-file=email_settings.py=config-maps/concent/email_settings.py             \
     --from-file=timing_settings.py=config-maps/concent/timing_settings.py           \
     --from-literal=__init__.py=
-{% endif %}
 
 kubectl create configmap gatekeeper-settings                               \
     --from-file=local_settings.py=config-maps/gatekeeper/local_settings.py \
@@ -38,7 +36,6 @@ kubectl create configmap conductor-settings                                \
     --from-file=email_settings.py=config-maps/concent/email_settings.py    \
     --from-file=timing_settings.py=config-maps/concent/timing_settings.py  \
 
-{% if deploy_verification %}
 kubectl create configmap verifier-settings                                 \
     --from-file=local_settings.py=config-maps/verifier/local_settings.py   \
     --from-file=email_settings.py=config-maps/concent/email_settings.py    \
@@ -50,7 +47,6 @@ kubectl create configmap conductor-worker-settings                              
     --from-file=email_settings.py=config-maps/concent/email_settings.py           \
     --from-file=timing_settings.py=config-maps/concent/timing_settings.py         \
     --from-literal=__init__.py=
-{% endif %}
 
 {% if allow_signing_service_authentication %}
 kubectl create configmap middleman-settings                                \
