@@ -8,7 +8,9 @@ kubectl create --record --filename services/verifier.yml
 {% endif %}
 kubectl create --record --filename services/geth.yml
 kubectl create --record --filename services/rabbitmq.yml
+{% if allow_signing_service_authentication %}
 kubectl create --record --filename services/middleman.yml
+{% endif %}
 {% if signing_service_on_the_cluster %}
 kubectl create --record --filename services/signing-service.yml
 {% endif %}
@@ -25,7 +27,9 @@ kubectl create --record --filename services/nginx-storage.yml
 kubectl create --record --filename services/nginx-proxy.yml
 ./wait-until-ready.sh geth                 60
 ./wait-until-ready.sh rabbitmq             60
+{% if allow_signing_service_authentication %}
 ./wait-until-ready.sh middleman            30
+{% endif %}
 {% if signing_service_on_the_cluster %}
 ./wait-until-ready.sh signing-service      30
 {% endif %}

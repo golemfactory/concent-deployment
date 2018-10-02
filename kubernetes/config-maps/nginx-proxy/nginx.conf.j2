@@ -28,6 +28,7 @@ http {
 }
 
 
+{% if allow_signing_service_authentication %}
 # TCP connection
 stream {
 
@@ -39,3 +40,4 @@ stream {
 
     include /etc/nginx/configs/tcp.conf;
 }
+{% endif %}

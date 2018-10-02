@@ -11,16 +11,18 @@ from ..secrets.secrets import (
     CONCENT_PUBLIC_KEY,
     CONCENT_PRIVATE_KEY,
     SENTRY_DATA_SOURCE_NAME,
+    {% if allow_signing_service_authentication %}
     SIGNING_SERVICE_PUBLIC_KEY,
+    {% else %}
+    CONCENT_ETHEREUM_PRIVATE_KEY,
+    {% endif %}
 )
 
 DEBUG_INFO_IN_ERROR_RESPONSES = {{ allow_debug_info_in_error_responses }}
 
 LOGGING['handlers']['console']['level'] = DEBUG
 
-{% if signing_service_on_the_cluster %}
-USE_SIGNING_SERVICE = True
-{% endif %}
+USE_SIGNING_SERVICE = {{ True if allow_signing_service_authentication else False }}
 
 DATABASES['control']['NAME']     = '{{ control_database_name }}'
 DATABASES['control']['USER']     = '{{ control_database_user }}'
