@@ -1,0 +1,49 @@
+# Give tiller complete control over the default namespace
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  name:      default-namespace-manager
+  namespace: default
+rules:
+- apiGroups: ["", "extensions", "apps"]
+  resources: ["*"]
+  verbs:     ["*"]
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  name:      default-namespace-manager-to-tiller
+  namespace: default
+subjects:
+- kind: ServiceAccount
+  name: tiller
+  namespace: tiller
+roleRef:
+  kind: Role
+  name: default-namespace-manager
+  apiGroup: rbac.authorization.k8s.io
+---
+# Allow tiller to do anything with config maps in its namespace so that it can store release information
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  namespace: tiller
+  name:      tiller-namespace-config-manager
+rules:
+- apiGroups: ["", "extensions", "apps"]
+  resources: ["configmaps"]
+  verbs:     ["*"]
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  name:      default-namespace-config-manager-to-tiller
+  namespace: tiller
+subjects:
+- kind: ServiceAccount
+  name: tiller
+  namespace: tiller
+roleRef:
+  kind: Role
+  name: tiller-namespace-config-manager
+  apiGroup: rbac.authorization.k8s.io

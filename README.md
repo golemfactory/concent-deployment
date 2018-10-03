@@ -155,10 +155,20 @@ ansible-playbook build-test-and-push.yml                           \
     --user       $user
 ```
 
-### Creating the database
+### Deploying to the cluster
 
-`concent-api` and other Django apps will try to connect a CloudSQL database configured in their settings.
-Control and storage clusters have separate databases that need to be created and migrated individually.
+``` bash
+cd concent-deployment/concent-builder/
+ansible-playbook deploy.yml                                        \
+    --extra-vars cluster=$cluster                                  \
+    --inventory  ../../concent-deployment-values/ansible_inventory \
+    --user       $user
+```
+
+### Migrate or reset the database
+
+Control and storage clusters have separate databases that need to be migrated individually.
+In some case, we can also reset database to clear all table information.
 Set `$cluster_type` to `control` or `storage` before proceeding. These commands are meant to be executed on every cluster separately.
 
 ``` bash
@@ -168,7 +178,7 @@ ansible-playbook job-cleanup.yml                                   \
     --inventory  ../../concent-deployment-values/ansible_inventory \
     --user       $user
 
-ansible-playbook create-db.yml                                     \
+ansible-playbook reset-db.yml                                      \
     --extra-vars "cluster=$cluster cluster_type=$cluster_type"     \
     --inventory  ../../concent-deployment-values/ansible_inventory \
     --user       $user
@@ -179,11 +189,73 @@ ansible-playbook migrate-db.yml                                    \
     --user       $user
 ```
 
-### Deploying to the cluster
+## Cloud Management
+
+### Create or delete the database
+This is a separate step that require access to the whole Google Cloud project to modify CloudSQL database.
+In normal scenario, we don't needed to create or delete database. Normal cluster deployment only involves a reset or a migration.
+
+```bash
+cd concent-deployment/cloud/
+ansible-playbook create-databases.yml                              \
+    --extra-vars cluster=$cluster                                  \
+    --inventory  ../../concent-deployment-values/ansible_inventory \
+    --user       $user
+
+ansible-playbook drop-databases.yml                                \
+    --extra-vars cluster=$cluster                                  \
+    --inventory  ../../concent-deployment-values/ansible_inventory \
+    --user       $user
+```
+
+### Deploy or delete the secrets
+This is a step that allows to modify kubernetes secrets.
+In normal scenario, we don't needed to use them, only when secrets are updated or clear all component on the cluster.
+
+```bash
+cd concent-deployment/cloud/
+ansible-playbook cluster-deploy-secrets.yml                        \
+    --extra-vars cluster=$cluster                                  \
+    --inventory  ../../concent-deployment-values/ansible_inventory \
+    --user       $user
+
+ansible-playbook cluster-remove-secrets.yml                        \
+    --extra-vars cluster=$cluster                                  \
+    --inventory  ../../concent-deployment-values/ansible_inventory \
+    --user       $user
+```
+
+## Deployment by using helm package(in_progress)
+
+Before initialized helm you must create properly roles, create tiller namespace and service account.
+To create role, you must add to your user cluster-admin role by using:
+
+```bash
+kubectl create clusterrolebinding user-admin-binding --clusterrole=cluster-admin --user=$(gcloud config get-value account)
+```
+
+To create properly roles, namespace and service account use `create-tiller-roles.sh` script.
+
+```bash
+cd cloud/
+./create-tiller-roles.sh
+```
+
+### Installation and initialization of helm package
 
 ``` bash
 cd concent-deployment/concent-builder/
-ansible-playbook deploy.yml                                        \
+ansible-playbook helm-init.yml                                     \
+    --extra-vars cluster=$cluster                                  \
+    --inventory  ../../concent-deployment-values/ansible_inventory \
+    --user       $user
+```
+
+### Uninstall tiller from the cluster and helm package from the `concent-builder` server
+
+``` bash
+cd concent-deployment/concent-builder/
+ansible-playbook uninstall-tiller.yml                              \
     --extra-vars cluster=$cluster                                  \
     --inventory  ../../concent-deployment-values/ansible_inventory \
     --user       $user

@@ -1,0 +1,22 @@
+- hosts:
+    - concent-builder
+  vars_files:
+    - consts.yml
+    - "{{ deployment_values }}/var.yml"
+    - "{{ deployment_values }}/var-{{ cluster }}.yml"
+    - ../containers/versions.yml
+  tasks:
+    - become:      yes
+      become_user: "{{ shared_user }}"
+      block:
+        - name:    Configure kubectl to operate on the right cluster
+          command: gcloud container clusters get-credentials \
+              "{{ gke.cluster }}"                            \
+              --project "{{ gke.project }}"                  \
+              --zone    "{{ gke.zone }}"
+
+        - name:    Initialize helm and install tiller
+          command: helm init                                                       \
+              --service-account tiller                                             \
+              --tiller-image gcr.io/kubernetes-helm/tiller:v"{{ tiller_version }}" \
+              --tiller-namespace tiller

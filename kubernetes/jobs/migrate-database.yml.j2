@@ -20,6 +20,11 @@ spec:
         - name: database-job-settings
           configMap:
             name: database-job-settings
+        {% if initialize_django_admin %}
+        - name: django-admin-fixture
+          secret:
+            secretName: django-admin-fixture
+        {% endif %}
       initContainers:
         - name:             migrate-database
           image:            {{ docker_registry }}/{{ image_prefix }}concent-api:{{ image_version }}
@@ -32,3 +37,19 @@ spec:
             - name:       database-job-settings
               mountPath:  /srv/http/concent_api/concent_api/settings/config_map/
               readOnly:   true
+        {% if initialize_django_admin %}
+        - name:             create-django-admin
+          image:            {{ docker_registry }}/{{ image_prefix }}concent-api:{{ image_version }}
+          imagePullPolicy:  Always
+          command:          ["/usr/local/bin/concent-api-manage.sh", "loaddata", "/srv/http/fixtures/django-admin-fixture.yaml", "--database={{ selected_database_id }}"]
+          volumeMounts:
+            - name:       django-admin-fixture
+              mountPath:  /srv/http/fixtures/
+              readOnly:   true
+            - name:       concent-api-secrets
+              mountPath:  /srv/http/concent_api/concent_api/settings/secrets/
+              readOnly:   true
+            - name:       database-job-settings
+              mountPath:  /srv/http/concent_api/concent_api/settings/config_map/
+              readOnly:   true
+        {% endif %}

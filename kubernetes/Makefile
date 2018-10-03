@@ -40,12 +40,10 @@ CLUSTER_SCRIPTS :=                                            \
     build/config-maps/nginx-storage/default.conf              \
     build/config-maps/nginx-storage/ssl.conf                  \
     build/config-maps/nginx-storage/file-transfer-config.lua  \
-    build/jobs/create-control-database.yml                    \
+    build/jobs/reset-control-database.yml                     \
     build/jobs/migrate-control-database.yml                   \
-    build/jobs/delete-control-database.yml                    \
-    build/jobs/create-storage-database.yml                    \
-    build/jobs/migrate-storage-database.yml                   \
-    build/jobs/delete-storage-database.yml
+    build/jobs/reset-storage-database.yml                     \
+    build/jobs/migrate-storage-database.yml
 
 
 

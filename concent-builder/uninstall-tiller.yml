@@ -14,12 +14,16 @@
               --project "{{ gke.project }}"                  \
               --zone    "{{ gke.zone }}"
 
-        - name:    Clear the cluster
-          command: "{{ build_dir}}/concent-deployment/kubernetes/build/delete-services.sh"
-          args:
-            chdir: "{{ build_dir}}/concent-deployment/kubernetes/build/"
+        - name:     Check if charts exist
+          command:  helm list --short --tiller-namespace tiller
+          register: result
 
-        - name:    Deploy containers to the cluster
-          command: "{{ build_dir}}/concent-deployment/kubernetes/build/create-services.sh"
-          args:
-            chdir: "{{ build_dir}}/concent-deployment/kubernetes/build/"
+        - name:   Uninstall charts
+          shell:  helm delete $(helm list --short --tiller-namespace tiller)  \
+               --tiller-namespace tiller
+          when:   result.stdout != ""
+
+        - name:    Uninstall tiller
+          command: helm reset             \
+              --remove-helm-home          \
+              --tiller-namespace tiller
