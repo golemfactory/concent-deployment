@@ -1,3 +1,7 @@
+### NEXT
+- Added possibility to use an external Signing Service (#246).
+- Bugfix: upgrade outdated and unsupported `kubectl` and `google-cloud-sdk` packages (#248).
+
 ### 0.9.0
 - Middleman is now reachable over TCP from outside the cluster (#212).
 - Added Signing Service container which can also be packaged for deployment outside of Concent (#189).
