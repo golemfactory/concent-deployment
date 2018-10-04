@@ -12,7 +12,21 @@ To provision such a disk for the development cluster use the following command:
 gcloud compute disks create --size 30GB <disk name>
 ```
 
-## Deployment scenarios
+### Creating the database
+
+Before creating a new cluster in GKE, a PosgreSQL database and role have to be created for it.
+This operation requires privileges for creating and deleting arbitrary databases in Cloud SQL.
+For security reasons the role used to access the database from within the cluster should not have such wide privileges and this step needs to be performed outside of cluster deployment process.
+
+``` bash
+cd concent-deployment/cloud/
+ansible-playbook create-databases.yml                              \
+    --extra-vars cluster=$cluster                                  \
+    --inventory  ../../concent-deployment-values/ansible_inventory \
+    --user       $user
+```
+
+## Build scenarios
 
 Scripts in this repository allow you to build containers and cluster configuration in three different scanarios. Each one has its own requirements:
 
@@ -155,30 +169,6 @@ ansible-playbook build-test-and-push.yml                           \
     --user       $user
 ```
 
-### Creating the database
-
-`concent-api` and other Django apps will try to connect a CloudSQL database configured in their settings.
-Control and storage clusters have separate databases that need to be created and migrated individually.
-Set `$cluster_type` to `control` or `storage` before proceeding. These commands are meant to be executed on every cluster separately.
-
-``` bash
-cd concent-deployment/concent-builder/
-ansible-playbook job-cleanup.yml                                   \
-    --extra-vars cluster=$cluster                                  \
-    --inventory  ../../concent-deployment-values/ansible_inventory \
-    --user       $user
-
-ansible-playbook create-db.yml                                     \
-    --extra-vars "cluster=$cluster cluster_type=$cluster_type"     \
-    --inventory  ../../concent-deployment-values/ansible_inventory \
-    --user       $user
-
-ansible-playbook migrate-db.yml                                    \
-    --extra-vars "cluster=$cluster cluster_type=$cluster_type"     \
-    --inventory  ../../concent-deployment-values/ansible_inventory \
-    --user       $user
-```
-
 ### Deploying to the cluster
 
 ``` bash
@@ -188,6 +178,53 @@ ansible-playbook deploy.yml                                        \
     --inventory  ../../concent-deployment-values/ansible_inventory \
     --user       $user
 ```
+
+### Initializing or migrating the database
+
+`concent-api` and other Django apps will try to connect a CloudSQL database configured in their settings.
+Control and storage clusters have separate databases that need to be created and migrated individually.
+Set `$cluster_type` to `control` or `storage` before proceeding.
+These commands are meant to be executed on every cluster separately.
+
+#### Initialization
+
+Initialization must only be performed on a newly created cluster or if we want to clear the data and start from scratch:
+
+``` bash
+cd concent-deployment/concent-builder/
+ansible-playbook job-cleanup.yml                                   \
+    --extra-vars cluster=$cluster                                  \
+    --inventory  ../../concent-deployment-values/ansible_inventory \
+    --user       $user
+
+ansible-playbook reset-db.yml                                      \
+    --extra-vars "cluster=$cluster cluster_type=$cluster_type"     \
+    --inventory  ../../concent-deployment-values/ansible_inventory \
+    --user       $user
+```
+
+**WARNING**: This operation removes all the data from an existing database.
+
+#### Migration
+
+From time to time a Concent update may require making changes to the database schema.
+This is done using Django migrations.
+Migrations should be executed after containers with new version have been deployed and all the containers running the old version deleted.
+
+``` bash
+cd concent-deployment/concent-builder/
+ansible-playbook job-cleanup.yml                                   \
+    --extra-vars cluster=$cluster                                  \
+    --inventory  ../../concent-deployment-values/ansible_inventory \
+    --user       $user
+
+ansible-playbook migrate-db.yml                                    \
+    --extra-vars "cluster=$cluster cluster_type=$cluster_type"     \
+    --inventory  ../../concent-deployment-values/ansible_inventory \
+    --user       $user
+```
+
+It's safe to run migrations even if there are no changes - Django will detect that and simply leave the schema as is.
 
 ### Building nginx-storage locally
 
