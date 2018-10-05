@@ -20,6 +20,11 @@ testing_dependencies=(
     python{{ python_version }}
     python{{ python_version }}-dev
     virtualenv
+    # The upgrade of `virtualenv` package also upgrade `python3-apt` and `libapt-pkg5.0:amd64` packages.
+    # We don't install recommendation packages(`--no-install-recommends`) which is in this case `apt` package.
+    # The `apt` package is connected with `libapt-pkg5.0:amd64` package, so they need the same version.
+    # We need upgrade `apt` package to testing version.
+    apt
 )
 
 apt-get update --assume-yes
