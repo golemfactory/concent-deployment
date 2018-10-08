@@ -22,8 +22,11 @@
 
         - name: Create a directory for secrets
           file:
-            path:  "{{ data_dir }}/concent-secrets/{{ cluster }}/"
+            path:  "{{ data_dir }}/concent-secrets/{{ item }}/"
             state: directory
+          with_items:
+            - "{{ cluster }}"
+            - cloud
 
     - become:      yes
       become_user: root
@@ -34,13 +37,13 @@
         - name: Upload secrets
           copy:
             src:   "{{ local_secret_dir }}/{{ cluster }}/{{ item }}"
-            dest:  "{{ data_dir }}/concent-secrets/{{ cluster }}/"
+            dest:  "{{ data_dir }}/concent-secrets/{{ cluster }}/{{ item }}"
             owner: "{{ shared_user }}"
             group: "{{ shared_user }}"
           with_items:
+            - cluster-secrets.yml
             - secrets.py
-            - var-secret.yml
-            - "{{ gke.service_account_name }}-private-key.json"
+            - "../cloud/{{ gke.service_account_name }}-private-key.json"
             - nginx-proxy-ssl.crt
             - nginx-proxy-ssl.key
             - nginx-storage-ssl.crt
@@ -50,9 +53,9 @@
       become_user: "{{ shared_user }}"
       block:
         - name: Activate the service account that has permissions to access the cluster
-          command: gcloud auth activate-service-account                                                                 \
-              "{{ gke.service_account_name }}@{{ gke.project }}.iam.gserviceaccount.com"                                \
-              --key-file "{{ data_dir }}/concent-secrets/{{ cluster }}/{{ gke.service_account_name }}-private-key.json"
+          command: gcloud auth activate-service-account                                                           \
+              "{{ gke.service_account_name }}@{{ gke.project }}.iam.gserviceaccount.com"                          \
+              --key-file "{{ data_dir }}/concent-secrets/cloud/{{ gke.service_account_name }}-private-key.json"
 
         - name: Configure kubectl to operate on the right cluster
           command: gcloud container clusters get-credentials \
