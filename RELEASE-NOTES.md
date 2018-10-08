@@ -6,6 +6,7 @@
 - Added possibility to use an external Signing Service (#246).
 - Bugfix: upgrade outdated and unsupported `kubectl` and `google-cloud-sdk` packages (#248).
 - Bugfix: upgraded `apt` package from the Debian test repository that caused an error in the Debian images (#252).
+- Bugfix: added timeout and passive health check to nginx proxy connection with middleman (#255).
 
 ### 0.9.0
 - Middleman is now reachable over TCP from outside the cluster (#212).
