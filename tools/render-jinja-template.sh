@@ -15,11 +15,11 @@ pass_count=5
 
 mkdir --parents "$(dirname "$output_file")"
 
-yasha --no-extension-file --variables "$vars_file" --output "$output_file" "$template_file"
+yasha --extensions ${BASH_SOURCE%/*}/jinja2-filters.py --variables "$vars_file" --output "$output_file" "$template_file"
 for pass in $(seq 1 $pass_count); do
     # Rerun the rendering using the output from the previous step as a template.
     # This resolves nested variables.
-    yasha --no-extension-file --variables "$vars_file" --output "$output_file" "$output_file"
+    yasha --extensions ${BASH_SOURCE%/*}/jinja2-filters.py --variables "$vars_file" --output "$output_file" "$output_file"
 done
 
 # Copy file permissions from the source file

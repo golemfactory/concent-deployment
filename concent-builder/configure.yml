@@ -80,6 +80,7 @@
           apt:  name={{ item }} default_release=testing
           with_items:
             - python{{ python_version }}
+            - python3-pip
             - python{{ python_version }}-dev
             - virtualenv
 
@@ -91,7 +92,8 @@
 
         - name:    Install yasha in global python environment using pip
           pip:
-            name: yasha
+            executable: pip3
+            name:       yasha
 
         - name:    Create user that will be used for building stuff
           user:
