@@ -1,4 +1,5 @@
 ### NEXT
+- The concent-builder server now only uses python 3 (#249).
 - Separated cloud management from cluster deployment (#226).
 - Added possibility to use an external Signing Service (#246).
 - Bugfix: upgrade outdated and unsupported `kubectl` and `google-cloud-sdk` packages (#248).

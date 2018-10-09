@@ -60,8 +60,6 @@
           apt:     name={{ item }}
           with_items:
             - build-essential
-            - python2.7
-            - python-pip  # For Python 2
             - libssl-dev
             - pkg-config
             - libsecp256k1-dev
@@ -69,7 +67,6 @@
             - kubectl={{ kubectl_version }}
             - docker-engine={{ docker_version }}
             - google-cloud-sdk={{ google_cloud_sdk_version }}
-            - ansible
             - libpq-dev
             - gcc
             - python3-yaml
@@ -82,6 +79,10 @@
             - python{{ python_version }}
             - python3-pip
             - python{{ python_version }}-dev
+            # This package is need to upgrade after install python3.6
+            # that requires a newer version of python3-apt.
+            # The ansible `apt` module use this package.
+            - python3-apt
             - virtualenv
 
         - name:     apt autoclean
@@ -93,7 +94,10 @@
         - name:    Install yasha in global python environment using pip
           pip:
             executable: pip3
-            name:       yasha
+            name:       "{{ item }}"
+          with_items:
+            - yasha
+            - ansible
 
         - name:    Create user that will be used for building stuff
           user:
