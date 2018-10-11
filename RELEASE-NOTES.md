@@ -1,4 +1,5 @@
 ### NEXT
+- Added ability to use different ethereum smart contracts for different clusters (#253).
 - Separated secret deployment from cluster deployment (#204).
 - The concent-builder server now only uses python 3 (#249).
 - Separated cloud management from cluster deployment (#226).
