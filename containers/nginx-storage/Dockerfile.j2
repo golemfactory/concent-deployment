@@ -9,3 +9,9 @@ COPY file-transfer-endpoints.lua    /usr/local/openresty/lualib/
 COPY file-transfer-endpoints.conf   /etc/nginx/snippets/
 COPY error-pages.conf               /etc/nginx/snippets/
 COPY default.conf                   /etc/nginx/conf.d/
+COPY run-nginx-and-crond.sh         /usr/local/bin/
+COPY delete-old-files.sh            /etc/crontabs/
+COPY crontab.txt                    /tmp/
+RUN /usr/bin/crontab                /tmp/crontab.txt
+
+CMD ["/usr/local/bin/run-nginx-and-crond.sh"]

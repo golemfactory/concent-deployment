@@ -14,6 +14,9 @@ NGINX_STORAGE_SOURCE :=                                 \
     build/nginx-storage/file-transfer-endpoints.lua     \
     build/nginx-storage/file-transfer-endpoints.conf    \
     build/nginx-storage/default.conf                    \
+    build/nginx-storage/crontab.txt                     \
+    build/nginx-storage/delete-old-files.sh             \
+    build/nginx-storage/run-nginx-and-crond.sh          \
     $(NGINX_STORAGE_SOURCE_FROM_NGINX_PROXY)
 
 POSTGRESQL_SOURCE :=                          \
