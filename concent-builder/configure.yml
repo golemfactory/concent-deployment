@@ -71,7 +71,7 @@
             - gcc
             - python3-yaml
             - postgresql-{{ postgres_version }}
-            - python-psycopg2
+            - python3-psycopg2
 
         - name:    Install dependencies from testing
           apt:  name={{ item }} default_release=testing
