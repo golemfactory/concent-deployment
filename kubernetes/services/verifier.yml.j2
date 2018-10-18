@@ -21,11 +21,11 @@ spec:
           command:          ["/usr/local/bin/run-celery.sh", "--loglevel", "info", "--queues", "verifier"]
           resources:
             requests:
-              memory: "1Gi"
-              cpu:    "600m"
+              memory: "{{ resource_limits.worker_apps.verifier.memory.requests }}"
+              cpu:    "{{ resource_limits.worker_apps.verifier.cpu.requests }}"
             limits:
-              memory: "1.5Gi"
-              cpu:    "800m"
+              memory: "{{ resource_limits.worker_apps.verifier.memory.limits }}"
+              cpu:    "{{ resource_limits.worker_apps.verifier.cpu.limits }}"
           volumeMounts:
             - name:      concent-api-secrets
               mountPath: /srv/http/concent_api/concent_api/settings/secrets/

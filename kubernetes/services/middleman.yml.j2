@@ -28,11 +28,11 @@ spec:
               name:          external-port
           resources:
             requests:
-              memory: "0.1Gi"
-              cpu:    "50m"
+              memory: "{{ resource_limits.tcp_socket_apps.middleman.memory.requests }}"
+              cpu:    "{{ resource_limits.tcp_socket_apps.middleman.cpu.requests }}"
             limits:
-              memory: "0.4Gi"
-              cpu:    "500m"
+              memory: "{{ resource_limits.tcp_socket_apps.middleman.memory.limits }}"
+              cpu:    "{{ resource_limits.tcp_socket_apps.middleman.cpu.limits }}"
           volumeMounts:
             - name:      concent-api-secrets
               mountPath: /srv/http/concent_api/concent_api/settings/secrets/

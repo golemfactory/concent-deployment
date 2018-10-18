@@ -44,11 +44,11 @@ spec:
                   key:  signing_service_private_key
           resources:
             requests:
-              memory: "0.1Gi"
-              cpu:    "50m"
+              memory: "{{ resource_limits.tcp_socket_apps.signing_service.memory.requests }}"
+              cpu:    "{{ resource_limits.tcp_socket_apps.signing_service.cpu.requests }}"
             limits:
-              memory: "0.4Gi"
-              cpu:    "500m"
+              memory: "{{ resource_limits.tcp_socket_apps.signing_service.memory.limits }}"
+              cpu:    "{{ resource_limits.tcp_socket_apps.signing_service.cpu.limits }}"
       volumes:
         - name: signing-service-secrets
           secret:

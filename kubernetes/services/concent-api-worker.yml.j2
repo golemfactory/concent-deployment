@@ -19,11 +19,11 @@ spec:
             - containerPort: 80
           resources:
             requests:
-              memory: "350Mi"
-              cpu:    "50m"
+              memory: "{{ resource_limits.worker_apps.concent_api_worker.memory.requests }}"
+              cpu:    "{{ resource_limits.worker_apps.concent_api_worker.cpu.requests }}"
             limits:
-              memory: "600Mi"
-              cpu:    "800m"
+              memory: "{{ resource_limits.worker_apps.concent_api_worker.memory.limits }}"
+              cpu:    "{{ resource_limits.worker_apps.concent_api_worker.cpu.limits }}"
           volumeMounts:
             - name:      concent-api-secrets
               mountPath: /srv/http/concent_api/concent_api/settings/secrets/

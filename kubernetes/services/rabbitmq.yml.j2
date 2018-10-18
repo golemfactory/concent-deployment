@@ -27,11 +27,11 @@ spec:
               value: /srv/storage/mnesia
           resources:
             requests:
-              memory: "1200Mi"
-              cpu:    "600m"
+              memory: "{{ resource_limits.others.rabbitmq.memory.requests }}"
+              cpu:    "{{ resource_limits.others.rabbitmq.cpu.requests }}"
             limits:
-              memory: "1600Mi"
-              cpu:    "900m"
+              memory: "{{ resource_limits.others.rabbitmq.memory.limits }}"
+              cpu:    "{{ resource_limits.others.rabbitmq.cpu.limits }}"
           volumeMounts:
             - mountPath:  /srv/storage/mnesia/
               name:       queue-storage
