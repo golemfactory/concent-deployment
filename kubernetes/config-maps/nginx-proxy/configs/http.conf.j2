@@ -8,14 +8,73 @@ map $http_accept $extension {
 {% if not nginx_proxy_allow_http %}
 # HTTP -> HTTPS redirect
 server {
-    listen 80      default_server;
-    listen [::]:80 default_server;
-    server_name    {{ cluster_address }};
+    listen 80;
+    listen [::]:80;
+    server_name    {{ concent_versions[concent_version].cluster_address }};
     return 302     https://$server_name$request_uri;
 
 }
 {% endif %}
+{% if concent_versions[concent_version].load_balancer_turned_on %}
+upstream {{ current_golem_messages_version }} {
+     server nginx-proxy.default.svc.cluster.local;
+}
 
+upstream {{ previous_golem_messages_version }} {
+     {% set concent_old_version = concent_versions.keys() |list %}
+     server {{ concent_versions[concent_old_version[1]].cluster_address }};
+}
+
+# Map to different upstream backends based on the `X-Golem-Messages` http header
+map $http_x_golem_messages $version {
+     ""          "http://{{ current_golem_messages_version }}";
+     {{ current_golem_messages_version }}   "http://{{ current_golem_messages_version }}";
+     {{ previous_golem_messages_version }}  "http://{{ previous_golem_messages_version }}";
+     default    "not_supported";
+     # Check semi version 2.0 format
+     ~^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*)?(\+[0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*)?$ "not_found";
+}
+
+map $http_x_golem_messages $host_param {
+     ""                                    internal.local;
+     {{ current_golem_messages_version }}  internal.local;
+     {{ previous_golem_messages_version }} $http_host;
+     default                               $http_host;
+}
+
+server {
+    {% if nginx_proxy_allow_http %}
+    # HTTP
+    listen 80;
+    server_name {{ concent_versions[concent_version].cluster_address }};
+    {% endif %}
+    # HTTPS
+    listen 443      ssl http2 default_server;
+    listen [::]:443 ssl http2 default_server;
+
+    gzip            on;
+    gzip_min_length 1000;
+    gzip_proxied    expired no-cache no-store private auth;
+    gzip_types      text/plain text/css text/javascript application/xml;
+    include         snippets/error-pages.conf;
+    location / {
+        if ( $version = 'not_supported' ) {
+            return 400;
+        }
+        if ( $version = 'not_found' ) {
+            return 404;
+        }
+        proxy_set_header X-Real-IP         $remote_addr;
+        proxy_set_header X-Forwarded-For   $remote_addr;
+        proxy_set_header Host              $host_param;
+        proxy_pass                         $version$request_uri;
+    }
+
+}
+
+{% endif %}
+
+{% if not concent_versions[concent_version].load_balancer_turned_on %}
 server {
     {% if nginx_proxy_allow_http %}
     # HTTP
@@ -25,6 +84,14 @@ server {
     listen 443      ssl http2 default_server;
     listen [::]:443 ssl http2 default_server;
 
+{% else %}
+
+server {
+
+    listen      80;
+    server_name internal.local;
+
+{% endif %}
     gzip            on;
     gzip_min_length 1000;
     gzip_proxied    expired no-cache no-store private auth;
