@@ -20,11 +20,11 @@ DATABASES = {}
 
 RAVEN_CONFIG = {
     'dsn': SENTRY_DATA_SOURCE_NAME,
-    'environment': '{{ gke.cluster }}',
+    'environment': '{{ concent_versions[concent_version].gke.cluster }}',
     'tags': {'component': 'verifier'},
 }
 
-EMAIL_SUBJECT_PREFIX = "[{{ gke.cluster }}:verifier] "
+EMAIL_SUBJECT_PREFIX = "[{{ concent_versions[concent_version].gke.cluster }}:verifier] "
 
 CELERY_BROKER_URL = 'amqp://rabbitmq.default.svc.cluster.local:5672'
 
@@ -33,8 +33,8 @@ CONCENT_FEATURES = ["verifier"]
 STORAGE_SERVER_INTERNAL_ADDRESS = "http://nginx-storage.default.svc.cluster.local/"
 VERIFIER_STORAGE_PATH = "/srv/storage/"
 
-{% if storage_cluster_address == cluster_address and not nginx_proxy_allow_http or storage_cluster_address != cluster_address and not nginx_storage_allow_http %}
-STORAGE_CLUSTER_ADDRESS = "https://{{ storage_cluster_address }}/"
+{% if concent_versions[concent_version].storage_cluster_address == concent_versions[concent_version].cluster_address and not nginx_proxy_allow_http or concent_versions[concent_version].storage_cluster_address != concent_versions[concent_version].cluster_address and not nginx_storage_allow_http %}
+STORAGE_CLUSTER_ADDRESS = "https://{{ concent_versions[concent_version].storage_cluster_address }}/"
 {% else %}
-STORAGE_CLUSTER_ADDRESS = "http://{{ storage_cluster_address }}/"
+STORAGE_CLUSTER_ADDRESS = "http://{{ concent_versions[concent_version].storage_cluster_address }}/"
 {% endif %}

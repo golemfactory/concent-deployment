@@ -15,13 +15,13 @@ spec:
           image:            {{ docker_registry }}/{{image_prefix }}signing-service:{{ image_version }}
           imagePullPolicy:  Always
           args:             [
-              "{{ cluster_address }}",
+              "{{ concent_versions[concent_version].cluster_address }}",
               "{{ concent_public_key }}",
               "--concent-cluster-port", "9055",
               "--sentry-dsn-from-env",
               "--ethereum-private-key-from-env",
               "--signing-service-private-key-from-env",
-              "--sentry-environment {{ gke.cluster }}"
+              "--sentry-environment {{ concent_versions[concent_version].gke.cluster }}"
           ]
           ports:
             - containerPort: 9055

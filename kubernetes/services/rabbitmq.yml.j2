@@ -54,7 +54,7 @@ spec:
       volumes:
         - name: queue-storage
           gcePersistentDisk:
-            pdName: {{ rabbitmq_disk }}
+            pdName: {{ concent_versions[concent_version].rabbitmq_disk }}
             fsType: ext4
       # securityContext allows you to add permission for pod and mounted volumes to specific group.
       # We need this permission to create files and directories on mounted persistent disk.

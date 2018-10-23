@@ -44,7 +44,7 @@ spec:
       volumes:
         - name: geth-storage
           gcePersistentDisk:
-            pdName: {{ geth_disk }}
+            pdName: {{ concent_versions[concent_version].geth_disk }}
             fsType: ext4
 ---
 apiVersion: v1
