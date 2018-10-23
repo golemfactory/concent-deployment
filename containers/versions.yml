@@ -1,7 +1,7 @@
 debian_version:               "9.4"
 docker_version:               "17.05.0~ce-0~debian-stretch"
 geth_version:                 "v1.8.12"
-golem_version:                "0.17.0"
+golem_version:                "0.18.0"
 concent_version:              "v0.9.0-71-g40ab4dc"
 golemfactory_blender_version: "1.4"
 google_cloud_sdk_version:     "219.0.1-0"
