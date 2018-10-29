@@ -22,14 +22,14 @@ upstream {{ current_golem_messages_version }} {
 
 upstream {{ previous_golem_messages_version }} {
      {% set concent_old_version = concent_versions.keys() |list %}
-     server {{ concent_versions[concent_old_version[1]].cluster_address }};
+     server {{ concent_versions[concent_old_version[1]].cluster_address }}:443;
 }
 
 # Map to different upstream backends based on the `X-Golem-Messages` http header
 map $http_x_golem_messages $version {
      ""          "http://{{ current_golem_messages_version }}";
      {{ current_golem_messages_version }}   "http://{{ current_golem_messages_version }}";
-     {{ previous_golem_messages_version }}  "http://{{ previous_golem_messages_version }}";
+     {{ previous_golem_messages_version }}  "https://{{ previous_golem_messages_version }}";
      default    "not_supported";
      # Check semi version 2.0 format
      ~^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*)?(\+[0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*)?$ "not_found";
@@ -57,6 +57,7 @@ server {
     gzip_proxied    expired no-cache no-store private auth;
     gzip_types      text/plain text/css text/javascript application/xml;
     include         snippets/error-pages.conf;
+
     location / {
         if ( $version = 'not_supported' ) {
             return 400;
