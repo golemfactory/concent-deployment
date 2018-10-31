@@ -155,6 +155,9 @@ Do this if you want to use the remote server for building and deploying.
 All the instructions below assume that you're using the remote server.
 
 ### Building containers and cluster configuration
+Before following these instructions, please make sure that the Concent version you're building (i.e. `concent_version` in `containers/versions.yml`) is listed in `concent_versions` dictionary in `var-concent-<cluster>.yml` file.
+At any given time there can be multiple Concent versions deployed to different clusters within the same environment (e.g. `v1.8` and `v1.9` on `dev`, `v1.9` and `v2.0` on `staging`, etc.) and this dictionary contains configuration values that are not the same for all those clusters.
+Without providing configuration values there you won't be able to generate Kubernetes cluster configuration or use Ansible playbooks to deploy to the cluster.
 
 ``` bash
 cd concent-deployment/concent-builder/
@@ -188,6 +191,21 @@ Secret deployment is separate from deployment of the application specifically so
 ``` bash
 cd concent-deployment/concent-builder/
 ansible-playbook deploy.yml                                        \
+    --extra-vars cluster=$cluster                                  \
+    --inventory  ../../concent-deployment-values/ansible_inventory \
+    --user       $user
+```
+
+### Update configuration of nginx-proxy
+
+This step is necessary only when we move persistent disks or IP address from nginx-proxy on one cluster to another (as specified in `var-concent-<cluster>.yml` file in `concent-deployment-values`).
+That's because when you update the `var` file and deploy to a new cluster, the previous cluster still has the disks or the IP attached.
+Running this playbook updates the configuration of the old cluster so that the disks and IPs are released.
+The new cluster will then claim them automatically.
+
+``` bash
+cd concent-deployment/concent-builder/
+ansible-playbook redeploy-nginx-proxy-router.yml                   \
     --extra-vars cluster=$cluster                                  \
     --inventory  ../../concent-deployment-values/ansible_inventory \
     --user       $user
