@@ -1,0 +1,4 @@
+#!/bin/bash -e
+
+kubectl delete job reset-database --context "{{ gke.cluster }}"   || true
+kubectl delete job migrate-database --context "{{ gke.cluster }}" || true

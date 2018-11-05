@@ -1,0 +1,13 @@
+#!/bin/bash -e
+
+kubectl delete configmap nginx-storage-configs --context "{{ gke.cluster }}"        || true
+kubectl delete configmap file-transfer-config --context "{{ gke.cluster }}"         || true
+kubectl delete configmap nginx-configs --context "{{ gke.cluster }}"                || true
+kubectl delete configmap nginx-settings --context "{{ gke.cluster }}"               || true
+kubectl delete configmap gatekeeper-settings --context "{{ gke.cluster }}"          || true
+kubectl delete configmap conductor-settings --context "{{ gke.cluster }}"           || true
+kubectl delete configmap conductor-worker-settings --context "{{ gke.cluster }}"    || true
+kubectl delete configmap concent-api-settings --context "{{ gke.cluster }}"         || true
+kubectl delete configmap concent-api-worker-settings --context "{{ gke.cluster }}"  || true
+kubectl delete configmap verifier-settings --context "{{ gke.cluster }}"            || true
+kubectl delete configmap middleman-settings --context "{{ gke.cluster }}"           || true

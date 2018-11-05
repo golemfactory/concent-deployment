@@ -2,35 +2,35 @@
 
 ./create-config-maps.sh
 
-kubectl create --record --filename services/verifier.yml
+kubectl create --record --context "{{ gke.cluster }}" --filename services/verifier.yml
 ./wait-until-ready.sh verifier 70
-kubectl create --record --filename services/geth.yml
-kubectl create --record --filename services/rabbitmq.yml
+kubectl create --record --context "{{ gke.cluster }}" --filename services/geth.yml
+kubectl create --record --context "{{ gke.cluster }}" --filename services/rabbitmq.yml
 {% if allow_signing_service_authentication %}
-kubectl create --record --filename services/middleman.yml
+kubectl create --record --context "{{ gke.cluster }}" --filename services/middleman.yml
 {% endif %}
 {% if signing_service_on_the_cluster %}
-kubectl create --record --filename services/signing-service.yml
+kubectl create --record --context "{{ gke.cluster }}" --filename services/signing-service.yml
 {% endif %}
-kubectl create --record --filename services/concent-api.yml
-kubectl create --record --filename services/concent-api-worker.yml
-kubectl create --record --filename services/gatekeeper.yml
-kubectl create --record --filename services/conductor.yml
-kubectl create --record --filename services/conductor-worker.yml
-kubectl create --record --filename services/nginx-storage.yml
-kubectl create --record --filename services/nginx-proxy.yml
-./wait-until-ready.sh geth                 60
-./wait-until-ready.sh rabbitmq             60
+kubectl create --record --context "{{ gke.cluster }}" --filename services/concent-api.yml
+kubectl create --record --context "{{ gke.cluster }}" --filename services/concent-api-worker.yml
+kubectl create --record --context "{{ gke.cluster }}" --filename services/gatekeeper.yml
+kubectl create --record --context "{{ gke.cluster }}" --filename services/conductor.yml
+kubectl create --record --context "{{ gke.cluster }}" --filename services/conductor-worker.yml
+kubectl create --record --context "{{ gke.cluster }}" --filename services/nginx-storage.yml
+kubectl create --record --context "{{ gke.cluster }}" --filename services/nginx-proxy.yml
+./wait-until-ready.sh geth               60
+./wait-until-ready.sh rabbitmq           60
 {% if allow_signing_service_authentication %}
-./wait-until-ready.sh middleman            30
+./wait-until-ready.sh middleman          30
 {% endif %}
 {% if signing_service_on_the_cluster %}
-./wait-until-ready.sh signing-service      30
+./wait-until-ready.sh signing-service    30
 {% endif %}
-./wait-until-ready.sh concent-api          30
-./wait-until-ready.sh concent-api-worker   30
-./wait-until-ready.sh gatekeeper           30
-./wait-until-ready.sh conductor            30
-./wait-until-ready.sh conductor-worker     30
-./wait-until-ready.sh nginx-storage        30
-./wait-until-ready.sh nginx-proxy          30
+./wait-until-ready.sh concent-api        30
+./wait-until-ready.sh concent-api-worker 30
+./wait-until-ready.sh gatekeeper         30
+./wait-until-ready.sh conductor          30
+./wait-until-ready.sh conductor-worker   30
+./wait-until-ready.sh nginx-storage      30
+./wait-until-ready.sh nginx-proxy        30

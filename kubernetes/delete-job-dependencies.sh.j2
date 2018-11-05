@@ -1,0 +1,3 @@
+#!/bin/bash -e
+
+kubectl delete configmap database-job-settings --context "{{ gke.cluster }}" || true

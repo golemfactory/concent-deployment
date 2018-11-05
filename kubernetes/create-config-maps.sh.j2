@@ -1,48 +1,58 @@
 #!/bin/bash -e
 
 kubectl create configmap nginx-storage-configs                                              \
+    --context "{{ gke.cluster }}"                                                           \
     --from-file=ssl.conf=config-maps/nginx-storage/ssl.conf                                 \
     --from-file=default.conf=config-maps/nginx-storage/default.conf                         \
 
 kubectl create configmap file-transfer-config                                               \
+    --context "{{ gke.cluster }}"                                                           \
     --from-file=file-transfer-config.lua=config-maps/nginx-storage/file-transfer-config.lua
 
 kubectl create configmap nginx-configs                              \
+    --context "{{ gke.cluster }}"                                   \
     --from-file=config-maps/nginx-proxy/configs
 
 kubectl create configmap nginx-settings                              \
+    --context "{{ gke.cluster }}"                                    \
     --from-file=config-maps/nginx-proxy/nginx.conf
 
 kubectl create configmap concent-api-settings                                \
+    --context "{{ gke.cluster }}"                                            \
     --from-file=local_settings.py=config-maps/concent-api/local_settings.py  \
     --from-file=email_settings.py=config-maps/concent/email_settings.py      \
     --from-file=timing_settings.py=config-maps/concent/timing_settings.py    \
     --from-literal=__init__.py=
 
 kubectl create configmap concent-api-worker-settings                                \
+    --context "{{ gke.cluster }}"                                                   \
     --from-file=local_settings.py=config-maps/concent-api-worker/local_settings.py  \
     --from-file=email_settings.py=config-maps/concent/email_settings.py             \
     --from-file=timing_settings.py=config-maps/concent/timing_settings.py           \
     --from-literal=__init__.py=
 
 kubectl create configmap gatekeeper-settings                               \
+    --context "{{ gke.cluster }}"                                          \
     --from-file=local_settings.py=config-maps/gatekeeper/local_settings.py \
     --from-file=email_settings.py=config-maps/concent/email_settings.py    \
     --from-file=timing_settings.py=config-maps/concent/timing_settings.py  \
     --from-literal=__init__.py=
 
 kubectl create configmap conductor-settings                                \
+    --context "{{ gke.cluster }}"                                          \
     --from-file=local_settings.py=config-maps/conductor/local_settings.py  \
     --from-file=email_settings.py=config-maps/concent/email_settings.py    \
     --from-file=timing_settings.py=config-maps/concent/timing_settings.py  \
 
 kubectl create configmap verifier-settings                                 \
+    --context "{{ gke.cluster }}"                                          \
     --from-file=local_settings.py=config-maps/verifier/local_settings.py   \
     --from-file=email_settings.py=config-maps/concent/email_settings.py    \
     --from-file=timing_settings.py=config-maps/concent/timing_settings.py  \
     --from-literal=__init__.py=
 
 kubectl create configmap conductor-worker-settings                                \
+    --context "{{ gke.cluster }}"                                                 \
     --from-file=local_settings.py=config-maps/conductor-worker/local_settings.py  \
     --from-file=email_settings.py=config-maps/concent/email_settings.py           \
     --from-file=timing_settings.py=config-maps/concent/timing_settings.py         \
@@ -50,6 +60,7 @@ kubectl create configmap conductor-worker-settings                              
 
 {% if allow_signing_service_authentication %}
 kubectl create configmap middleman-settings                                \
+    --context "{{ gke.cluster }}"                                          \
     --from-file=local_settings.py=config-maps/middleman/local_settings.py  \
     --from-file=email_settings.py=config-maps/concent/email_settings.py    \
     --from-file=timing_settings.py=config-maps/concent/timing_settings.py  \

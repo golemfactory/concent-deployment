@@ -1,0 +1,17 @@
+#!/bin/bash -e
+
+
+kubectl delete --context "{{ gke.cluster }}" --filename services/verifier.yml             || true
+kubectl delete --context "{{ gke.cluster }}" --filename services/nginx-proxy.yml          || true
+kubectl delete --context "{{ gke.cluster }}" --filename services/nginx-storage.yml        || true
+kubectl delete --context "{{ gke.cluster }}" --filename services/gatekeeper.yml           || true
+kubectl delete --context "{{ gke.cluster }}" --filename services/conductor.yml            || true
+kubectl delete --context "{{ gke.cluster }}" --filename services/conductor-worker.yml     || true
+kubectl delete --context "{{ gke.cluster }}" --filename services/concent-api-worker.yml   || true
+kubectl delete --context "{{ gke.cluster }}" --filename services/concent-api.yml          || true
+kubectl delete --context "{{ gke.cluster }}" --filename services/middleman.yml            || true
+kubectl delete --context "{{ gke.cluster }}" --filename services/signing-service.yml      || true
+kubectl delete --context "{{ gke.cluster }}" --filename services/rabbitmq.yml             || true
+kubectl delete --context "{{ gke.cluster }}" --filename services/geth.yml                 || true
+
+./delete-config-maps.sh || true
