@@ -8,12 +8,6 @@
     - become:      yes
       become_user: "{{ shared_user }}"
       block:
-        - name: Configure kubectl to operate on the right cluster
-          command: gcloud container clusters get-credentials \
-              "{{ gke.cluster }}"                            \
-              --project "{{ gke.project }}"                  \
-              --zone    "{{ gke.zone }}"
-
         - name:    Delete outdated secrets and config maps required by jobs
           command: "{{ build_dir }}/concent-deployment/kubernetes/build/delete-job-dependencies.sh"
           args:
@@ -25,5 +19,6 @@
             chdir: "{{ build_dir}}/concent-deployment/kubernetes/build/"
 
         - name:    Migrate the database used by concent-api
-          command: kubectl create \
-            --filename "{{ build_dir }}/concent-deployment/kubernetes/build/jobs/migrate-{{ cluster_type }}-database.yml"
+          command: kubectl create                                                                                           \
+            --filename "{{ build_dir }}/concent-deployment/kubernetes/build/jobs/migrate-{{ cluster_type }}-database.yml"   \
+            --context "{{ cluster }}"
