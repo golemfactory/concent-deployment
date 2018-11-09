@@ -28,18 +28,18 @@ upstream {{ previous_golem_messages_version }} {
 # Map to different upstream backends based on the `X-Golem-Messages` http header
 map $http_x_golem_messages $version {
      ""          "http://{{ current_golem_messages_version }}";
-     {{ current_golem_messages_version }}   "http://{{ current_golem_messages_version }}";
-     {{ previous_golem_messages_version }}  "https://{{ previous_golem_messages_version }}";
+     "~^{{ current_golem_messages_version }}.*$"   "http://{{ current_golem_messages_version }}";
+     "~^{{ previous_golem_messages_version }}.*$"  "https://{{ previous_golem_messages_version }}";
      default    "not_supported";
      # Check semi version 2.0 format
      ~^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*)?(\+[0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*)?$ "not_found";
 }
 
 map $http_x_golem_messages $host_param {
-     ""                                    internal.local;
-     {{ current_golem_messages_version }}  internal.local;
-     {{ previous_golem_messages_version }} $http_host;
-     default                               $http_host;
+     ""                                             internal.local;
+     "~^{{ current_golem_messages_version }}.*$"   internal.local;
+     "~^{{ previous_golem_messages_version }}.*$"  $http_host;
+     default    $http_host;
 }
 
 server {
