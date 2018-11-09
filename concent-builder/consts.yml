@@ -1,5 +1,6 @@
 shared_user:       builder
-data_dir:          /var/concent-data
+data_dir:          /var/git-mirror
+secret_dir:        /var/concent-secrets
 build_dir:         /home/{{ shared_user }}/build/{{ cluster }}
 local_secret_dir:  ../../concent-secrets
 deployment_values: ../../concent-deployment-values

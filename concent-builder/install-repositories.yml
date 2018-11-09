@@ -22,8 +22,9 @@
 
         - name: Create a directory for secrets
           file:
-            path:  "{{ data_dir }}/concent-secrets/{{ item }}/"
+            path:  "{{ secret_dir }}/{{ item }}/"
             state: directory
+            mode:  644
           with_items:
             - "{{ cluster }}"
             - cloud
@@ -37,7 +38,7 @@
         - name: Upload secrets
           copy:
             src:   "{{ local_secret_dir }}/{{ cluster }}/{{ item }}"
-            dest:  "{{ data_dir }}/concent-secrets/{{ cluster }}/{{ item }}"
+            dest:  "{{ secret_dir }}/{{ cluster }}/{{ item }}"
             owner: "{{ shared_user }}"
             group: "{{ shared_user }}"
           with_items:
@@ -54,7 +55,7 @@
         - name: Activate the service account that has permissions to access the cluster
           command: gcloud auth activate-service-account                                                           \
               "{{ gke.service_account_name }}@{{ gke.project }}.iam.gserviceaccount.com"                          \
-              --key-file "{{ data_dir }}/concent-secrets/cloud/{{ gke.service_account_name }}-private-key.json"
+              --key-file "{{ secret_dir }}/cloud/{{ gke.service_account_name }}-private-key.json"
 
         - name: Configure kubectl to operate on the right cluster
           command: gcloud container clusters get-credentials \
