@@ -1,0 +1,12 @@
+[Unit]
+Description=Update git repository
+
+[Service]
+Type=oneshot
+User=root
+Group=root
+WorkingDirectory=/usr/local/bin
+ExecStart=/usr/local/bin/update-git-mirror.sh
+
+[Install]
+WantedBy=multi-user.target
