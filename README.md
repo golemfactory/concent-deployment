@@ -156,13 +156,6 @@ All the instructions below assume that you're using the remote server.
 
 ### Building containers and cluster configuration
 
-``` bash
-cd concent-deployment/concent-builder/
-ansible-playbook install-repositories.yml                          \
-    --extra-vars cluster=$cluster                                  \
-    --inventory  ../../concent-deployment-values/ansible_inventory \
-    --user       $user
-
 ansible-playbook build-test-and-push.yml                           \
     --extra-vars cluster=$cluster                                  \
     --inventory  ../../concent-deployment-values/ansible_inventory \
@@ -171,7 +164,15 @@ ansible-playbook build-test-and-push.yml                           \
 
 ### Deploying secrets
 Before you can deploy containers, you need to make sure that certificates, keys and passwords used to configure those containers are available on the cluster.
-Deploy them with:
+Install and deploy them with:
+
+``` bash
+cd concent-deployment/cloud/
+ansible-playbook install-secrets.yml                               \
+    --extra-vars cluster=$cluster                                  \
+    --inventory  ../../concent-deployment-values/ansible_inventory \
+    --user       $user
+
 
 ``` bash
 cd concent-deployment/cloud/
