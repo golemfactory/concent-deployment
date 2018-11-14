@@ -344,22 +344,23 @@ If you have received the package and only want to build and run the docker conta
 To run it in a docker container with access to your local network interface, run:
 
 ```bash
-docker run                                                  \
-    --detach                                                \
-    --env         ETHEREUM_PRIVATE_KEY                      \
-    --env         SIGNING_SERVICE_PRIVATE_KEY               \
-    --env         SENTRY_DSN                                \
-    --network     host                                      \
-    --hostname    signing-service                           \
-    --name        signing-service                           \
-    --restart     on-failure                                \
-    concent-signing-service                                 \
-        concent.golem.network                               \
-        85cZzVjahnRpUBwm0zlNnqTdYom1LF1P1WNShLg17cmhN2Us    \
-        --concent-cluster-port                  9055        \
-        --ethereum-private-key-from-env                     \
-        --signing-service-private-key-from-env              \
-        --sentry-dsn-from-env                               \
+docker run                                                                                                      \
+    --detach                                                                                                    \
+    --env         ETHEREUM_PRIVATE_KEY                                                                          \
+    --env         SIGNING_SERVICE_PRIVATE_KEY                                                                   \
+    --env         SENTRY_DSN                                                                                    \
+    --network     host                                                                                          \
+    --hostname    signing-service                                                                               \
+    --name        signing-service                                                                               \
+    --volume      /var/log/concent/daily_thresholds:/usr/lib/signing_service/signing-service/daily_thresholds   \
+    --restart     on-failure                                                                                    \
+    concent-signing-service                                                                                     \
+        concent.golem.network                                                                                   \
+        85cZzVjahnRpUBwm0zlNnqTdYom1LF1P1WNShLg17cmhN2Us                                                        \
+        --concent-cluster-port                  9055                                                            \
+        --ethereum-private-key-from-env                                                                         \
+        --signing-service-private-key-from-env                                                                  \
+        --sentry-dsn-from-env                                                                                   \
         --sentry-environment                    mainnet
 ```
 
@@ -373,6 +374,8 @@ This assumes that:
     If so, you need to provide a valid DSN for the project that should receive the reports.
     Otherwise just skip the `--sentry-dsn-from-env` parameter and the `SENTRY_DSN` variable.
 - `mainnet` is the name of the Sentry environment that should be included in error reports.
+- `/var/log/concent/daily_thresholds/` is location in the host system where the Signing Service can create daily threshold reports.
+    It must be writable by a user with UID of 999 which is the UID under which the application runs in the container.
 
 Note that the service will crash on errors.
 The host system is responsible for restarting it in that case.
