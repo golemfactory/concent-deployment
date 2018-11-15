@@ -4,7 +4,7 @@ source /usr/local/lib/repositories.sh
 export repositories
 
 list_of_directories=(
-    $(ls /var/git-mirror/)
+    $(ls {{ git_mirror_dir }}/)
 )
 
 # Check list of directories in `/var/git-mirror/` path with repositories list in the `repositories.sh` file.
