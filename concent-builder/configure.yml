@@ -128,9 +128,9 @@
             - { name: update-git-mirror.sh, dest: /usr/local/bin/ }
 
         - name:   Copy service that run update git repositories script
-          copy:
-            src:   update-git-mirror.service
-            dest:  /etc/systemd/system/
+          template:
+            src:   update-git-mirror.service.j2
+            dest:  /etc/systemd/system/update-git-mirror.service
             owner: root
             group: root
             mode:  0555
