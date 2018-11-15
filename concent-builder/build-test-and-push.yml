@@ -25,6 +25,7 @@
             dest:    "{{ build_dir }}/concent-deployment"
             version: "{{ versions['concent-deployment'] }}"
             clone:   yes
+            update:  yes
 
     - become:      yes
       become_user: root
