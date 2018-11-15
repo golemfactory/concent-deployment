@@ -133,7 +133,7 @@
             dest:  /etc/systemd/system/
             owner: root
             group: root
-            mode:  0744
+            mode:  0555
 
         - name:    Clone or update git repositories
           service:
