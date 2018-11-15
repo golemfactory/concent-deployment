@@ -7,6 +7,3 @@ User=root
 Group=root
 WorkingDirectory=/usr/local/bin
 ExecStart=/usr/local/bin/update-git-mirror.sh
-
-[Install]
-WantedBy=multi-user.target
