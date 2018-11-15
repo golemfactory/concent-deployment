@@ -105,7 +105,7 @@
             state:  present
             groups: docker
 
-        - name:    Create data_dir and secret_dir
+        - name:    Create git_mirror_dir and secret_dir
           file:
             path:  "{{ item.name }}"
             state: directory
@@ -113,7 +113,7 @@
             group: "{{ item.group }}"
             mode:  "{{ item.mode }}"
           with_items:
-            - { name: "{{data_dir}}", owner: root, group: root, mode: "0755" }
+            - { name: "{{git_mirror_dir}}", owner: root, group: root, mode: "0755" }
             - { name: "{{secret_dir}}", owner: "{{ shared_user }}", group: "{{ shared_user }}", mode: "0755" }
 
         - name:   Copy scripts that update git repositories
