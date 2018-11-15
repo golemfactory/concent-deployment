@@ -5,5 +5,5 @@ Description=Update git repository
 Type=oneshot
 User=root
 Group=root
-WorkingDirectory=/usr/local/bin
+WorkingDirectory={{ git_mirror_dir }}/
 ExecStart=/usr/local/bin/update-git-mirror.sh
