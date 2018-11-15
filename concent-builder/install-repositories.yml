@@ -55,9 +55,3 @@
           command: gcloud auth activate-service-account                                                           \
               "{{ gke.service_account_name }}@{{ gke.project }}.iam.gserviceaccount.com"                          \
               --key-file "{{ data_dir }}/concent-secrets/cloud/{{ gke.service_account_name }}-private-key.json"
-
-        - name: Configure kubectl to operate on the right cluster
-          command: gcloud container clusters get-credentials \
-              "{{ gke.cluster }}"                            \
-              --project "{{ gke.project }}"                  \
-              --zone    "{{ gke.zone }}"

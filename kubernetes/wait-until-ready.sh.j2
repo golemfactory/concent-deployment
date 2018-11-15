@@ -9,16 +9,16 @@ timeout=$2
 # Statefulset starts the pods individually, but with the convention `{statefulset-name}-{0-n}`
 # The second member {0-n} corresponds to the amount of pods
 # We have to manually defined name of the pods based of amount of replicas.
-deployment_name="$(kubectl get deployment --selector "run=$pod_label" --output name)"
+deployment_name="$(kubectl get deployment --context "{{ gke.cluster }}" --selector "run=$pod_label" --output name)"
 if [ -z "$deployment_name" ]; then
     pod_names=()
-    replica_count="$(kubectl get statefulset $pod_label --output jsonpath='{.spec.replicas}')"
+    replica_count="$(kubectl get statefulset $pod_label --context "{{ gke.cluster }}" --output jsonpath='{.spec.replicas}')"
     for i in `seq 0 $(($replica_count-1))`; do
         pod_names+=(pods/$pod_label-$i)
     done
     [ -z "$pod_names" ] && echo "The pod does not exist!" && exit 1
 else
-    pod_name=$(kubectl get pod --selector "run=$1" --output name)
+    pod_name=$(kubectl get pod --selector "run=$1" --context "{{ gke.cluster }}" --output name)
 
     [ -z "$pod_name" ] && echo "The pod does not exist!" && exit 1
 

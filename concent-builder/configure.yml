@@ -111,3 +111,10 @@
             state: directory
             owner: "{{ shared_user }}"
             group: "{{ shared_user }}"
+
+        - name: Upload configuration for kubectl
+          copy:
+            src:   "{{ local_secret_dir }}/cloud/config"
+            dest:  "/home/{{ shared_user }}/.kube/config"
+            owner: "{{ shared_user }}"
+            group: "{{ shared_user }}"

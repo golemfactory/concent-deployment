@@ -4,7 +4,7 @@ pod_name=$1
 timeout=$2
 
 time_counter=0
-until [[ "$(kubectl get $pod_name --output jsonpath='{.status.conditions[?(@.type=="Ready")].status}')" == "True" ]] ; do
+until [[ "$(kubectl get $pod_name --context "{{ gke.cluster }}" --output jsonpath='{.status.conditions[?(@.type=="Ready")].status}')" == "True" ]] ; do
     if [[ "$timeout" == "$time_counter" ]]; then
         echo "Timeout has occurred"
         exit 1
