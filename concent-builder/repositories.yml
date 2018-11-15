@@ -1,7 +1,0 @@
-repositories:
-  concent:
-    url: https://github.com/golemfactory/concent.git
-  concent-deployment:
-    url: https://github.com/golemfactory/concent-deployment.git
-  golem:
-    url: https://github.com/golemfactory/golem.git

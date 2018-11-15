@@ -105,9 +105,37 @@
             state:  present
             groups: docker
 
-        - name:    Create data_dir
+        - name:    Create git_mirror_dir and secret_dir
           file:
-            path:  "{{ data_dir }}"
+            path:  "{{ item.name }}"
             state: directory
-            owner: "{{ shared_user }}"
-            group: "{{ shared_user }}"
+            owner: "{{ item.owner }}"
+            group: "{{ item.group }}"
+            mode:  "{{ item.mode }}"
+          with_items:
+            - { name: "{{git_mirror_dir}}", owner: root, group: root, mode: "0755" }
+            - { name: "{{secret_dir}}", owner: "{{ shared_user }}", group: "{{ shared_user }}", mode: "0755" }
+
+        - name:   Copy scripts that update git repositories
+          template:
+            src:   "{{ item.name }}"
+            dest:  "{{ item.dest }}"
+            owner: root
+            group: root
+            mode:  0555
+          with_items:
+            - { name: repositories.sh, dest: /usr/local/lib/ }
+            - { name: update-git-mirror.sh.j2, dest: /usr/local/bin/update-git-mirror.sh }
+
+        - name:   Copy service that run update git repositories script
+          template:
+            src:   update-git-mirror.service.j2
+            dest:  /etc/systemd/system/update-git-mirror.service
+            owner: root
+            group: root
+            mode:  0555
+
+        - name:    Clone or update git repositories
+          service:
+            name: update-git-mirror
+            state: started

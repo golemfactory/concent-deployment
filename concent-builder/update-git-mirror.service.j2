@@ -1,0 +1,9 @@
+[Unit]
+Description=Update git repository
+
+[Service]
+Type=oneshot
+User=root
+Group=root
+WorkingDirectory={{ git_mirror_dir }}/
+ExecStart=/usr/local/bin/update-git-mirror.sh

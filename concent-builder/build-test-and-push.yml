@@ -2,7 +2,6 @@
     - concent-builder
   vars_files:
     - consts.yml
-    - repositories.yml
     - "{{ deployment_values }}/var.yml"
     - "{{ deployment_values }}/var-{{ cluster }}.yml"
   tasks:
@@ -14,9 +13,15 @@
             path:    "{{ build_dir }}"
             state:   absent
 
+        - name:    Clone or update git repositories
+          service:
+            name: update-git-mirror
+            state: started
+          become_user: root
+
         - name: Check out working copy of concent-deployment repositories
           git:
-            repo:    "{{ data_dir }}/concent-deployment"
+            repo:    "{{ git_mirror_dir }}/concent-deployment"
             dest:    "{{ build_dir }}/concent-deployment"
             version: "{{ versions['concent-deployment'] }}"
             clone:   yes
