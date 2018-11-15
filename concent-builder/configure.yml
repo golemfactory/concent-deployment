@@ -122,7 +122,7 @@
             dest:  "{{ item.dest }}"
             owner: root
             group: root
-            mode:  0744
+            mode:  0555
           with_items:
             - { name: repositories.sh, dest: /usr/local/lib/ }
             - { name: update-git-mirror.sh, dest: /usr/local/bin/ }
