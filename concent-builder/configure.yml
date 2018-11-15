@@ -117,7 +117,7 @@
             - { name: "{{secret_dir}}", owner: "{{ shared_user }}", group: "{{ shared_user }}", mode: "0755" }
 
         - name:   Copy scripts that update git repositories
-          copy:
+          template:
             src:   "{{ item.name }}"
             dest:  "{{ item.dest }}"
             owner: root
@@ -125,7 +125,7 @@
             mode:  0555
           with_items:
             - { name: repositories.sh, dest: /usr/local/lib/ }
-            - { name: update-git-mirror.sh, dest: /usr/local/bin/ }
+            - { name: update-git-mirror.sh.j2, dest: /usr/local/bin/update-git-mirror.sh }
 
         - name:   Copy service that run update git repositories script
           template:
