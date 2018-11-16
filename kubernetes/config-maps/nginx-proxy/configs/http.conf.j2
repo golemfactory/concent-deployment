@@ -21,8 +21,7 @@ upstream {{ current_golem_messages_version }} {
 }
 
 upstream {{ previous_golem_messages_version }} {
-     {% set concent_old_version = concent_versions.keys() |list %}
-     server {{ concent_versions[concent_old_version[1]].cluster_address }}:443;
+     server {{ concent_versions[previous_concent_version].cluster_address }}:443;
 }
 
 # Map to different upstream backends based on the `X-Golem-Messages` http header
@@ -36,7 +35,7 @@ map $http_x_golem_messages $version {
 }
 
 map $http_x_golem_messages $host_param {
-     ""                                             internal.local;
+     ""                                            internal.local;
      "~^{{ current_golem_messages_version }}.*$"   internal.local;
      "~^{{ previous_golem_messages_version }}.*$"  $http_host;
      default    $http_host;
