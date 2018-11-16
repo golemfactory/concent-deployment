@@ -11,7 +11,7 @@ map $http_accept $extension {
 server {
     listen 80;
     listen [::]:80;
-    server_name    {{ storage_cluster_address }};
+    server_name    {{ concent_versions[concent_version].storage_cluster_address }};
     return 302     https://$server_name$request_uri;
 
 }

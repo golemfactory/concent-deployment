@@ -35,12 +35,12 @@ del DATABASES["control"]
 
 RAVEN_CONFIG = {
     'dsn': SENTRY_DATA_SOURCE_NAME,
-    'environment': '{{ gke.cluster }}',
+    'environment': '{{ concent_versions[concent_version].gke.cluster }}',
     'tags': {'component': 'conductor-worker'},
 }
 
 CELERY_BROKER_URL = 'amqp://rabbitmq.default.svc.cluster.local:5672'
 
-EMAIL_SUBJECT_PREFIX = "[{{ gke.cluster }}:conductor-worker] "
+EMAIL_SUBJECT_PREFIX = "[{{ concent_versions[concent_version].gke.cluster }}:conductor-worker] "
 
 CONCENT_FEATURES = ["conductor-worker"]

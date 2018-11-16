@@ -42,12 +42,12 @@ ALLOWED_HOSTS = [
 
 RAVEN_CONFIG = {
     'dsn': SENTRY_DATA_SOURCE_NAME,
-    'environment': '{{ gke.cluster }}',
+    'environment': '{{ concent_versions[concent_version].gke.cluster }}',
     'tags': {'component': 'conductor'},
 }
 
 CELERY_BROKER_URL = 'amqp://rabbitmq.default.svc.cluster.local:5672'
 
-EMAIL_SUBJECT_PREFIX = "[{{ gke.cluster }}:conductor] "
+EMAIL_SUBJECT_PREFIX = "[{{ concent_versions[concent_version].gke.cluster }}:conductor] "
 
 CONCENT_FEATURES = ["conductor-urls"]

@@ -2,6 +2,7 @@ debian_version:               "9.4"
 docker_version:               "17.05.0~ce-0~debian-stretch"
 geth_version:                 "v1.8.12"
 golem_version:                "0.18.0"
+# Remember set version in concent_version variable also require configure it in the var-concent-<cluster_name>.yml file
 concent_version:              "v0.10.0"
 golemfactory_blender_version: "1.4"
 google_cloud_sdk_version:     "219.0.1-0"

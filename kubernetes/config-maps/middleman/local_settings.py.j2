@@ -23,10 +23,10 @@ ALLOWED_HOSTS = []
 
 RAVEN_CONFIG = {
     'dsn': SENTRY_DATA_SOURCE_NAME,
-    'environment': '{{ gke.cluster }}',
+    'environment': '{{ concent_versions[concent_version].gke.cluster }}',
     'tags': {'component': 'middleman'},
 }
 
-EMAIL_SUBJECT_PREFIX = "[{{ gke.cluster }}:middleman] "
+EMAIL_SUBJECT_PREFIX = "[{{ concent_versions[concent_version].gke.cluster }}:middleman] "
 
 CONCENT_FEATURES = ["middleman"]

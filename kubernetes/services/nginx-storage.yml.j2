@@ -44,7 +44,7 @@ spec:
             defaultMode: 0600
         - name: concent-storage
           gcePersistentDisk:
-            pdName: {{ nginx_storage_disk }}
+            pdName: {{ concent_versions[concent_version].nginx_storage_disk }}
             fsType: ext4
         - name: file-transfer-config
           configMap:

@@ -3,6 +3,7 @@
   vars_files:
     - consts.yml
     - repositories.yml
+    - ../containers/versions.yml
     - "{{ deployment_values }}/var.yml"
     - "{{ deployment_values }}/var-{{ cluster }}.yml"
   tasks:
@@ -57,7 +58,7 @@
               --key-file "{{ data_dir }}/concent-secrets/cloud/{{ gke.service_account_name }}-private-key.json"
 
         - name: Configure kubectl to operate on the right cluster
-          command: gcloud container clusters get-credentials \
-              "{{ gke.cluster }}"                            \
-              --project "{{ gke.project }}"                  \
+          command: gcloud container clusters get-credentials         \
+              "{{ concent_versions[concent_version].gke.cluster }}"  \
+              --project "{{ gke.project }}"                          \
               --zone    "{{ gke.zone }}"

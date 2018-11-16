@@ -40,18 +40,18 @@ assert DATABASES['default'] == {}
 del DATABASES["storage"]
 
 ALLOWED_HOSTS = [
-{% for host in allowed_hosts %}
+{% for host in concent_versions[concent_version].allowed_hosts %}
     "{{ host }}",
 {% endfor %}
 ]
 
 RAVEN_CONFIG = {
     'dsn': SENTRY_DATA_SOURCE_NAME,
-    'environment': '{{ gke.cluster }}',
+    'environment': '{{ concent_versions[concent_version].gke.cluster }}',
     'tags': {'component': 'concent-api'},
 }
 
-{% if storage_cluster_address == cluster_address %}
+{% if concent_versions[concent_version].storage_cluster_address == concent_versions[concent_version].cluster_address %}
 STORAGE_CLUSTER_SSL_CERTIFICATE_PATH = "/srv/http/concent_api/concent_api/settings/secrets/nginx-proxy-ssl.crt"
 {% else %}
 STORAGE_CLUSTER_SSL_CERTIFICATE_PATH = "/srv/http/concent_api/concent_api/settings/secrets/nginx-storage-ssl.crt"
@@ -59,7 +59,7 @@ STORAGE_CLUSTER_SSL_CERTIFICATE_PATH = "/srv/http/concent_api/concent_api/settin
 
 CELERY_BROKER_URL = 'amqp://rabbitmq.default.svc.cluster.local:5672'
 
-EMAIL_SUBJECT_PREFIX = "[{{ gke.cluster }}:concent-api] "
+EMAIL_SUBJECT_PREFIX = "[{{ concent_versions[concent_version].gke.cluster }}:concent-api] "
 
 PAYMENT_BACKEND = 'core.payments.backends.sci_backend'
 GETH_ADDRESS = 'http://geth.default.svc.cluster.local:8545'
@@ -71,8 +71,8 @@ MIDDLEMAN_PORT = 9054
 
 CONCENT_FEATURES = ["concent-api", "admin-panel"]
 
-{% if storage_cluster_address == cluster_address and not nginx_proxy_allow_http or storage_cluster_address != cluster_address and not nginx_storage_allow_http %}
-STORAGE_CLUSTER_ADDRESS = "https://{{ storage_cluster_address }}/"
+{% if concent_versions[concent_version].storage_cluster_address == concent_versions[concent_version].cluster_address and not nginx_proxy_allow_http or concent_versions[concent_version].storage_cluster_address != concent_versions[concent_version].cluster_address and not nginx_storage_allow_http %}
+STORAGE_CLUSTER_ADDRESS = "https://{{ concent_versions[concent_version].storage_cluster_address }}/"
 {% else %}
-STORAGE_CLUSTER_ADDRESS = "http://{{ storage_cluster_address }}/"
+STORAGE_CLUSTER_ADDRESS = "http://{{ concent_versions[concent_version].storage_cluster_address }}/"
 {% endif %}
