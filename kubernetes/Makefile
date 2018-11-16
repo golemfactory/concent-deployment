@@ -23,8 +23,9 @@ CLUSTER_SCRIPTS :=                                            \
     build/run-unit-tests.sh                                   \
     build/docker_testing.py                                   \
     build/push-docker-images.sh                               \
+    build/config-maps/nginx/ssl.conf                          \
+    build/config-maps/nginx/global.conf                       \
     build/config-maps/nginx-proxy/configs/http.conf           \
-    build/config-maps/nginx-proxy/configs/ssl.conf            \
     build/config-maps/nginx-proxy/configs/tcp.conf            \
     build/config-maps/nginx-proxy/nginx.conf                  \
     build/config-maps/concent/email_settings.py               \
@@ -38,7 +39,6 @@ CLUSTER_SCRIPTS :=                                            \
     build/config-maps/concent-api-worker/local_settings.py    \
     build/config-maps/database-jobs/local_settings.py         \
     build/config-maps/nginx-storage/default.conf              \
-    build/config-maps/nginx-storage/ssl.conf                  \
     build/config-maps/nginx-storage/file-transfer-config.lua  \
     build/jobs/reset-control-database.yml                     \
     build/jobs/migrate-control-database.yml                   \
