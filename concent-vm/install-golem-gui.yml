@@ -1,0 +1,47 @@
+- hosts:
+    - concent-vm
+  vars_files:
+    - ../concent-builder/repositories.yml
+    - consts.yml
+  tasks:
+    - become:      yes
+      become_user: root
+      block:
+        - name:   Add node.js to repository
+          shell: curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
+
+        - name:   Install node.js
+          apt:
+            name:
+              - nodejs
+
+        - name:    Install XFCE desktop environment
+          apt:
+            name:
+              - xfce4
+              - libgconf-2-4
+              - libnss3-dev
+
+    - become:      yes
+      become_user: vagrant
+      block:
+        - name:    Clone golem-electron repository
+          git:
+            repo:    "{{ golem_electron_repository }}"
+            dest:    "{{ golem_electron_dir }}"
+            version: "{{ golem_electron_version }}"
+            clone:   yes
+            update:  yes
+
+        - name:   Install dependencies for golem electron
+          command: npm install
+          args:
+            chdir: ~/golem_electron/
+
+        - name:    Install helper scripts for Golem GUI
+          copy:
+            src:  "helper-scripts/{{ item }}"
+            dest: "~/bin/{{ item }}"
+            mode: 0555
+          with_items:
+            - golem-run-gui-mode.sh
