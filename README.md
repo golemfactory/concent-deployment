@@ -522,9 +522,35 @@ ansible-playbook install-golem.yml                                 \
 `golem_version` parameter determines which branch/tag/commit from the `golem` repository will be deployed in the machine.
 Version listed in `containers/versions.yml` in `concent-deployment` repository is used by default.
 
+##### Installing Golem GUI
+After installing Golem you may opt to install its `golem-electron` GUI too.
+The playbook also installs a lightweight XFCE desktop environment in the machine that lets you actually run it inside without connecting to the X server running on the host.
+
+To install it, run the following playbook:
+``` bash
+ansible-playbook install-golem-gui.yml                             \
+    --extra-vars  golem_electron_version=dev                       \
+    --private-key .vagrant/machines/default/virtualbox/private_key \
+    --user        vagrant                                          \
+    --inventory   inventory
+```
+
+`golem_electron_version` parameter determines which branch/tag/commit from the `golem-electron` repository will be deployed in the machine.
+The default is the `dev` branch.
+
+To be able to run graphical programs inside the machine, you also have to perform some manual steps:
+- Make sure the machine is not running.
+    If it is, stop it with `vagrant halt`.
+- Start VirtualBox GUI.
+- Select the `concent-vm` image.
+- Go to Settings > Display.
+- Set video memory to 128 MB.
+
+
 #### Using the machine
 ##### Using Vagrant
 Please read the [Getting Started](https://www.vagrantup.com/intro/getting-started/) page in Vagrant docs to get familar with basic operations like starting the machine, logging into it via ssh or destroying it.
+
 
 ##### Helper scripts
 The machine provides several scripts that automate common development tasks.
@@ -598,6 +624,36 @@ You can see all the available `golemapp` options by running:
 ``` bash
 golem-run-console-mode.sh --help
 ```
+
+###### `golem-run-gui-mode.sh`
+Starts the Electron app that provides a GUI for Golem.
+Does **not** start the console app.
+The console app should already be running in a separate terminal.
+
+To actually see the window you need to unhide the graphical output from the machine.
+This can be done from the VirtualBox GUI:
+- Start the machine as usual (with `vagrant up`):
+- Start VirtualBox GUI.
+    You should see that the `concent-vm` machine is running.
+- Right click `concent-vm` and select "Show" from the context menu.
+    You'll see the graphical login screen.
+- Log in as `vagrant` (the default password is `vagrant`).
+
+Now you can launch the GUI from a terminal:
+``` bash
+golem-run-gui-mode.sh
+```
+
+This does not need to be a graphical terminal.
+You can do it from a shell started with `vagrant ssh`.
+
+
+###### `golem-run-all.sh`
+Starts both Golem GUI and the console app on a single terminal.
+- Runs `golem-run-console-mode.sh` in console mode and passes all the command-line arguments to it.
+- Runs `golem-run-gui-mode.sh`
+
+All remarks about `golem-run-gui-mode.sh` apply here too.
 
 ##### What's inside the machine
 Here's some extra information you should be aware of when using the machine:
