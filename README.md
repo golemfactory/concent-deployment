@@ -490,6 +490,25 @@ ansible-playbook install-golem.yml                                 \
 `golem_version` parameter determines which branch/tag/commit from the `concent` repository will be deployed in the machine.
 Version listed in `containers/versions.yml` in `concent-deployment` repository is used by default.
 
+### Installing Golem GUI
+``` bash
+golem_electron_version=dev
+ansible-playbook install-golem-gui.yml                             \
+    --extra-vars  golem_electron_version=$golem_electron_version   \
+    --private-key .vagrant/machines/default/virtualbox/private_key \
+    --user        vagrant                                          \
+    --inventory   inventory
+```
+
+You can use `golem_electron_version` to define which branch/tag/commit from the `golemfactory/golem-electron` repository will be installed.
+
+You also need to stop your machine and reconfigure it in VirtualBox GUI:
+- Run VirtualBox GUI.
+- Select the `concent-vm` image.
+- Go to Display Settings.
+- Set video memory to 128 MB.
+- Change screen resolution to match your screen.
+
 #### Using the machine
 ##### Using Vagrant
 Please read the [Getting Started](https://www.vagrantup.com/intro/getting-started/) page in Vagrant docs to get familar with basic operations like starting the machine, logging into it via ssh or destroying it.
@@ -565,6 +584,26 @@ You can see all the available `golemapp` options by running:
 
 ``` bash
 golem-run-console-mode.sh --help
+```
+
+###### `golem-run-gui-mode.sh`
+- Sources `golem-env.sh`.
+- Starts `golemapp` in console mode and passes all the command-line arguments to it.
+- Starts the Electron GUI
+
+To actually see the GUI you need to actually run a terminal on the virtual machine (rather than just connect with SSH):
+- Start the machine as usual (with `vagran up`):
+- Run VirtualBox GUI
+- Right click on the `concent-vm` image and select "Show". You should see a console where you can log in.
+- Log in as `vagrant`.
+
+Now you can start Golem GUI with:
+```bash
+source .profile
+golem-run-gui-mode.sh    \
+    --accept-terms       \
+    --mainnet            \
+    --password $password
 ```
 
 ##### What's inside the machine
