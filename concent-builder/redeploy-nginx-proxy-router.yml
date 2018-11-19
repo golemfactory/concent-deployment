@@ -1,66 +1,55 @@
-- hosts:
-    - concent-builder
-  vars_files:
-    - consts.yml
-    - repositories.yml
-    - "{{ deployment_values }}/var.yml"
-    - "{{ deployment_values }}/var-{{ cluster }}.yml"
-  tasks:
-    - become:      yes
-      become_user: "{{ shared_user }}"
-      block:
-        - name: Clone concent repositories
-          git:
-            repo:           "{{ item.value.url }}"
-            dest:           "{{ data_dir }}/{{ item.key }}/"
-            clone:          yes
-            update:         yes
-            bare:           yes
-            # FIXME: Do not blindly accept the hostkey
-            accept_hostkey: yes
-          with_dict:        "{{ repositories }}"
+- name: Clone concent repositories
+  git:
+    repo:           "{{ item.value.url }}"
+    dest:           "{{ data_dir }}/{{ item.key }}/"
+    clone:          yes
+    update:         yes
+    bare:           yes
+    # FIXME: Do not blindly accept the hostkey
+    accept_hostkey: yes
+  with_dict:        "{{ repositories }}"
 
-        - name: Check out working copy of concent-deployment repositories
-          git:
-            repo:    "{{ data_dir }}/concent-deployment"
-            dest:    "{{ build_dir }}/concent-deployment-nginx-proxy"
-            version: "{{ concent_versions[previous_concent_version].versions['concent-deployment'] }}"
-            clone:   yes
-            update:  yes
+- name: Check out working copy of concent-deployment repositories
+  git:
+    repo:    "{{ data_dir }}/concent-deployment"
+    dest:    "{{ build_dir }}/concent-deployment-nginx-proxy"
+    version: "{{ concent_clusters[cluster_index].versions['concent-deployment'] }}"
+    clone:   yes
+    update:  yes
 
-        - name: Install var.yml from the local machine
-          copy:
-            src:   "{{ deployment_values }}/{{ item }}"
-            dest:  "{{ build_dir }}/concent-deployment-nginx-proxy/kubernetes/"
-            owner: "{{ shared_user }}"
-            group: "{{ shared_user }}"
-          with_items:
-            - var.yml
-            - var-{{ cluster }}.yml
-          become_user: root
+- name: Install var.yml from the local machine
+  copy:
+    src:   "{{ deployment_values }}/{{ item }}"
+    dest:  "{{ build_dir }}/concent-deployment-nginx-proxy/kubernetes/"
+    owner: "{{ shared_user }}"
+    group: "{{ shared_user }}"
+  with_items:
+    - var.yml
+    - var-{{ cluster }}.yml
+  become_user: root
 
-        - name: Build cluster configuration
-          make:
-            chdir: "{{ build_dir }}/concent-deployment-nginx-proxy/kubernetes"
-            params:
-              IMAGE_PREFIX:   "{{ image_prefix }}"
-              CLUSTER:        "{{ cluster }}"
+- name: Build cluster configuration
+  make:
+    chdir: "{{ build_dir }}/concent-deployment-nginx-proxy/kubernetes"
+    params:
+      IMAGE_PREFIX:   "{{ image_prefix }}"
+      CLUSTER:        "{{ cluster }}"
 
-        - name:    Configure kubectl to operate on the right cluster
-          command: gcloud container clusters get-credentials                   \
-              "{{ concent_versions[previous_concent_version].gke.cluster }}"   \
-              --project "{{ gke.project }}"                                    \
-              --zone    "{{ gke.zone }}"
+- name:    Configure kubectl to operate on the right cluster
+  command: gcloud container clusters get-credentials                   \
+      "{{ cluster_index }}"                                             \
+      --project "{{ gke.project }}"                                    \
+      --zone    "{{ gke.zone }}"
 
-        - name:    Delete nginx-proxy from the "{{ concent_versions[previous_concent_version].gke.cluster }}" cluster
-          command: "kubectl delete --filename {{ build_dir}}/concent-deployment-nginx-proxy/kubernetes/build/services/nginx-proxy.yml"
+- name:    Delete nginx-proxy from the "{{ concent_clusters[cluster_index].gke.cluster }}" cluster
+  command: "kubectl delete --filename {{ build_dir}}/concent-deployment-nginx-proxy/kubernetes/build/services/nginx-proxy.yml"
 
-        - name:    Delete nginx-proxy configmap from the "{{ concent_versions[previous_concent_version].gke.cluster }}" cluster
-          command: kubectl delete configmap nginx-configs
+- name:    Delete nginx-proxy configmap from the "{{ concent_clusters[cluster_index].gke.cluster }}" cluster
+  command: kubectl delete configmap nginx-configs
 
-        - name:    Create new nginx-proxy configmap on the "{{ concent_versions[previous_concent_version].gke.cluster }}" cluster
-          command: "kubectl create configmap nginx-configs     \
-              --from-file={{ build_dir}}/concent-deployment-nginx-proxy/kubernetes/build/config-maps/nginx-proxy/configs"
+- name:    Create new nginx-proxy configmap on the "{{ concent_clusters[cluster_index].gke.cluster }}" cluster
+  command: "kubectl create configmap nginx-configs     \
+      --from-file={{ build_dir}}/concent-deployment-nginx-proxy/kubernetes/build/config-maps/nginx-proxy/configs"
 
-        - name:     Create nginx-proxy on the "{{ concent_versions[previous_concent_version].gke.cluster }}" cluster
-          command: "kubectl create --filename {{ build_dir}}/concent-deployment-nginx-proxy/kubernetes/build/services/nginx-proxy.yml"
+- name:     Create nginx-proxy on the "{{ concent_clusters[cluster_index].gke.cluster }}" cluster
+  command: "kubectl create --filename {{ build_dir}}/concent-deployment-nginx-proxy/kubernetes/build/services/nginx-proxy.yml"

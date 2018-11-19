@@ -53,7 +53,7 @@ metadata:
   name: nginx-proxy
 spec:
   type:           LoadBalancer
-  loadBalancerIP: {{ concent_versions[concent_version].external_ip }}
+  loadBalancerIP: {{ concent_clusters[cluster_index].external_ip }}
   ports:
     - name:       http
       protocol:   TCP

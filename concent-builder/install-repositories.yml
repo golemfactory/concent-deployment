@@ -59,6 +59,6 @@
 
         - name: Configure kubectl to operate on the right cluster
           command: gcloud container clusters get-credentials         \
-              "{{ concent_versions[concent_version].gke.cluster }}"  \
+              "{{concent_clusters[cluster_index].gke.cluster }}"     \
               --project "{{ gke.project }}"                          \
               --zone    "{{ gke.zone }}"

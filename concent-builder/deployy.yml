@@ -1,0 +1,47 @@
+- hosts:
+    - concent-builder
+  vars_files:
+    - consts.yml
+    - repositories.yml
+    - ../containers/versions.yml
+    - "{{ deployment_values }}/var.yml"
+    - "{{ deployment_values }}/var-{{ cluster }}.yml"
+  tasks:
+    - become:      yes
+      become_user: "{{ shared_user }}"
+      block:
+       - include_tasks: deploy.yml
+         with_dict:
+           # - "{{'{{ concent_clusters }}' if (cluster_index is undefined) else '{{ concent_clusters[cluster_index] }}'}}"
+           # - "{% if cluster_index is undefined %}{{ concent_clusters }}{% else %}{{ concent_clusters[cluster_index].keys() }}{% endif %}"
+           - "{{ concent_clusters }}"
+         vars:
+           cluster_index: "{{ item.key }}"
+         when: item.key.load_balancer_turned_on is defined and cluster_index is undefined
+
+       - include_tasks: deploy.yml
+         with_items:
+           # - "{{'{{ concent_clusters }}' if (cluster_index is undefined) else '{{ concent_clusters[cluster_index] }}'}}"
+           # - "{% if cluster_index is undefined %}{{ concent_clusters }}{% else %}{{ concent_clusters[cluster_index].keys() }}{% endif %}"
+           - "{{ concent_clusters[cluster_index] }}"
+         vars:
+           cluster_index: "{{ cluster_index }}"
+         when: concent_clusters[cluster_index].load_balancer_turned_on is defined and cluster_index is defined
+
+       - include_tasks: redeploy-nginx-proxy-router.yml
+         with_dict:
+           # - "{{'concent_clusters[cluster_index].key()' if (cluster_index is defined) else 'concent_clusters'}}"
+           - "{{ concent_clusters }}"
+         vars:
+           cluster_index: "{{ item.key }}"
+         when: item.value.load_balancer_turned_on is undefined and cluster_index is undefined
+
+       - include_tasks: redeploy-nginx-proxy-router.yml
+         with_items:
+           # - "{{'concent_clusters[cluster_index].key()' if (cluster_index is defined) else 'concent_clusters'}}"
+           - "{{ concent_clusters }}"
+         loop_control:
+           loop_var: cluster_item
+         vars:
+           cluster_index: "{{ cluster_index }}"
+         when: cluster_item.load_balancer_turned_on is undefined and cluster_index is defined

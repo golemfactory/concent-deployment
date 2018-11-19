@@ -52,6 +52,11 @@ ifndef CLUSTER
 endif
 $(info CLUSTER=$(CLUSTER))
 
+ifndef CLUSTER_INDEX
+    $(error CLUSTER_INDEX parameter not specified)
+endif
+$(info CLUSTER_INDEX=$(CLUSTER_INDEX))
+
 ifndef DEPLOYMENT_VALUES_DIR
     DEPLOYMENT_VALUES_DIR := $(abspath .)
 endif
@@ -90,11 +95,11 @@ build/vars-with-%-database-config.yml: build/%-database-configuration.yml build/
 		"build/vars-merged.yml"                    \
 		--output "$@"
 
-build/vars-merged.yml: $(DEPLOYMENT_VALUES_DIR)/var.yml $(DEPLOYMENT_VALUES_DIR)/var-$(CLUSTER).yml build/image-version.yml ../containers/versions.yml ../tools/merge-yaml.py
+build/vars-merged.yml: $(DEPLOYMENT_VALUES_DIR)/var.yml $(DEPLOYMENT_VALUES_DIR)/var-$(CLUSTER).yml build/image-version-and-cluster-index.yml ../containers/versions.yml ../tools/merge-yaml.py
 	../tools/merge-yaml.py                                \
 		"$<"                                              \
 		"$(DEPLOYMENT_VALUES_DIR)/var-$(CLUSTER).yml"     \
-		"build/image-version.yml"                         \
+		"build/image-version-and-cluster-index.yml"       \
 		../containers/versions.yml                        \
 		--output "$@"
 
@@ -107,8 +112,9 @@ build/%-database-configuration.yml:
 	    echo "initialize_django_admin: true" >> "$@";  \
 	fi
 
-build/image-version.yml:
+build/image-version-and-cluster-index.yml:
 	echo "image_version: $(IMAGE_VERSION)" >> "$@"
+	echo "cluster_index: $(CLUSTER_INDEX)" >> "$@"
 
 clean:
 	rm -rf build/

@@ -1,5 +1,5 @@
 from .testing import *
 
-DATABASES['default']['HOST']     = '{{ concent_versions[concent_version].gke.cluster }}-{{ image_prefix }}postgresql-unittest'
-DATABASES['control']['HOST']     = '{{ concent_versions[concent_version].gke.cluster }}-{{ image_prefix }}postgresql-unittest'
-DATABASES['storage']['HOST']     = '{{ concent_versions[concent_version].gke.cluster }}-{{ image_prefix }}postgresql-unittest'
+DATABASES['default']['HOST']     = '{{ concent_clusters[cluster_index].gke.cluster }}-{{ image_prefix }}postgresql-unittest'
+DATABASES['control']['HOST']     = '{{ concent_clusters[cluster_index].gke.cluster }}-{{ image_prefix }}postgresql-unittest'
+DATABASES['storage']['HOST']     = '{{ concent_clusters[cluster_index].gke.cluster }}-{{ image_prefix }}postgresql-unittest'
