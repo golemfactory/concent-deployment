@@ -4,6 +4,9 @@
 # We never commit binary files to the repository.
 *.tar
 
+# Ansible retry files
+*.retry
+
 # Build files created by Makefiles.
 /containers/build/
 /kubernetes/build/
