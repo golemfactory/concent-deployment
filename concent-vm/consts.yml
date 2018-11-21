@@ -1,2 +1,5 @@
-concent_deployment_dir: /home/builder/concent-deployment
-concent_dir:            /home/vagrant/concent
+concent_deployment_dir:      /home/builder/concent-deployment
+concent_dir:                 /home/vagrant/concent
+golem_dir:                   /home/vagrant/golem
+golem_hyperdrive_repository: https://github.com/mfranciszkiewicz/golem-hyperdrive/releases/download/v0.2.6/hyperg_0.2.6_linux-x64.tar.gz
+golem_hyperdrive_checksum:   sha256:94220ef8533030652d4a1c126f06fa9cdce9d620b91f1c4574a109a3891e8adf

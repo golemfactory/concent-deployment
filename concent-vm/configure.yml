@@ -39,18 +39,31 @@
             - python-psycopg2
             - blender
             - libsm6
+            # Golem dependencies
+            - openssl
+            - libffi-dev
+            - pkg-config
+            - libjpeg-dev
+            - libopenexr-dev
+            - autoconf
+            - libgmp-dev
+            - libfreeimage-dev
+            - libtool
+            - rustc
+            - cargo
+
+        - name:   Install extra dependencies from testing for Golem
+          apt:  name={{ item }} default_release=testing
+          with_items:
+            - python3-pip
+            - python3-netifaces
+            - python3-psutil
 
         - name:   Create the user account that will be used for building stuff
           user:
             name:   builder
             state:  present
             groups: docker
-
-        - name:    Add user 'vagrant' to the 'docker' group
-          user:
-            name:   vagrant
-            groups: docker
-            append: yes
 
         - name:   include common postrequire tasks from `postrequire-configure-tasks.yml` file
           include_tasks: ../concent-builder/common_tasks/postrequire-configure-tasks.yml
