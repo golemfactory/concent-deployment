@@ -1,3 +1,10 @@
+### 0.10.1
+- Added support for deploying multiple golem-messages versions to the same environment (#258).
+
+Compatibility:
+- Golem: 0.18.2
+- Concent: 0.10.1
+
 ### 0.10.0
 - Added system that controls free space on nginx-storage (#254).
 - Added ability to use different ethereum smart contracts for different clusters (#253).
