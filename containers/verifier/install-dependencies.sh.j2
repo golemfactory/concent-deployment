@@ -29,8 +29,8 @@ testing_dependencies=(
     python3-pip
 
     # There's no stable Python 3.6 package in Debian Jessie so we have to get it from testing.
-    python3.6
-    python3.6-dev
+    python{{ python_version }}
+    python{{ python_version }}-dev
     virtualenv
     # The upgrade of `virtualenv` package also upgrade `python3-apt` and `libapt-pkg5.0:amd64` packages.
     # We don't install recommendation packages(`--no-install-recommends`) which is in this case `apt` package.
