@@ -1,3 +1,9 @@
+### 0.10.2
+
+Compatibility:
+- Golem: 0.18.2
+- Concent: 0.10.2
+
 ### 0.10.1
 - Added support for deploying multiple golem-messages versions to the same environment (#258).
 
