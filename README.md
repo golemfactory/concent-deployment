@@ -404,6 +404,7 @@ The `concent-vm/` directory contains a Vagrant configuration that creates a virt
 The machine has multiple purposes:
 - It can be used to run and debug Concent tests in a reproducible environment.
 - It serves as a reference for setting up Concent development environment.
+- It can can be set up to run Golem from source.
 
 #### Prerequisites
 ##### Vagrant
@@ -475,6 +476,20 @@ ansible-playbook install-concent.yml                               \
 `concent_version` parameter determines which branch/tag/commit from the `concent` repository will be deployed in the machine.
 Version listed in `containers/versions.yml` in `concent-deployment` repository is used by default.
 
+##### Installing Golem
+Golem installation does not require any extra configuration.
+Just run the following playbook:
+``` bash
+ansible-playbook install-golem.yml                                 \
+    --extra-vars  golem_version=develop                            \
+    --private-key .vagrant/machines/default/virtualbox/private_key \
+    --user        vagrant                                          \
+    --inventory   inventory
+```
+
+`golem_version` parameter determines which branch/tag/commit from the `concent` repository will be deployed in the machine.
+Version listed in `containers/versions.yml` in `concent-deployment` repository is used by default.
+
 #### Using the machine
 ##### Using Vagrant
 Please read the [Getting Started](https://www.vagrantup.com/intro/getting-started/) page in Vagrant docs to get familar with basic operations like starting the machine, logging into it via ssh or destroying it.
@@ -530,6 +545,26 @@ Prepares your shell for work with the Golem working copy checked out in the mach
 This script is meant to be sourced rather than executed:
 ```
 source golem-env.sh
+```
+
+###### `golem-run-console-mode.sh`
+Starts Golem without GUI.
+- Sources `golem-env.sh`.
+- Starts `golemapp` in console mode and passes all the command-line arguments to it.
+
+You can use it to start Golem like this:
+``` bash
+golem-run-console-mode.sh \
+    --accept-terms        \
+    --password $password
+```
+
+`$password` needs to contain your Golem password.
+
+You can see all the available `golemapp` options by running:
+
+``` bash
+golem-run-console-mode.sh --help
 ```
 
 ##### What's inside the machine

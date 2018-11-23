@@ -1,0 +1,55 @@
+- hosts:
+    - concent-vm
+  vars_files:
+    - ../containers/versions.yml
+    - ../concent-builder/repositories.yml
+    - consts.yml
+  tasks:
+    - become:      yes
+      become_user: vagrant
+      block:
+        - name:   Clone golem repository
+          git:
+            repo:    "{{ repositories.golem.url }}"
+            dest:    "{{ golem_dir }}"
+            version: "{{ golem_version }}"
+            clone:   yes
+            update:  yes
+
+        - name:   Create virtualenv for golem
+          command:  virtualenv ~/golem_virtualenv --python "python{{ python_version }}" creates="~/golem_virtualenv"
+
+        - name:   Install requirements for golem
+          pip:
+            requirements:       "{{ golem_dir }}/{{ item }}"
+            virtualenv:         ~/golem_virtualenv
+            virtualenv_python:  "python{{ python_version }}"
+          with_items:
+            - requirements.txt
+            - requirements-test.txt
+
+        - name:   Run setup.py develop
+          shell: ~/golem_virtualenv/bin/python setup.py develop
+          args:
+            chdir: "{{ golem_dir }}"
+
+        - name:   Download hyperg
+          get_url:
+            url:      "{{ golem_hyperdrive_repository }}"
+            dest:     ~/hyperg.tar.gz
+            mode:     0644
+            checksum: "{{ golem_hyperdrive_checksum }}"
+
+        - name:   Extract hyperg
+          unarchive:
+            src:        ~/hyperg.tar.gz
+            dest:       ~/
+            remote_src: yes
+
+        - name:    Copy to execute path
+          file:
+            src:  ~/hyperg/hyperg
+            dest: ~/bin/hyperg
+            owner: vagrant
+            group: vagrant
+            state: link
