@@ -446,6 +446,35 @@ export CONCENT_DEPLOYMENT_VERSION=master
 vagrant up
 ```
 
+##### Installing Concent
+###### Configuration
+This step requires two configuration files.
+
+`concent-vm/extra_settings.py` is a Python script that will be imported into the automatically generated `local_settings.py` in the machine.
+You can use it to provide secrets or override default settings.
+It can be empty if you're fine with defaults.
+
+`concent-vm/signing-service-env.sh` is a shell script meant to be sourced immediately before starting an instance of Concent's Signing Service and can define values of environment variables used by it.
+At minimum it should define the following variables:
+
+``` bash
+export ETHEREUM_PRIVATE_KEY="..."
+export SIGNING_SERVICE_PRIVATE_KEY="..."
+```
+
+###### Installation
+After creating the configuration, it's enough to run the following playbook:
+``` bash
+ansible-playbook install-concent.yml                               \
+    --extra-vars  concent_version=master                           \
+    --private-key .vagrant/machines/default/virtualbox/private_key \
+    --user        vagrant                                          \
+    --inventory   inventory
+```
+
+`concent_version` parameter determines which branch/tag/commit from the `concent` repository will be deployed in the machine.
+Version listed in `containers/versions.yml` in `concent-deployment` repository is used by default.
+
 #### Using the machine
 ##### Using Vagrant
 Please read the [Getting Started](https://www.vagrantup.com/intro/getting-started/) page in Vagrant docs to get familar with basic operations like starting the machine, logging into it via ssh or destroying it.
