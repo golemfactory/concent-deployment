@@ -1,0 +1,24 @@
+- name:   Clone concent-deployment repository
+  git:
+    repo:    "{{ repositories['concent-deployment'].url }}"
+    dest:    "{{ concent_deployment_dir }}"
+    version: "{{ concent_deployment_version }}"
+    clone:   yes
+    update:  yes
+
+- name:   Build nginx-storage container
+  make:
+    chdir:  "{{ concent_deployment_dir }}/containers"
+    target: nginx-storage
+
+- name:   Create directory for nginx-storage script
+  file:
+    path:  ~/bin
+    state: directory
+
+- name:   Install the script for running nginx-storage
+  copy:
+    src:        "{{ concent_deployment_dir }}/concent-vm/run-nginx-storage.sh"
+    dest:       "~/bin/run-nginx-storage.sh"
+    remote_src: yes
+    mode:       0555

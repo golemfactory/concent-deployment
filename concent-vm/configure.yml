@@ -1,0 +1,118 @@
+- hosts:
+    - concent-vm
+  vars_files:
+    - ../containers/versions.yml
+    - ../concent-builder/repositories.yml
+    - consts.yml
+  tasks:
+    - become:      yes
+      become_user: root
+      block:
+        - name:   include common prerequire tasks from `prerequire-configure-tasks.yml` file
+          include_tasks: ../concent-builder/common_tasks/prerequire-configure-tasks.yml
+
+        - name:   Install basic utilities
+          apt:  name={{ item }}
+          with_items:
+            - ncdu
+            - tree
+            - htop
+            - tmux
+            - vim
+
+        - name:   Install dependencies
+          apt:  name={{ item }}
+          with_items:
+            - build-essential
+            - python2.7
+            - python-pip  # For Python 2
+            - libssl-dev
+            - pkg-config
+            - libsecp256k1-dev
+            - git
+            - docker-engine={{ docker_version }}
+            - ansible
+            - libpq-dev
+            - gcc
+            - python3-yaml
+            - postgresql-{{ debian_postgres_version }}
+            - python-psycopg2
+            - blender
+            - libsm6
+
+        - name:   Create the user account that will be used for building stuff
+          user:
+            name:   builder
+            state:  present
+            groups: docker
+
+        - name:    Add user 'vagrant' to the 'docker' group
+          user:
+            name:   vagrant
+            groups: docker
+            append: yes
+
+        - name:   include common postrequire tasks from `postrequire-configure-tasks.yml` file
+          include_tasks: ../concent-builder/common_tasks/postrequire-configure-tasks.yml
+
+    - become:      yes
+      become_user: builder
+      block:
+        - name:   include start docker service tasks from `start-docker-services.yml` file
+          include_tasks: start-docker-services.yml
+
+        - name:   include building nginx tasks from `build-nginx-storage.yml` file
+          include_tasks: build-nginx-storage.yml
+
+    - become:      yes
+      become_user: root
+      block:
+        - name:   Configure PostgreSQL to accept local connections
+          lineinfile:
+            path: "/etc/postgresql/{{ debian_postgres_version }}/main/postgresql.conf"
+            line: "listen_addresses='*'"
+
+        - name:   Configure postgresql to trust local connections without password
+          copy:
+            src:        "{{ concent_deployment_dir }}/concent-vm/pg_hba.conf"
+            dest:       "/etc/postgresql/{{ debian_postgres_version }}/main/pg_hba.conf"
+            remote_src: yes
+            owner:      postgres
+            group:      postgres
+
+        - name:   Restart postgresql service
+          service:
+            enabled: yes
+            name:    postgresql
+            state:   restarted
+
+        - name:   Install systemd service file for nginx-storage
+          copy:
+            src:        "{{ concent_deployment_dir }}/concent-vm/nginx-storage.service"
+            dest:       "/etc/systemd/system/nginx-storage.service"
+            remote_src: yes
+
+        - name:   Run nginx-storage service
+          service:
+            enabled: yes
+            name:    nginx-storage
+            state:   started
+
+        - name:   Create control and storage databases
+          postgresql_db:
+            name: "{{ item }}"
+          with_items:
+            - concent_api
+            - storage
+          become:      yes
+          become_user: postgres
+
+    - become:      yes
+      become_user: vagrant
+      block:
+        - name:   Install helper scripts for managing Concent
+          command: cp                                                            \
+              --recursive                                                        \
+              --preserve                                                         \
+              "{{ concent_deployment_dir }}/concent-vm/helper-scripts/."         \
+              "~/bin/"

@@ -1,0 +1,37 @@
+- name:          Check if rabbitmq container is running
+  command:       docker inspect --format {% raw %}"{{.State.Running}}"{% endraw %} rabbitmq
+  register:      rabbitmq_container_running
+  ignore_errors: True
+
+- name:    Run rabbitmq container
+  command: docker run            \
+      --rm                       \
+      --detach                   \
+      --hostname rabbitmq-server \
+      --network  host            \
+      --name     rabbitmq        \
+      rabbitmq:{{ rabbitmq_alpine_version }}-alpine
+  when: rabbitmq_container_running is failed or rabbitmq_container_running.stdout == "false"
+
+- name:          Check if geth container is running
+  command:       docker inspect --format {% raw %}"{{.State.Running}}"{% endraw %} geth
+  register:      geth_container_running
+  ignore_errors: True
+
+- name:    Run geth container
+  command: docker run                                \
+      --rm                                           \
+      --detach                                       \
+      --network host                                 \
+      --volume  /home/vagrant/blockchain:/blockchain \
+      --name    geth                                 \
+      ethereum/client-go:{{ geth_version }}          \
+          --rinkeby                                  \
+          --datadir  /blockchain/.ethereum/rinkeby/  \
+          --syncmode fast                            \
+          --cache    512                             \
+          --rpc                                      \
+          --rpcaddr  0.0.0.0                         \
+          --rpcapi   "eth, web3, net"                \
+          --ipcdisable
+  when: geth_container_running is failed or geth_container_running.stdout == "false"
