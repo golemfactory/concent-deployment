@@ -479,6 +479,59 @@ Version listed in `containers/versions.yml` in `concent-deployment` repository i
 ##### Using Vagrant
 Please read the [Getting Started](https://www.vagrantup.com/intro/getting-started/) page in Vagrant docs to get familar with basic operations like starting the machine, logging into it via ssh or destroying it.
 
+##### Helper scripts
+The machine provides several scripts that automate common development tasks.
+They're located in `/home/vagrant/bin/` which is in user's `PATH` so you can execute them from any location.
+
+###### `concent-env.sh`
+This is a helper script that loads a Python virtualenv with all dependencies required to run Concent and enters the directory that contains a working coy of the `concent` repository.
+
+This script is meant to be sourced rather than executed:
+```
+source concent-env.sh
+```
+
+Use it when you want to be able to run scripts from the repository (start Concent, run unit tests, etc.).
+All the helper scripts provided with the machine source this file automatically when needed.
+
+###### `concent-run.sh`
+This script starts Concent, including:
+- A development Django server (`manage.py runserver`).
+- 3 Celery worker instances attached to the right queues.
+- Signing Service
+- Middleman
+
+###### `concent-migrate.sh`
+Migrates the databases, preserving their content.
+
+###### `concent-reset.sh`
+This script reinitializes Concent, removing all data stored by it so that you can start from scratch:
+- Destroys and recreates the databases.
+- Migrates the databases.
+- Empties RabbitMQ queues.
+- Re-creates the superuser account.
+- Restarts all the services.
+- Does **not** remove blockchain data.
+
+###### `concent-update.sh`
+Updates Concent to the version (tag/branch/commit) specified in the first parameter (`master` by default):
+- Fetches the latest code from git.
+- Checks out the specified version.
+- Destroys and recreates the virtualenv.
+- Installs Concent dependencies in the virtualenv.
+- Migrates the databases.
+
+###### `golem-env.sh`
+Similar to `concent-env.sh`.
+Prepares your shell for work with the Golem working copy checked out in the machine:
+- Loads the virtualenv with Golem's dependencies.
+- Changes the directory to `golem`.
+
+This script is meant to be sourced rather than executed:
+```
+source golem-env.sh
+```
+
 ##### What's inside the machine
 Here's some extra information you should be aware of when using the machine:
 - `Vagrantfile` creates a virtual disk image in `concent-vm/disk/blockchain_disk.vdi`.
@@ -497,3 +550,5 @@ Here's some extra information you should be aware of when using the machine:
     - Geth (runs in a Docker container)
     - nginx (configured to act as `nginx-storage`, built from `concent-deployment`)
 - The initialization playbook automatically creates PostgreSQL databases required by Concent
+- Concent, Signing Service and Golem do not start automatically.
+    Since you may want to run only one or the other, you need to start them using the helper scripts listed above.
