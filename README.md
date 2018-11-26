@@ -373,8 +373,8 @@ docker run                                                                      
     --volume      /var/log/concent/daily_thresholds:/usr/lib/signing_service/signing-service/daily_thresholds   \
     --restart     on-failure                                                                                    \
     concent-signing-service                                                                                     \
-        concent.golem.network                                                                                   \
-        85cZzVjahnRpUBwm0zlNnqTdYom1LF1P1WNShLg17cmhN2Us                                                        \
+        --concent-cluster-host                  concent.golem.network                                           \
+        --concent-public-key                    85cZzVjahnRpUBwm0zlNnqTdYom1LF1P1WNShLg17cmhN2Us                \
         --concent-cluster-port                  9055                                                            \
         --ethereum-private-key-from-env                                                                         \
         --signing-service-private-key-from-env                                                                  \
