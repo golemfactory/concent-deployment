@@ -5,11 +5,11 @@ source ~/signing-service-env.sh
 
 function run_signing_service {
     cd ../signing_service/
-    ./signing_service.sh                                                                            \
-        127.0.0.1                                                                                   \
-        85cZzVjahnRpUBwm0zlNnqTdYom1LF1P1WNShLg17cmhN2UssnPrCjHKTi5susO3wrr/q07eswumbL82b4HgOw==    \
-        --concent-cluster-port 9055                                                                 \
-        --ethereum-private-key-from-env                                                             \
+    ./signing_service.sh                                                                                                 \
+        --concent-cluster-host 127.0.0.1                                                                                 \
+        --concent-public-key 85cZzVjahnRpUBwm0zlNnqTdYom1LF1P1WNShLg17cmhN2UssnPrCjHKTi5susO3wrr/q07eswumbL82b4HgOw==    \
+        --concent-cluster-port 9055                                                                                      \
+        --ethereum-private-key-from-env                                                                                  \
         --signing-service-private-key-from-env
 }
 
