@@ -6,6 +6,7 @@ DATABASES['storage']['HOST']     = 'localhost'
 
 STORAGE_CLUSTER_ADDRESS = 'http://172.40.2.3:8001/'
 PAYMENT_BACKEND = 'core.payments.backends.sci_backend'
+GETH_ADDRESS = 'https://rinkeby.golem.network:55555'
 
 ALLOWED_HOSTS = [
     "172.40.2.3",
