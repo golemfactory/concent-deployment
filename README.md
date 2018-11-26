@@ -536,6 +536,12 @@ Updates Concent to the version (tag/branch/commit) specified in the first parame
 - Installs Concent dependencies in the virtualenv.
 - Migrates the databases.
 
+###### `concent-run-all-tests.sh`
+This script run all concent tests, before execute, you must run the `concent-run.sh` script in a second console.
+- Sources `concent-env.sh`.
+- Starts `full-check.sh`.
+- Starts `api-e2e-tests.sh`.
+
 ###### `golem-env.sh`
 Similar to `concent-env.sh`.
 Prepares your shell for work with the Golem working copy checked out in the machine:
@@ -565,6 +571,20 @@ You can see all the available `golemapp` options by running:
 
 ``` bash
 golem-run-console-mode.sh --help
+```
+
+###### `golem-run-concent-integration-tests.sh`
+Starts Golem integration tests for concent.
+- Sources `golem-env.sh`.
+- Starts `pytest` and passes all the command-line arguments to it.
+
+For example:
+```bash
+golem-run-concent-integration-tests.sh              \
+    scripts/concent_acceptance_tests/force_accept   \
+    --maxfail=1                                     \
+    -vs                                             \
+    --lf
 ```
 
 ##### What's inside the machine
