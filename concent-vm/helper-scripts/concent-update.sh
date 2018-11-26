@@ -1,8 +1,10 @@
 #!/bin/bash -e
 
-DEFAULT_BRANCH=master
-
-branch_name="${1:-$DEFAULT_BRANCH}"
+branch_name="$1"
+if [ -z "$branch_name" ]; then
+    echo "Please specify the name of branch"
+    exit 1
+fi
 
 cd ~/concent/concent_api/
 
