@@ -569,15 +569,6 @@ golem-run-console-mode.sh --help
 
 ##### What's inside the machine
 Here's some extra information you should be aware of when using the machine:
-- `Vagrantfile` creates a virtual disk image in `concent-vm/disk/blockchain_disk.vdi`.
-    This image is meant to store the blockchain data needed for geth to connect and use the Ethereum testnet.
-    Since downloading this data can take a while, the machine is configured to never delete it on its own.
-    It always gets detached before you destroy the machine.
-    - This image is quite large (currently 30 GB by default) so make sure you have enough disk space.
-      You can manually tweak the size in `Vagrantfile` but keep in mind that it has to be big enough to store the whole blockchain.
-    - If you want to start from scratch, you need to remove the file manually.
-        It should not be necessary in normal circumstances.
-        Geth can deal with partially downloaded blockchain.
 - The following services are automatically started inside the machine when the it boots:
     - Docker
     - PostgreSQL (accepts connections from within the machine without a password)
