@@ -15,8 +15,8 @@ spec:
           image:            {{ docker_registry }}/{{image_prefix }}signing-service:{{ image_version }}
           imagePullPolicy:  Always
           args:             [
-              "{{ concent_versions[concent_version].cluster_address }}",
-              "{{ concent_public_key }}",
+              "--concent-cluster-host", "{{ concent_versions[concent_version].cluster_address }}",
+              "--concent-public-key",   "{{ concent_public_key }}",
               "--concent-cluster-port", "9055",
               "--sentry-dsn-from-env",
               "--ethereum-private-key-from-env",
