@@ -2,6 +2,7 @@
     - concent-builder
   vars_files:
     - consts.yml
+    - repositories.yml
     - ../containers/versions.yml
     # NOTE: This playbook should not use values from concent-deployment-values
   tasks:
@@ -19,6 +20,15 @@
         - name:    Add Google Cloud SDK repository
           apt_repository:
             repo:  "deb http://packages.cloud.google.com/apt cloud-sdk-{{ ansible_distribution_release }} main"
+
+        - name:    Add jenkins repository key
+          apt_key:
+            url:   https://pkg.jenkins.io/debian/jenkins.io.key
+            state: present
+
+        - name:    Add jenkins repository
+          apt_repository:
+            repo:  "deb https://pkg.jenkins.io/debian binary/"
             state: present
 
         - name:   Install system updates for Debian
@@ -48,6 +58,12 @@
             - python3-yaml
             - postgresql-{{ postgres_version }}
             - python3-psycopg2
+            - default-jdk
+            - groovy
+
+        - name:    Install jenkins package
+          apt:
+            name: jenkins={{ jenkins_version }}
 
         - name:   include common postrequire tasks from `postrequire-configure-tasks.yml` file
           include_tasks: common_tasks/postrequire-configure-tasks.yml
@@ -58,9 +74,34 @@
             state:  present
             groups: docker
 
+        - name:    Add jenkins user to sudo group
+          user:
+            name:   jenkins
+            state:  present
+            groups: sudo
+
         - name:    Create data_dir
           file:
             path:  "{{ data_dir }}"
             state: directory
             owner: "{{ shared_user }}"
             group: "{{ shared_user }}"
+
+        - name:    Create jenkins home directory
+          file:
+            path:  "{{ jenkins_home_dir }}/"
+            state: directory
+            owner: jenkins
+            group: jenkins
+
+        - name:   Add jenkins role to sudoers
+          copy:
+            src:  "jenkins-configuration-files/jenkins_sudoers"
+            dest: "/etc/sudoers.d/jenkins"
+
+        - name:   Add inventory file to run ansible playbook by jenkins
+          copy:
+            src:   "jenkins-configuration-files/jenkins_inventory"
+            dest:  "{{ jenkins_home_dir }}/inventory"
+            owner: jenkins
+            group: jenkins
