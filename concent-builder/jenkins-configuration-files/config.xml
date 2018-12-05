@@ -1,0 +1,45 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<flow-definition plugin="workflow-job@2.29">
+  <actions/>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties/>
+  <definition class="org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition" plugin="workflow-cps@2.60">
+    <script>node {
+   ansiblePlaybook( 
+       extraVars: [
+           concent_version: &apos;v0.10.2-50-g0fe5f995&apos;,
+       ],
+       inventory: &apos;/home/jenkins/inventory&apos;, 
+       playbook: &apos;/home/jenkins/concent-deployment/concent-builder/set-concent-version.yml&apos;)
+   ansiblePlaybook( 
+       extraVars: [
+           cluster: &apos;concent-dev&apos;,
+       ],
+       inventory: &apos;/home/jenkins/inventory&apos;, 
+       playbook: &apos;/home/jenkins/concent-deployment/concent-builder/install-repositories.yml&apos;)
+    ansiblePlaybook( 
+       extraVars: [
+           cluster: &apos;concent-dev&apos;,
+       ],
+       inventory: &apos;/home/jenkins/inventory&apos;, 
+       playbook: &apos;/home/jenkins/concent-deployment/concent-builder/build-test-and-push.yml&apos;)
+    ansiblePlaybook( 
+       extraVars: [
+           cluster: &apos;concent-dev&apos;,
+       ],
+       inventory: &apos;/home/jenkins/inventory&apos;, 
+       playbook: &apos;/home/jenkins/concent-deployment/concent-builder/deploy.yml&apos;)
+    ansiblePlaybook( 
+       extraVars: [
+           cluster: &apos;concent-dev&apos;,
+       ],
+       inventory: &apos;/home/jenkins/inventory&apos;, 
+       playbook: &apos;/home/jenkins/concent-deployment/concent-builder/configure-and-run-tests.yml&apos;)
+   
+}</script>
+    <sandbox>true</sandbox>
+  </definition>
+  <triggers/>
+  <disabled>false</disabled>
+</flow-definition>

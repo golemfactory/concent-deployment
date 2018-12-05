@@ -7,4 +7,6 @@ deployment_values: ../../concent-deployment-values
 pyenv_repository:  https://github.com/pyenv/pyenv
 pyenv_dir:         /opt/pyenv
 python_path:       /opt/pyenv/versions/{{ python_version }}.{{ python_patch_version }}/bin/python{{ python_version }}
+deployment_values_repository:  https://github.com/golemfactory/concent-deployment-values.git
+jenkins_address:               127.0.0.1:8080
 jenkins_home_dir:              /home/jenkins
