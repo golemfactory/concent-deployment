@@ -1,0 +1,20 @@
+- hosts:
+    - concent-builder
+  vars_files:
+    - consts.yml
+  tasks:
+    - become:      yes
+      become_user: jenkins
+      block:
+        - name: Change concent_version in versions.yml file
+          lineinfile:
+            path:         "{{ jenkins_home_dir }}/concent-deployment/containers/versions.yml"
+            regexp:       '^concent_version: '
+            insertafter:  '^#concent_version: '
+            line:         'concent_version:              "{{ version_of_concent }}"'
+
+        - name: Change concent_version in var-concent-dev.yml file
+          lineinfile:
+            path:   "{{ jenkins_home_dir }}/concent-deployment-values/var-concent-dev.yml"
+            regexp: '^\s\sv{1,2}\d.*$'
+            line:   '  {{ version_of_concent }}:'
