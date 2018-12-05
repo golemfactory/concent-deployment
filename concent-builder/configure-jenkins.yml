@@ -1,0 +1,147 @@
+- hosts:
+    - concent-builder
+  vars_files:
+    - consts.yml
+    - repositories.yml
+    - ../containers/versions.yml
+    - "{{ deployment_values }}/var.yml"
+    - "{{ deployment_values }}/var-{{ cluster }}.yml"
+    - "{{ deployment_values }}/var-jenkins.yml"
+  tasks:
+    - become:      yes
+      become_user: jenkins
+      block:
+        - name: Clone concent repositories
+          git:
+            repo:    "{{ item.url }}"
+            dest:    "{{ jenkins_home_dir }}/{{ item.name }}"
+            clone:   yes
+            update:  yes
+            version: ci
+            force:   yes
+          with_items:
+            - { url: "{{ repositories['concent-deployment'].url }}", name: concent-deployment }
+            - { url: "{{ repositories['concent-deployment-values'].url }}", name: concent-deployment-values }
+
+        - name: Create directory for concent jenkins secrets
+          file:
+            path:  "{{ jenkins_home_dir }}/{{ item }}"
+            state: directory
+          with_items:
+            - concent-secrets
+            - concent-secrets/{{ cluster }}/
+            - concent-secrets/cloud/
+            - concent-secrets/jenkins/
+
+    - become:      yes
+      become_user: root
+      block:
+        - name: Upload secrets
+          copy:
+            src:   "{{ local_secret_dir }}/{{ cluster }}/{{ item }}"
+            dest:  "{{ jenkins_home_dir }}/concent-secrets/{{ cluster }}/{{ item }}"
+            owner: jenkins
+            group: jenkins
+            mode:  0400
+          with_items:
+            - cluster-secrets.yml
+            - "../cloud/{{ gke.service_account_name }}-private-key.json"
+            - nginx-proxy-ssl.crt
+            - nginx-proxy-ssl.key
+            - nginx-storage-ssl.crt
+            - nginx-storage-ssl.key
+            - "../jenkins/.token"
+
+        - name: Delete default user settings
+          file:
+            path:  /var/lib/jenkins/users/users.xml
+            state: absent
+
+        - name: Create directory for jenkins job and workspace
+          file:
+            path:  "{{ item }}"
+            state: directory
+            owner: jenkins
+            group: jenkins
+          with_items:
+            - "/var/lib/jenkins/jobs/Build-deploy-and-test/"
+            - "/var/lib/jenkins/jobs/Build-deploy-and-test/workspace/"
+            - "/var/lib/jenkins/workspace/"
+            - "/var/lib/jenkins/workspace/Build-deploy-and-test/"
+            - "/var/lib/jenkins/users/admin/"
+
+        - name: Upload jenkins secrets
+          copy:
+            src:   "{{ local_secret_dir }}/jenkins/{{ item }}"
+            dest:  "/var/lib/jenkins/{{ item }}"
+            owner: "jenkins"
+            group: "jenkins"
+          with_items:
+            - users/admin/config.xml
+            - users/admin/apiTokenStats.xml
+
+        - name: Upload jenkins template configuration file
+          template:
+            src:   "jenkins/{{ item }}.j2"
+            dest:  "/var/lib/jenkins/{{ item }}"
+            owner: "jenkins"
+            group: "jenkins"
+          with_items:
+            - jenkins.model.JenkinsLocationConfiguration.xml
+            - jobs/Build-deploy-and-test/config.xml
+            - Jenkinsfile
+
+        - name: Temporary delete jenkins config
+          file:
+            # This must be done because `config.xml` contain `<useSecurity>true</useSecurity>`
+            # that setting causes error when trying to install plugins by jenkins-cli
+            path:  "/var/lib/jenkins/config.xml"
+            state: absent
+
+        - name: Restart jenkins service
+          service:
+            enabled: yes
+            name:    jenkins
+            state:   restarted
+
+    - become:      yes
+      become_user: jenkins
+      block:
+        - name: Wait for jenkins after restarting the daemon
+          wait_for:
+            port:  8080
+            delay: 60
+
+        - name: Create symbolic link to jenkins-cli in jenkins home directory
+          file:
+            src:        "/var/cache/jenkins/war/WEB-INF/jenkins-cli.jar"
+            dest:       "{{ jenkins_home_dir }}/jenkins-cli.jar"
+            state:      link
+
+        - name:  Install Jenkins plugins
+          command: java                                               \
+              -jar jenkins-cli.jar                                    \
+              -s http://localhost:8080/                               \
+              -auth @/home/jenkins/concent-secrets/jenkins/.token     \
+              install-plugin                                          \
+              "{{ item }}"
+          args:
+            chdir: "{{ jenkins_home_dir }}/"
+          with_items:
+            - workflow-aggregator
+            - ansible
+
+    - become:      yes
+      become_user: root
+      block:
+        - name: Upload jenkins configuration file
+          copy:
+            src:   "jenkins/config.xml"
+            dest:  "/var/lib/jenkins/config.xml"
+            owner: "jenkins"
+            group: "jenkins"
+
+        - name: Restart jenkins service
+          service:
+            name:    jenkins
+            state:   restarted

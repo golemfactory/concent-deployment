@@ -1,10 +1,12 @@
-shared_user:       builder
-data_dir:          /var/concent-data
-deployment_dir:    /home/{{ ansible_user_id }}/deployment
-build_dir:         /home/{{ ansible_user_id }}/build/{{ cluster }}
-local_secret_dir:  ../../concent-secrets
-deployment_values: ../../concent-deployment-values
-pyenv_repository:  https://github.com/pyenv/pyenv
-pyenv_dir:         /opt/pyenv
-python_path:       /opt/pyenv/versions/{{ python_version }}.{{ python_patch_version }}/bin/python{{ python_version }}
-jenkins_home_dir:  /home/jenkins
+shared_user:                     builder
+data_dir:                        /var/concent-data
+deployment_dir:                  /home/{{ ansible_user_id }}/deployment
+build_dir:                       /home/{{ ansible_user_id }}/build/{{ cluster }}
+local_secret_dir:                ../../concent-secrets
+deployment_values:               ../../concent-deployment-values
+pyenv_repository:                https://github.com/pyenv/pyenv
+pyenv_dir:                       /opt/pyenv
+python_path:                     /opt/pyenv/versions/{{ python_version }}.{{ python_patch_version }}/bin/python{{ python_version }}
+jenkins_home_dir:                /home/jenkins
+jenkins_address:                 127.0.0.1:8080
+jenkins_configuration_files_dir: "{{ jenkins_home_dir }}/concent-deployment/concent-builder"
