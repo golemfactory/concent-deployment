@@ -3,4 +3,6 @@ data_dir:                      /var/concent-data
 build_dir:                     /home/{{ shared_user }}/build/{{ cluster }}
 local_secret_dir:              ../../concent-secrets
 deployment_values:             ../../concent-deployment-values
+deployment_values_repository:  https://github.com/golemfactory/concent-deployment-values.git
+jenkins_address:               127.0.0.1:8080
 jenkins_home_dir:              /home/jenkins

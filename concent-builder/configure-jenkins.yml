@@ -1,0 +1,127 @@
+- hosts:
+    - concent-builder
+  vars_files:
+    - consts.yml
+    - repositories.yml
+    - ../containers/versions.yml
+    - "{{ deployment_values }}/var.yml"
+    - "{{ deployment_values }}/var-{{ cluster }}.yml"
+  tasks:
+    - become:      yes
+      become_user: jenkins
+      block:
+        - name: Clone concent repositories
+          git:
+            repo:    "{{ item.url }}"
+            dest:    "{{ jenkins_home_dir }}/{{ item.name }}"
+            clone:   yes
+            update:  yes
+          with_items:
+            - { url: "{{ repositories['concent-deployment'].url }}", name: concent-deployment }
+            - { url: "{{ deployment_values_repository }}", name: concent-deployment-values }
+
+        - name: Create directory for concent jenkins secrets
+          file:
+            path:  "{{ jenkins_home_dir }}/{{ item }}"
+            state: directory
+            owner: jenkins
+            group: jenkins
+          with_items:
+            - concent-secrets
+            - concent-secrets/{{ cluster }}/
+            - concent-secrets/cloud/
+            - concent-secrets/jenkins/
+
+    - become:      yes
+      become_user: root
+      block:
+        - name: Upload secrets
+          copy:
+            src:   "{{ local_secret_dir }}/{{ cluster }}/{{ item }}"
+            dest:  "{{ jenkins_home_dir }}/concent-secrets/{{ cluster }}/{{ item }}"
+            owner: jenkins
+            group: jenkins
+          with_items:
+            - cluster-secrets.yml
+            - "../cloud/{{ gke.service_account_name }}-private-key.json"
+            - nginx-proxy-ssl.crt
+            - nginx-proxy-ssl.key
+            - nginx-storage-ssl.crt
+            - nginx-storage-ssl.key
+            - "../jenkins/.token"
+
+        - name: Delete default user settings
+          file:
+            path:  /var/lib/jenkins/users/users.xml
+            state: absent
+
+        - name: Create directory for jenkins job and workspace
+          file:
+            path:  "{{ item }}"
+            state: directory
+            owner: jenkins
+            group: jenkins
+          with_items:
+            - "/var/lib/jenkins/jobs/Build-deploy-and-test/"
+            - "/var/lib/jenkins/jobs/Build-deploy-and-test/workspace"
+            - "/var/lib/jenkins/users/admin/"
+
+        - name: Upload jenkins secrets
+          copy:
+            src:   "{{ local_secret_dir }}/jenkins/{{ item }}"
+            dest:  "/var/lib/jenkins/users/admin/{{ item }}"
+            owner: "jenkins"
+            group: "jenkins"
+          with_items:
+            - config.xml
+            - apiTokenStats.xml
+
+        - name: Upload jenkins configuration file
+          # FIXME This need use as remote_src
+          copy:
+            src:   "jenkins-configuration-files/config.xml"
+            dest:  "/var/lib/jenkins/jobs/Build-deploy-and-test/config.xml"
+            owner: "jenkins"
+            group: "jenkins"
+
+        - name: Restart jenkins service
+          service:
+            enabled: yes
+            name:    jenkins
+            state:   restarted
+
+    - become:      yes
+      become_user: jenkins
+      block:
+        - name: Wait for jenkins after restart daemon
+          wait_for:
+            port:  8080
+            delay: 60
+
+        - name: Download jenkins-cli
+          get_url:
+            url:   "http://{{ jenkins_address }}/jnlpJars/jenkins-cli.jar"
+            dest:  "{{ jenkins_home_dir }}/jenkins-cli.jar"
+            mode:  0755
+
+        - name: Install needed plugin for jenkins
+          command: java                                               \
+              -jar jenkins-cli.jar                                    \
+              -s http://localhost:8080/                               \
+              -auth @/home/jenkins/concent-secrets/jenkins/.token     \
+              install-plugin                                          \
+              "{{ item }}"
+          args:
+            chdir: "{{ jenkins_home_dir }}/"
+          with_items:
+            - workflow-aggregator
+            - ansible
+
+    - become:      yes
+      become_user: root
+      block:
+        - name: Restart jenkins service
+          service:
+            enabled: yes
+            name:    jenkins
+            state:   restarted

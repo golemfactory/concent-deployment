@@ -1,0 +1,55 @@
+- hosts:
+    - concent-builder
+  vars_files:
+    - consts.yml
+    - repositories.yml
+    - ../containers/versions.yml
+    - "{{ deployment_values }}/var.yml"
+    - "{{ deployment_values }}/var-{{ cluster }}.yml"
+  tasks:
+    - become:      yes
+      become_user: jenkins
+      block:
+        - name: Copy concent and virtualmachine for deployment build
+          command: cp                                                                  \
+              --recursive                                                              \
+              "{{ build_dir }}/concent-deployment/containers/build/{{ item.path }}"    \
+              "{{ jenkins_home_dir }}/{{ item.name }}"
+          with_items:
+            - { path: "repositories/concent", name: "concent" }
+            - { path: "virtualenv", name: "virtualenv" }
+
+        - name: Copy local_settings.py file
+          copy:
+            src:        "{{ jenkins_home_dir }}/concent-deployment/concent-builder/jenkins-configuration-files/local_settings.py"
+            dest:       "{{ jenkins_home_dir }}/concent/concent_api/concent_api/settings/local_settings.py"
+            owner:      jenkins
+            group:      jenkins
+            remote_src: yes
+
+    - become:      yes
+      become_user: "{{ shared_user }}"
+      block:
+        - name: Wait for geth synchronization
+          command: ./wait-until-ready.sh geth 600
+          args:
+            chdir:  "{{ build_dir }}/concent-deployment/kubernetes/build/"
+
+    - become:      yes
+      become_user: jenkins
+      block:
+        - name:  Run end-to-end test
+          shell: source ../virtualenv/bin/activate &&                  \
+              ./api-e2e-tests.sh http://devel.concent.golem.network
+          args:
+            chdir:      "{{ jenkins_home_dir }}/concent/"
+            executable: /bin/bash
+
+      always:
+        - name: Remove the concent and virtualenv directories to get rid of files from previous builds
+          file:
+            path:    "{{ jenkins_home_dir }}/{{ item }}"
+            state:   absent
+          with_items:
+            - concent
+            - virtualenv
