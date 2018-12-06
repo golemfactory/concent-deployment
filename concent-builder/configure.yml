@@ -11,6 +11,19 @@
         - name:   include common prerequire tasks from `prerequire-configure-tasks.yml` file
           include_tasks: ../concent-builder/common_tasks/prerequire-configure-tasks.yml
 
+        - name:    Add Google SDK repository key
+          apt_key:
+            url:   https://packages.cloud.google.com/apt/doc/apt-key.gpg
+            state: present
+
+        - name:    Add Google Cloud SDK repository
+          apt_repository:
+            repo:  "deb http://packages.cloud.google.com/apt cloud-sdk-{{ ansible_distribution_release }} main"
+            state: present
+
+        - name:   Install system updates for Debian
+          apt:  update_cache=yes
+
         - name:    Install basic packages
           apt:     name={{ item }}
           with_items:
