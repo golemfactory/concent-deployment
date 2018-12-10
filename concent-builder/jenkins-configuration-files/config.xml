@@ -1,42 +1,81 @@
 <?xml version='1.1' encoding='UTF-8'?>
 <flow-definition plugin="workflow-job@2.29">
-  <actions/>
+  <actions>
+    <org.jenkinsci.plugins.workflow.multibranch.JobPropertyTrackerAction plugin="workflow-multibranch@2.20">
+      <jobPropertyDescriptors>
+        <string>org.jenkinsci.plugins.workflow.job.properties.PipelineTriggersJobProperty</string>
+        <string>com.coravy.hudson.plugins.github.GithubProjectProperty</string>
+      </jobPropertyDescriptors>
+    </org.jenkinsci.plugins.workflow.multibranch.JobPropertyTrackerAction>
+  </actions>
   <description></description>
   <keepDependencies>false</keepDependencies>
-  <properties/>
-  <definition class="org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition" plugin="workflow-cps@2.60">
-    <script>node {
-   ansiblePlaybook( 
-       extraVars: [
-           concent_version: &apos;v0.10.2-50-g0fe5f995&apos;,
-       ],
-       inventory: &apos;/home/jenkins/inventory&apos;, 
-       playbook: &apos;/home/jenkins/concent-deployment/concent-builder/set-concent-version.yml&apos;)
-   ansiblePlaybook( 
-       extraVars: [
-           cluster: &apos;concent-dev&apos;,
-       ],
-       inventory: &apos;/home/jenkins/inventory&apos;, 
-       playbook: &apos;/home/jenkins/concent-deployment/concent-builder/install-repositories.yml&apos;)
-    ansiblePlaybook( 
-       extraVars: [
-           cluster: &apos;concent-dev&apos;,
-       ],
-       inventory: &apos;/home/jenkins/inventory&apos;, 
-       playbook: &apos;/home/jenkins/concent-deployment/concent-builder/build-test-and-push.yml&apos;)
-    ansiblePlaybook( 
-       extraVars: [
-           cluster: &apos;concent-dev&apos;,
-       ],
-       inventory: &apos;/home/jenkins/inventory&apos;, 
-       playbook: &apos;/home/jenkins/concent-deployment/concent-builder/deploy.yml&apos;)
-    ansiblePlaybook( 
-       extraVars: [
-           cluster: &apos;concent-dev&apos;,
-       ],
-       inventory: &apos;/home/jenkins/inventory&apos;, 
-       playbook: &apos;/home/jenkins/concent-deployment/concent-builder/configure-and-run-tests.yml&apos;)
-   
+  <properties>
+    <com.coravy.hudson.plugins.github.GithubProjectProperty plugin="github@1.29.3">
+      <projectUrl>https://github.com/bartoszbetka/concent-deployment.git/</projectUrl>
+      <displayName></displayName>
+    </com.coravy.hudson.plugins.github.GithubProjectProperty>
+    <org.jenkinsci.plugins.workflow.job.properties.PipelineTriggersJobProperty>
+      <triggers>
+        <com.cloudbees.jenkins.GitHubPushTrigger plugin="github@1.29.3">
+          <spec></spec>
+        </com.cloudbees.jenkins.GitHubPushTrigger>
+      </triggers>
+    </org.jenkinsci.plugins.workflow.job.properties.PipelineTriggersJobProperty>
+  </properties>
+  <definition class="org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition" plugin="workflow-cps@2.61">
+    <script>properties([[$class:
+&apos;GithubProjectProperty&apos;,
+    displayName: &apos;&apos;,
+    projectUrlStr: &apos;https://github.com/bartoszbetka/concent-deployment.git/&apos;],
+pipelineTriggers([githubPush()])])
+
+node {
+    stage (&apos;Checkout repository&apos;) {
+        dir(&apos;/home/jenkins/concent-deployment/&apos;) {
+            git url:
+            &apos;https://github.com/bartoszbetka/concent-deployment.git&apos;,
+            branch: &apos;dev&apos;
+        }
+        ansiblePlaybook( 
+            inventory: &apos;/home/jenkins/inventory&apos;, 
+            playbook: &apos;/home/jenkins/concent-deployment/concent-builder/set-concent-version.yml&apos;
+       )
+    }
+    stage (&apos;Build&apos;) {
+        ansiblePlaybook( 
+            extraVars: [
+                cluster: &apos;concent-dev&apos;,
+            ],
+            inventory: &apos;/home/jenkins/inventory&apos;, 
+            playbook: &apos;/home/jenkins/concent-deployment/concent-builder/install-repositories.yml&apos;
+        )
+        ansiblePlaybook( 
+            extraVars: [
+                cluster: &apos;concent-dev&apos;,
+            ],
+            inventory: &apos;/home/jenkins/inventory&apos;, 
+            playbook: &apos;/home/jenkins/concent-deployment/concent-builder/build-test-and-push.yml&apos;
+        )
+    }
+    stage (&apos;Deploy&apos;) {
+        ansiblePlaybook( 
+            extraVars: [
+                cluster: &apos;concent-dev&apos;,
+            ],
+            inventory: &apos;/home/jenkins/inventory&apos;, 
+            playbook: &apos;/home/jenkins/concent-deployment/concent-builder/deploy.yml&apos;
+        )
+    }
+    stage (&apos;Test&apos;) {
+        ansiblePlaybook( 
+            extraVars: [
+                cluster: &apos;concent-dev&apos;,
+            ],
+            inventory: &apos;/home/jenkins/inventory&apos;, 
+            playbook: &apos;/home/jenkins/concent-deployment/concent-builder/configure-and-run-tests.yml&apos;
+        )
+    }
 }</script>
     <sandbox>true</sandbox>
   </definition>
