@@ -1,0 +1,8 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<github-plugin-configuration plugin="github@1.29.3">
+  <configs/>
+  <hookUrl>http://builder.concent.golem.network/github-webhook/</hookUrl>
+  <hookSecretConfig>
+    <credentialsId>f3d86e33-7dbe-43a8-bacd-d131120e998b</credentialsId>
+  </hookSecretConfig>
+</github-plugin-configuration>
