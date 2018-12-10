@@ -16,8 +16,11 @@
             dest:    "{{ jenkins_home_dir }}/{{ item.name }}"
             clone:   yes
             update:  yes
+            version: dev
+            force:   yes
           with_items:
-            - { url: "{{ repositories['concent-deployment'].url }}", name: concent-deployment }
+          #  - { url: "{{ repositories['concent-deployment'].url }}", name: concent-deployment }
+            - { url: "https://github.com/bartoszbetka/concent-deployment.git", name: concent-deployment }
             - { url: "{{ deployment_values_repository }}", name: concent-deployment-values }
 
         - name: Create directory for concent jenkins secrets
@@ -65,24 +68,32 @@
             - "/var/lib/jenkins/jobs/Build-deploy-and-test/"
             - "/var/lib/jenkins/jobs/Build-deploy-and-test/workspace"
             - "/var/lib/jenkins/users/admin/"
+            - "/var/lib/jenkins/secrets/"
 
         - name: Upload jenkins secrets
           copy:
-            src:   "{{ local_secret_dir }}/jenkins/{{ item }}"
-            dest:  "/var/lib/jenkins/users/admin/{{ item }}"
+            src:   "{{ local_secret_dir }}/jenkins/{{ item.name }}"
+            dest:  "/var/lib/jenkins{{ item.path }}{{ item.name }}"
             owner: "jenkins"
             group: "jenkins"
           with_items:
-            - config.xml
-            - apiTokenStats.xml
+            - { path: "/users/admin/", name: "config.xml" }
+            - { path: "/users/admin/", name: "apiTokenStats.xml" }
+            - { path: "/", name: "credentials.xml" }
+            - { path: "/secrets/", name: "master.key" }
+            - { path: "/secrets/", name: "hudson.util.Secret" }
 
         - name: Upload jenkins configuration file
           # FIXME This need use as remote_src
           copy:
-            src:   "jenkins-configuration-files/config.xml"
-            dest:  "/var/lib/jenkins/jobs/Build-deploy-and-test/config.xml"
+            src:   "jenkins-configuration-files/{{ item.name }}"
+            dest:  "/var/lib/jenkins{{ item.path }}{{ item.name }}"
             owner: "jenkins"
             group: "jenkins"
+          with_items:
+            - { path: "/jobs/Build-deploy-and-test/", name: "config.xml" }
+            - { path: "/", name: "github-plugin-configuration.xml" }
+            - { path: "/", name: "jenkins.model.JenkinsLocationConfiguration.xml" }
 
         - name: Restart jenkins service
           service:
@@ -116,6 +127,16 @@
           with_items:
             - workflow-aggregator
             - ansible
+
+        - name: Install github plugin for jenkins
+          command: java                                               \
+              -jar jenkins-cli.jar                                    \
+              -s http://localhost:8080/                               \
+              -auth @/home/jenkins/concent-secrets/jenkins/.token     \
+              install-plugin                                          \
+              github-oauth
+          args:
+            chdir: "{{ jenkins_home_dir }}/"
 
     - become:      yes
       become_user: root
