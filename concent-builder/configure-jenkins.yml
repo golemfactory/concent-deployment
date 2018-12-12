@@ -146,3 +146,28 @@
             enabled: yes
             name:    jenkins
             state:   restarted
+
+    - become:      yes
+      become_user: "{{ shared_user }}"
+      block:
+        - name: Check if firewall rule that allow http traffic exist
+          shell: gcloud compute firewall-rules list    \
+              --format=json                            \
+              | grep allow-http-traffic
+          register:      result
+          ignore_errors: yes
+
+        - name: Add firewall rule to allow http traffic
+          command: gcloud compute firewall-rules create \
+              allow-http-traffic                        \
+              --allow=tcp:80                            \
+              --priority=1000                           \
+              --direction=ingress                       \
+              --target-tags=http-server
+          when: result.stdout == ""
+
+        - name: Add firewall rule to deployment server
+          command: "gcloud compute instances add-tags    \
+              {{ deployment_server_name }}               \
+              --tags=http-server                         \
+              --zone={{ gke.zone }}"
