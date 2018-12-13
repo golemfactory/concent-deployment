@@ -32,7 +32,7 @@ spec:
           ]
           livenessProbe:
             httpGet:
-              path: http://geth.default.svc.cluster.local/
+              path: /
               port: 8545
               httpHeaders:
                 - name:  Content-Type
