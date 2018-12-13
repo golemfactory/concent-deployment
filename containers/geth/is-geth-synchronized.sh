@@ -5,7 +5,7 @@ geth_address="$1"
 message="$(cat<<EOF
 {
     "jsonrpc": "2.0",
-    "method":  "eath_syncing",
+    "method":  "eth_syncing",
     "params":  [],
     "id":      4
 }
