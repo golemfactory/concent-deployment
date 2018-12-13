@@ -60,6 +60,7 @@
               - python3-psycopg2
               - default-jdk
               - groovy
+              - nginx={{ nginx_debian_version }}
 
         - name:    Install jenkins package
           apt:
@@ -98,4 +99,25 @@
           copy:
             src:  "files/jenkins/jenkins_sudoers"
             dest: "/etc/sudoers.d/jenkins"
+
+        - name: Delete default nginx config
+          file:
+            path:  "/etc/nginx/sites-enabled/default"
+            state: absent
+
+        - name: Add nginx config
+          copy:
+           src:        "files/jenkins/jenkins"
+           dest:       "/etc/nginx/sites-available/jenkins"
+
+        - name: Create symbolic link from sites-available config to sites-enabled
+          file:
+            src:        "/etc/nginx/sites-available/jenkins"
+            dest:       "/etc/nginx/sites-enabled/jenkins"
+            state:      link
+
+        - name: Restart nginx service
+          service:
+            name:    nginx
+            state:   restarted
 
