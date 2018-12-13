@@ -1,5 +1,7 @@
 #! /bin/sh -e
 
+geth_address="$1"
+
 message=<<EOF
 {
     "jsonrpc": "2.0",
@@ -15,7 +17,7 @@ response="$(
         --quiet                                                                     \
         --header    "Content-Type:application/json"                                 \
         --post-data "$message"                                                      \
-        "geth.default.svc.cluster.local:8545"                                       \
+        "$geth_address"                                                             \
         | jq '.result'                                                              \
 )"
 
