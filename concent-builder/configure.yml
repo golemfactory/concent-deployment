@@ -60,6 +60,7 @@
             - python3-psycopg2
             - default-jdk
             - groovy
+            - nginx={{ nginx_debian_version }}
 
         - name:    Install jenkins package
           apt:
