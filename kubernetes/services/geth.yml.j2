@@ -41,7 +41,7 @@ spec:
             periodSeconds:       8
           readinessProbe:
             exec:
-              command: ["/usr/local/bin/syncing-blockchain.sh", "geth.default.svc.cluster.local:8545"]
+              command: ["/usr/local/bin/syncing-blockchain.sh", "127.0.0.1:8545"]
             initialDelaySeconds: 70
             periodSeconds:       10
           resources:
