@@ -28,9 +28,9 @@ if [[ "$synchronization_status" == null ]]; then
     exit 2
 fi
 if [[ "$synchronization_status" == "false" ]]; then
-    echo READY
+    echo SYNCHRONIZED
     exit 0
 fi
 
-echo NOT READY
+echo NOT SYNCHRONIZED
 exit 1
