@@ -25,7 +25,7 @@ POSTGRESQL_SOURCE :=                          \
 
 GETH_SOURCE :=                              \
     build/geth/Dockerfile                   \
-    build/geth/syncing-blockchain.sh
+    build/geth/is-geth-synchronized.sh
 
 CONCENT_API_SOURCE :=                           \
     build/concent-api/install-concent-api.sh    \
