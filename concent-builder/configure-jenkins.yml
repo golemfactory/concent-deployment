@@ -147,6 +147,17 @@
             name:    jenkins
             state:   restarted
 
+        - name: Add nginx config
+          copy:
+            src:   "jenkins-configuration-files/default"
+            dest:  "/etc/nginx/sites-enabled/default"
+
+        - name: Restart nginx service
+          service:
+            enabled: yes
+            name:    nginx
+            state:   restarted
+
     - become:      yes
       become_user: "{{ shared_user }}"
       block:
