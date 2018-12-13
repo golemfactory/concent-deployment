@@ -1,17 +1,16 @@
 #! /bin/sh -e
-
 geth_address="$1"
 
 
-message=$(cat<<EOF
+message="$(cat<<EOF
 {
     "jsonrpc": "2.0",
-    "method":  "eth_syncing",
+    "method":  "eath_syncing",
     "params":  [],
     "id":      4
 }
 EOF
-)
+)"
 
 
 response="$(
@@ -23,12 +22,12 @@ response="$(
         "$geth_address"                                                             \
 )"
 
-synchronization_status="$($response | jq '.result')"
-if [ -z "$synchronization_status" ]; then
+synchronization_status="$(echo $response | jq '.result')"
+if [[ "$synchronization_status" == null ]]; then
     echo "The response from geth failed with an error: \"$response\""
     exit 2
 fi
-if [[ "$response" == "false" ]]; then
+if [[ "$synchronization_status" == "false" ]]; then
     echo READY
     exit 0
 fi
