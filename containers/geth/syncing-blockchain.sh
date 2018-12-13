@@ -2,7 +2,8 @@
 
 geth_address="$1"
 
-message=<<EOF
+
+message=$(cat<<EOF
 {
     "jsonrpc": "2.0",
     "method":  "eth_syncing",
@@ -10,6 +11,8 @@ message=<<EOF
     "id":      4
 }
 EOF
+)
+
 
 response="$(
     wget                                                                            \
@@ -18,9 +21,13 @@ response="$(
         --header    "Content-Type:application/json"                                 \
         --post-data "$message"                                                      \
         "$geth_address"                                                             \
-        | jq '.result'                                                              \
 )"
 
+synchronization_status="$($response | jq '.result')"
+if [ -z "$synchronization_status" ]; then
+    echo "The response from geth failed with an error: \"$response\""
+    exit 2
+fi
 if [[ "$response" == "false" ]]; then
     echo READY
     exit 0
