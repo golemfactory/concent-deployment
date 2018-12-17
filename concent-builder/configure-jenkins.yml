@@ -28,8 +28,6 @@
           file:
             path:  "{{ jenkins_home_dir }}/{{ item }}"
             state: directory
-            owner: jenkins
-            group: jenkins
           with_items:
             - concent-secrets
             - concent-secrets/{{ cluster }}/
