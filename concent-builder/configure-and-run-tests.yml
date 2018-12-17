@@ -10,7 +10,7 @@
     - become:      yes
       become_user: jenkins
       block:
-        - name: Copy concent and virtualmachine for deployment build
+        - name: Copy concent and virtual environment for deployment build
           command: cp                                                                  \
               --recursive                                                              \
               "{{ build_dir }}/concent-deployment/containers/build/{{ item.path }}"    \
