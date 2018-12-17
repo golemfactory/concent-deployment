@@ -43,6 +43,7 @@
             dest:  "{{ jenkins_home_dir }}/concent-secrets/{{ cluster }}/{{ item }}"
             owner: jenkins
             group: jenkins
+            mode:  0400
           with_items:
             - cluster-secrets.yml
             - "../cloud/{{ gke.service_account_name }}-private-key.json"
