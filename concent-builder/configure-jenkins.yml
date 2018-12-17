@@ -84,20 +84,19 @@
             - { path: "/secrets/", name: "hudson.util.Secret" }
 
         - name: Upload jenkins configuration file
-          # FIXME This need use as remote_src
           copy:
-            src:   "jenkins-configuration-files/{{ item.name }}"
+            src:   "{{ jenkins_configuration_files_dir }}/{{ item.name }}"
             dest:  "/var/lib/jenkins{{ item.path }}{{ item.name }}"
             owner: "jenkins"
             group: "jenkins"
+          remote_src: yes
           with_items:
             - { path: "/jobs/Build-deploy-and-test/", name: "config.xml" }
             - { path: "/", name: "github-plugin-configuration.xml" }
 
         - name: Upload jenkins template configuration file
-          # FIXME This need use as remote_src
           template:
-            src:   "jenkins-configuration-files/jenkins.model.JenkinsLocationConfiguration.xml.j2"
+            src:   "{{ jenkins_configuration_files_dir }}/jenkins.model.JenkinsLocationConfiguration.xml.j2"
             dest:  "/var/lib/jenkins/jenkins.model.JenkinsLocationConfiguration.xml"
             owner: "jenkins"
             group: "jenkins"
@@ -156,8 +155,9 @@
 
         - name: Add nginx config
           copy:
-            src:   "jenkins-configuration-files/default"
-            dest:  "/etc/nginx/sites-enabled/default"
+            src:      "{{ jenkins_configuration_files_dir }}/default"
+            dest:     "/etc/nginx/sites-enabled/default"
+          remote_src: yes
 
         - name: Restart nginx service
           service:
