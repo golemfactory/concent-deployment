@@ -110,7 +110,7 @@
     - become:      yes
       become_user: jenkins
       block:
-        - name: Wait for jenkins after restart daemon
+        - name: Wait for jenkins after restarting the daemon
           wait_for:
             port:  8080
             delay: 60
