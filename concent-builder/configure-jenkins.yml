@@ -6,6 +6,7 @@
     - ../containers/versions.yml
     - "{{ deployment_values }}/var.yml"
     - "{{ deployment_values }}/var-{{ cluster }}.yml"
+    - "{{ deployment_values }}/var-jenkins.yml"
   tasks:
     - become:      yes
       become_user: jenkins
