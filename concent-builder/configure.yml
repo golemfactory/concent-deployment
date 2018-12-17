@@ -76,12 +76,6 @@
             state:  present
             groups: docker
 
-        - name:    Add jenkins user to sudo group
-          user:
-            name:   jenkins
-            state:  present
-            groups: sudo
-
         - name:    Create data_dir
           file:
             path:  "{{ data_dir }}"
@@ -101,9 +95,3 @@
             src:  "jenkins-configuration-files/jenkins_sudoers"
             dest: "/etc/sudoers.d/jenkins"
 
-        - name:   Add inventory file to run ansible playbook by jenkins
-          copy:
-            src:   "jenkins-configuration-files/jenkins_inventory"
-            dest:  "{{ jenkins_home_dir }}/inventory"
-            owner: jenkins
-            group: jenkins
