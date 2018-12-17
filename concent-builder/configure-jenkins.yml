@@ -93,7 +93,14 @@
           with_items:
             - { path: "/jobs/Build-deploy-and-test/", name: "config.xml" }
             - { path: "/", name: "github-plugin-configuration.xml" }
-            - { path: "/", name: "jenkins.model.JenkinsLocationConfiguration.xml" }
+
+        - name: Upload jenkins template configuration file
+          # FIXME This need use as remote_src
+          template:
+            src:   "jenkins-configuration-files/jenkins.model.JenkinsLocationConfiguration.xml.j2"
+            dest:  "/var/lib/jenkins/jenkins.model.JenkinsLocationConfiguration.xml"
+            owner: "jenkins"
+            group: "jenkins"
 
         - name: Restart jenkins service
           service:
