@@ -39,8 +39,8 @@
       become_user: jenkins
       block:
         - name:  Run end-to-end test
-          shell: source ../virtualenv/bin/activate &&                  \
-              ./api-e2e-tests.sh http://devel.concent.golem.network
+          shell: source ../virtualenv/bin/activate &&                                         \
+              ./api-e2e-tests.sh "http://{{ concent_versions[concent_version].gke.cluster }}"
           args:
             chdir:      "{{ jenkins_home_dir }}/concent/"
             executable: /bin/bash
