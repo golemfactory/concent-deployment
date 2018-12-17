@@ -168,7 +168,7 @@
     - become:      yes
       become_user: "{{ shared_user }}"
       block:
-        - name: Check if firewall rule that allow http traffic exist
+        - name: Check if firewall rule that allows HTTP traffic exists
           shell: gcloud compute firewall-rules list    \
               --format=json                            \
               | grep allow-http-traffic
