@@ -184,7 +184,7 @@
               --target-tags=http-server
           when: result.stdout == ""
 
-        - name: Add firewall rule to deployment server
+        - name: Enable firewall rule for deployment server
           command: "gcloud compute instances add-tags    \
               {{ deployment_server_name }}               \
               --tags=http-server                         \
