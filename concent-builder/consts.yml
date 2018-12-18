@@ -10,4 +10,4 @@ python_path:       /opt/pyenv/versions/{{ python_version }}.{{ python_patch_vers
 deployment_values_repository:  https://github.com/golemfactory/concent-deployment-values.git
 jenkins_address:               127.0.0.1:8080
 jenkins_home_dir:              /home/jenkins
-jenkins_configuration_files_dir: {{ jenkins_home_dir }}/concent-deployment/concent-builder/jenkins-configuration-files/default
+jenkins_configuration_files_dir: "{{ jenkins_home_dir }}/concent-deployment/concent-builder/jenkins-configuration-files"
