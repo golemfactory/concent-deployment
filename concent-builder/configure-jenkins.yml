@@ -85,11 +85,11 @@
 
         - name: Upload jenkins configuration file
           copy:
-            src:   "{{ jenkins_configuration_files_dir }}/{{ item.name }}"
-            dest:  "/var/lib/jenkins{{ item.path }}{{ item.name }}"
-            owner: "jenkins"
-            group: "jenkins"
-          remote_src: yes
+            src:        "{{ jenkins_configuration_files_dir }}/{{ item.name }}"
+            dest:       "/var/lib/jenkins{{ item.path }}{{ item.name }}"
+            owner:      "jenkins"
+            group:      "jenkins"
+            remote_src: yes
           with_items:
             - { path: "/jobs/Build-deploy-and-test/", name: "config.xml" }
             - { path: "/", name: "github-plugin-configuration.xml" }
@@ -100,6 +100,7 @@
             dest:  "/var/lib/jenkins/jenkins.model.JenkinsLocationConfiguration.xml"
             owner: "jenkins"
             group: "jenkins"
+            remote_src: yes
 
         - name: Restart jenkins service
           service:
@@ -149,19 +150,17 @@
       block:
         - name: Restart jenkins service
           service:
-            enabled: yes
             name:    jenkins
             state:   restarted
 
         - name: Add nginx config
           copy:
-            src:      "{{ jenkins_configuration_files_dir }}/default"
-            dest:     "/etc/nginx/sites-enabled/default"
-          remote_src: yes
+            src:        "{{ jenkins_configuration_files_dir }}/default"
+            dest:       "/etc/nginx/sites-enabled/default"
+            remote_src: yes
 
         - name: Restart nginx service
           service:
-            enabled: yes
             name:    nginx
             state:   restarted
 
