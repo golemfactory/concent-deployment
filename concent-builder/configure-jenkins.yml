@@ -96,11 +96,10 @@
 
         - name: Upload jenkins template configuration file
           template:
-            src:   "{{ jenkins_configuration_files_dir }}/jenkins.model.JenkinsLocationConfiguration.xml.j2"
+            src:   "jenkins-configuration-files/jenkins.model.JenkinsLocationConfiguration.xml.j2"
             dest:  "/var/lib/jenkins/jenkins.model.JenkinsLocationConfiguration.xml"
             owner: "jenkins"
             group: "jenkins"
-            remote_src: yes
 
         - name: Restart jenkins service
           service:
