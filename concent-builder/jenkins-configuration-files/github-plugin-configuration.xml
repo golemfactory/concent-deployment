@@ -1,7 +1,7 @@
 <?xml version='1.1' encoding='UTF-8'?>
 <github-plugin-configuration plugin="github@1.29.3">
   <configs/>
-  <hookUrl>http://builder.concent.golem.network/github-webhook/</hookUrl>
+  <hookUrl>http://builder.concent.golem.network/concent-deployment-commit-notification/</hookUrl>
   <hookSecretConfig>
     <credentialsId>bbe1e591-1dda-4398-aa6c-1a8a5b4ca634</credentialsId>
   </hookSecretConfig>
