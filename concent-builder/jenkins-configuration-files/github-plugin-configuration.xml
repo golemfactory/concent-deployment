@@ -3,6 +3,6 @@
   <configs/>
   <hookUrl>http://builder.concent.golem.network/github-webhook/</hookUrl>
   <hookSecretConfig>
-    <credentialsId>f3d86e33-7dbe-43a8-bacd-d131120e998b</credentialsId>
+    <credentialsId>bbe1e591-1dda-4398-aa6c-1a8a5b4ca634</credentialsId>
   </hookSecretConfig>
 </github-plugin-configuration>
