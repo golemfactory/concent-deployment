@@ -35,7 +35,7 @@ node {
         dir(&apos;/home/jenkins/concent-deployment/&apos;) {
             git url:
             &apos;https://github.com/bartoszbetka/concent-deployment.git&apos;,
-            branch: &apos;dev&apos;
+            branch: &apos;CI&apos;
         }
         ansiblePlaybook( 
             inventory: &apos;/home/jenkins/concent-deployment-values/ansible_inventory&apos;, 
