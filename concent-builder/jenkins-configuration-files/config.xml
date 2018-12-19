@@ -12,7 +12,7 @@
   <keepDependencies>false</keepDependencies>
   <properties>
     <com.coravy.hudson.plugins.github.GithubProjectProperty plugin="github@1.29.3">
-      <projectUrl>https://github.com/bartoszbetka/concent-deployment.git/</projectUrl>
+      <projectUrl>https://github.com/golemfactory/concent-deployment.git/</projectUrl>
       <displayName></displayName>
     </com.coravy.hudson.plugins.github.GithubProjectProperty>
     <org.jenkinsci.plugins.workflow.job.properties.PipelineTriggersJobProperty>
@@ -27,14 +27,14 @@
     <script>properties([[$class:
 &apos;GithubProjectProperty&apos;,
     displayName: &apos;&apos;,
-    projectUrlStr: &apos;https://github.com/bartoszbetka/concent-deployment.git/&apos;],
+    projectUrlStr: &apos;https://github.com/golemfactory/concent-deployment.git/&apos;],
 pipelineTriggers([githubPush()])])
 
 node {
     stage (&apos;Checkout repository&apos;) {
         dir(&apos;/home/jenkins/concent-deployment/&apos;) {
             git url:
-            &apos;https://github.com/bartoszbetka/concent-deployment.git&apos;,
+            &apos;https://github.com/golemfactory/concent-deployment.git&apos;,
             branch: &apos;CI&apos;
         }
         ansiblePlaybook( 
