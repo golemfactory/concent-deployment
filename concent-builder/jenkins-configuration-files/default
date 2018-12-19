@@ -10,4 +10,13 @@ server {
         proxy_pass                         $jenkins_backend;
 
     }
+
+    location /concent-deployment-commit-notification/ {
+        set              $jenkins_webhook_endpoint  http://127.0.0.1:8080/github-webhook/;
+        proxy_set_header x-real-ip                  $remote_addr;
+        proxy_set_header x-forwarded-for            $remote_addr;
+        proxy_set_header host                       $http_host;
+        proxy_pass                                  $jenkins_webhook_endpoint;
+
+    }
 }
