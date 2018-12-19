@@ -3,6 +3,6 @@
   <configs/>
   <hookUrl>http://builder.concent.golem.network/concent-deployment-commit-notification/</hookUrl>
   <hookSecretConfig>
-    <credentialsId>bbe1e591-1dda-4398-aa6c-1a8a5b4ca634</credentialsId>
+    <credentialsId>a88b23fa-46ca-4a54-b996-a1f9e6ce7a0d</credentialsId>
   </hookSecretConfig>
 </github-plugin-configuration>
