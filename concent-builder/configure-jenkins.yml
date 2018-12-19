@@ -17,7 +17,7 @@
             dest:    "{{ jenkins_home_dir }}/{{ item.name }}"
             clone:   yes
             update:  yes
-            version: dev
+            version: CI
             force:   yes
           with_items:
           #  - { url: "{{ repositories['concent-deployment'].url }}", name: concent-deployment }
@@ -66,7 +66,8 @@
             group: jenkins
           with_items:
             - "/var/lib/jenkins/jobs/Build-deploy-and-test/"
-            - "/var/lib/jenkins/jobs/Build-deploy-and-test/workspace"
+            - "/var/lib/jenkins/workspace/"
+            - "/var/lib/jenkins/workspace/Build-deploy-and-test/"
             - "/var/lib/jenkins/users/admin/"
             - "/var/lib/jenkins/secrets/"
 
