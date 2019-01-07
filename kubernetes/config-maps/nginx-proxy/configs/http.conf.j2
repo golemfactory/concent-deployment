@@ -20,15 +20,23 @@ upstream {{ current_golem_messages_version }} {
      server nginx-proxy.default.svc.cluster.local;
 }
 
+# The `previous_golem_messages_version` variable controls routing of the previous golem-messages version to the second cluster.
+# When the variable is empty, the traffic to second cluster is disabled and only the current golem-messages version is supported.
+{% if previous_golem_messages_version is not none %}
 upstream {{ previous_golem_messages_version }} {
      server {{ concent_versions[previous_concent_version].cluster_address }}:443;
 }
+{% endif %}
 
 # Map to different upstream backends based on the `X-Golem-Messages` http header
 map $http_x_golem_messages $version {
+     # This address uses the HTTP protocol because it is an internal endpoint that is on this cluster.
      ""          "http://{{ current_golem_messages_version }}";
      "~^{{ current_golem_messages_version }}.*$"   "http://{{ current_golem_messages_version }}";
+     {% if previous_golem_messages_version is not none %}
+     # This address uses the HTTPS protocol because it is an external endpoint that is on the second cluster.
      "~^{{ previous_golem_messages_version }}.*$"  "https://{{ previous_golem_messages_version }}";
+     {% endif %}
      default    "not_supported";
      # Check semi version 2.0 format
      ~^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*)?(\+[0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*)?$ "not_found";
@@ -37,7 +45,9 @@ map $http_x_golem_messages $version {
 map $http_x_golem_messages $host_param {
      ""                                            internal.local;
      "~^{{ current_golem_messages_version }}.*$"   internal.local;
+     {% if previous_golem_messages_version is not none %}
      "~^{{ previous_golem_messages_version }}.*$"  $http_host;
+     {% endif %}
      default    $http_host;
 }
 
