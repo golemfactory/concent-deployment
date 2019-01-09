@@ -70,8 +70,8 @@ chmod 555 /usr/local/bin/su-exec
 su-exec nobody true
 
 # Python packages needed by Golem's imgverifier and Concent's verifier
-python3 -m pip install --upgrade pip
-python3 -m pip install --no-cache-dir --requirement /golem/work/imgverifier-requirements.txt
+python3.6 -m pip install --upgrade pip=={{ verifier_image_pip_version }}
+python3.6 -m pip install --no-cache-dir --requirement /golem/work/imgverifier-requirements.txt
 
 # Clean up
 apt-get clean
