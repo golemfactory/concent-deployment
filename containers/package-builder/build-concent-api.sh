@@ -19,5 +19,6 @@ tar                                            \
     --verbose                                  \
     --file="$output_dir/concent-api.tar"       \
     --directory="$concent_dir"                 \
+    --exclude=.git                             \
     concent_api/                               \
     RELEASE-VERSION
