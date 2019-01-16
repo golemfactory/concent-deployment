@@ -49,7 +49,6 @@
             - libgmp-dev
             - libfreeimage-dev
             - libtool
-            - rustc
             - cargo
 
         - name:   Install extra dependencies from testing for Golem
@@ -58,6 +57,7 @@
             - python3-pip
             - python3-netifaces
             - python3-psutil
+            - rustc
 
         - name:   Create the user account that will be used for building stuff
           user:
