@@ -48,11 +48,11 @@ spec:
           resources:
             requests:
               # SYNC: Make sure that the memory limits for the pod include the cache size defined above.
-              memory: "2.5Gi"
-              cpu:    "700m"
+              memory: "{{ resource_limits.others.geth.memory.requests }}"
+              cpu:    "{{ resource_limits.others.geth.cpu.requests }}"
             limits:
-              memory: "3Gi"
-              cpu:    "1100m"
+              memory: "{{ resource_limits.others.geth.memory.limits }}"
+              cpu:    "{{ resource_limits.others.geth.cpu.limits }}"
           volumeMounts:
             - mountPath:  /blockchain
               name:       geth-storage
