@@ -4,7 +4,9 @@
 
 kubectl create --record --filename services/verifier.yml
 ./wait-until-ready.sh verifier 70
+{% if concent_versions[concent_version].external_geth_address is none %}
 kubectl create --record --filename services/geth.yml
+{% endif %}
 kubectl create --record --filename services/rabbitmq.yml
 {% if allow_signing_service_authentication %}
 kubectl create --record --filename services/middleman.yml
@@ -33,4 +35,6 @@ kubectl create --record --filename services/nginx-proxy.yml
 ./wait-until-ready.sh conductor-worker     30
 ./wait-until-ready.sh nginx-storage        30
 ./wait-until-ready.sh nginx-proxy          30
+{% if concent_versions[concent_version].external_geth_address is none %}
 ./wait-until-ready.sh geth                 500
+{% endif %}
