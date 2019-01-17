@@ -12,24 +12,15 @@ Vagrant.configure("2") do |config|
 
     config.vm.network "private_network", ip: "172.40.2.3"
 
-    blockchain_disk       = './disk/blockchain_disk.vdi'
-    golem_blockchain_disk = './disk/golem_blockchain_disk.vdi'
+    golem_configuration_directory = './disk/golem_configuration_directory.vdi'
 
     config.vm.provider "virtualbox" do |virtualbox|
         virtualbox.memory = 2048
         virtualbox.gui    = false
-        if not File.exists?(blockchain_disk)
+        if not File.exists?(golem_configuration_directory)
             virtualbox.customize [
                 'createhd',
-                '--filename', blockchain_disk,
-                '--variant',  'Fixed',
-                '--size',     30 * 1024, # MB
-            ]
-        end
-        if not File.exists?(golem_blockchain_disk)
-            virtualbox.customize [
-                'createhd',
-                '--filename', golem_blockchain_disk,
+                '--filename', golem_configuration_directory,
                 '--variant',  'Fixed',
                 '--size',     1 * 1024, # MB
             ]
@@ -41,40 +32,23 @@ Vagrant.configure("2") do |config|
             '--port',         1,
             '--device',       0,
             '--type',         'hdd',
-            '--medium',       blockchain_disk,
-            '--hotpluggable', 'on'
-        ]
-        virtualbox.customize [
-            'storageattach',
-            :id,
-            '--storagectl',   'SATA Controller',
-            '--port',         2,
-            '--device',       0,
-            '--type',         'hdd',
-            '--medium',       golem_blockchain_disk,
+            '--medium',       golem_configuration_directory,
             '--hotpluggable', 'on'
         ]
     end
 
-    if not File.exists?(blockchain_disk)
+    if not File.exists?(golem_configuration_directory)
         config.vm.provision "shell", privileged: true, inline: <<-SHELL
             mkfs.ext4 /dev/sdb
-        SHELL
-    end
-    if not File.exists?(golem_blockchain_disk)
-        config.vm.provision "shell", privileged: true, inline: <<-SHELL
-            mkfs.ext4 /dev/sdc
         SHELL
     end
 
     config.vm.provision "shell", run: "always", privileged: true, inline: <<-SHELL
         directories=(
-            /home/vagrant/blockchain
             /home/vagrant/.local
         )
         partition_name=(
             /dev/sdb
-            /dev/sdc
         )
         for directory in "${directories[@]}"; do
             if [ ! -d "$directory" ]; then
@@ -105,15 +79,13 @@ Vagrant.configure("2") do |config|
     end
 
     config.trigger.after :halt do |trigger|
-        detach_virtual_disk(trigger, 1, blockchain_disk)
-        detach_virtual_disk(trigger, 2, golem_blockchain_disk)
+        detach_virtual_disk(trigger, 1, golem_configuration_directory)
     end
 
     config.trigger.before :destroy do |trigger|
         # `vagrant destroy` normally destroys any virtual disks attached to the machine.
         # Our disk contains Ethereum blockchain which can take a lot of time to redownload so we detach it to prevent its destruction.
-        detach_virtual_disk(trigger, 1, blockchain_disk)
-        detach_virtual_disk(trigger, 2, golem_blockchain_disk)
+        detach_virtual_disk(trigger, 1, golem_configuration_directory)
     end
 
     config.vm.provision "ansible", run: "always" do |ansible|

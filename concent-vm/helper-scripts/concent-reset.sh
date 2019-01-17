@@ -42,7 +42,6 @@ EOF
     # Restart all service
     sudo systemctl restart postgresql
     sudo systemctl restart nginx-storage
-    docker restart geth
 else
     echo "Operation canceled"
 fi
