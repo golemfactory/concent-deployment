@@ -1,10 +1,27 @@
+properties([
+    [
+        $class:        'GithubProjectProperty',
+        displayName:   '',
+        projectUrlStr: '{{ jenkins_github_url_address }}'
+    ],
+    pipelineTriggers([githubPush()])
+])
+
+// This is a process of fetching and checkouting concent-deployment repository
+// before running playbooks in properly versions.
 stage ('Checkout repository') {
+    dir('/home/jenkins/concent-deployment/') {
+        git url:
+        '{{ jenkins_github_url_address }}',
+        branch: 'ci'
+    }
     ansiblePlaybook(
         inventory: '/home/jenkins/concent-deployment-values/ansible_inventory',
         playbook:  '{{ jenkins_configuration_files_dir }}/set-concent-version.yml',
         extras:    '--connection local'
    )
 }
+// This is a process of fetching and checkouting repositories for building step.
 stage ('Build') {
     ansiblePlaybook(
         extraVars: [

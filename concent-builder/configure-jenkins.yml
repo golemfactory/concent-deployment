@@ -69,6 +69,7 @@
             - "/var/lib/jenkins/workspace/"
             - "/var/lib/jenkins/workspace/Build-deploy-and-test/"
             - "/var/lib/jenkins/users/admin/"
+            - "/var/lib/jenkins/secrets/"
 
         - name: Upload jenkins secrets
           copy:
@@ -79,6 +80,9 @@
           with_items:
             - users/admin/config.xml
             - users/admin/apiTokenStats.xml
+            - credentials.xml
+            - secrets/master.key
+            - secrets/hudson.util.Secret
 
         - name: Upload jenkins template configuration file
           template:
@@ -89,6 +93,7 @@
           with_items:
             - jenkins.model.JenkinsLocationConfiguration.xml
             - jobs/Build-deploy-and-test/config.xml
+            - github-plugin-configuration.xml
             - Jenkinsfile
 
         - name: Temporary delete jenkins config
@@ -130,6 +135,7 @@
           with_items:
             - workflow-aggregator
             - ansible
+            - github-oauth
 
     - become:      yes
       become_user: root
