@@ -10,15 +10,11 @@ cp --recursive "$concent_dir/concent_api" "$build_dir/concent-api-assets"
 
 cd "$build_dir/concent-api-assets/concent_api/"
 
-virtualenv --python "python{{ python_version }}" "$build_dir/virtualenv/"
 source "$build_dir/virtualenv/bin/activate"
-# The requirements needs to be installed from the directory it's in because it contains relative paths.
-cd "$build_dir/repositories/concent/concent_api/"
-python -m pip install -r "requirements.lock"
-
 cp "$package_builder_dir/minimal_settings.py" "concent_api/settings/local_settings.py"
 
-./manage.py collectstatic --noinput
+# Running python with -B prevents it from creating the .pyc files
+python -B manage.py collectstatic --noinput
 
 tar                                             \
     --create                                    \
