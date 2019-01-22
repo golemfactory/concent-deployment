@@ -1,3 +1,10 @@
+### 0.10.3
+- Bugfix: upgraded geth version to `v1.8.20` after Constantinople hard fork are enabled (#299).
+
+Compatibility:
+- Golem: 0.18.2
+- Concent: 0.10.2
+
 ### 0.10.2
 
 Compatibility:
