@@ -1,3 +1,10 @@
+### 0.10.4
+- Bugfix: downgraded pip version to `18.0` and specified to use `python3.6` after errors in building and downloading python packages (#298).
+
+Compatibility:
+- Golem: 0.18.2
+- Concent: 0.10.2
+
 ### 0.10.3
 - Bugfix: upgraded geth version to `v1.8.20` after Constantinople hard fork are enabled (#299).
 
