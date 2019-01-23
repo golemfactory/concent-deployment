@@ -5,7 +5,7 @@ virtualenv_dir=/srv/http/virtualenv
 # Create virtualenv and Django app's dependencies
 virtualenv --python "python{{ python_version }}" "$virtualenv_dir"
 source "$virtualenv_dir/bin/activate"
-python -m pip install --upgrade pip
+python -m pip install --upgrade pip=={{ verifier_image_pip_version }}
 # The requirements needs to be installed from the directory it's in because it contains relative paths.
 cd /srv/http/concent_api/
 python -m pip install --no-cache-dir --requirement "/srv/http/concent_api/requirements.lock"
