@@ -11,3 +11,9 @@ source "$build_dir/virtualenv/bin/activate"
 cd "$build_dir/repositories/concent/concent_api/"
 echo -n "$(git describe --tags)" > ../middleman_protocol/RELEASE-VERSION
 python -m pip install -r "$requirements_path"
+
+(
+    cd ../middleman_protocol/
+    python setup.py install
+    rm RELEASE-VERSION
+)

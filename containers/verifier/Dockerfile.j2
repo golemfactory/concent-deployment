@@ -10,10 +10,12 @@ COPY install-dependencies.sh                  /tmp/
 RUN  /tmp/install-dependencies.sh
 
 # Build virtualenv and concent apps
-COPY requirements.lock              /srv/http/concent_api/
-COPY middleman_protocol             /srv/http/middleman_protocol/
-COPY install-concent-api.sh         /tmp/
-RUN  /tmp/install-concent-api.sh
+COPY cacheable-requirements.lock                       /srv/http/concent_api/
+COPY install-concent-api-python-dependencies.sh        /tmp/
+RUN  /tmp/install-concent-api-python-dependencies.sh
+COPY middleman_protocol                                /srv/http/middleman_protocol/
+COPY install-middleman-protocol.sh                     /tmp/
+RUN  /tmp/install-middleman-protocol.sh
 
 
 # Copy golem verification scripts

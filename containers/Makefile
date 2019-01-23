@@ -27,27 +27,30 @@ GETH_SOURCE :=                              \
     build/geth/Dockerfile                   \
     build/geth/is-geth-synchronized.sh
 
-CONCENT_API_SOURCE :=                                \
-    build/concent-api/install-concent-api.sh         \
-    build/concent-api/install-dependencies.sh        \
-    build/concent-api/Dockerfile                     \
-    build/concent-api/configure-pyenv.sh             \
-    build/concent-api/clean-pyenv-dependencies.sh    \
-    build/concent-api/concent-api-manage.sh          \
-    build/concent-api/run-celery.sh                  \
-    build/concent-api/pyenv-build-dependencies.txt   \
-    build/concent-api/run-gunicorn.sh                \
+CONCENT_API_SOURCE :=                                              \
+    build/concent-api/install-concent-api-python-dependencies.sh   \
+    build/concent-api/install-middleman-protocol.sh                \
+    build/concent-api/install-dependencies.sh                      \
+    build/concent-api/Dockerfile                                   \
+    build/concent-api/configure-pyenv.sh                           \
+    build/concent-api/clean-pyenv-dependencies.sh                  \
+    build/concent-api/concent-api-manage.sh                        \
+    build/concent-api/run-celery.sh                                \
+    build/concent-api/pyenv-build-dependencies.txt                 \
+    build/concent-api/run-gunicorn.sh                              \
     build/concent-api/local_settings.py
 
-VERIFIER_SOURCE_FROM_CONCENT_API :=                 \
-    build/verifier/install-concent-api.sh           \
-    build/verifier/concent-api-manage.sh            \
-    build/verifier/run-celery.sh                    \
-    build/verifier/clean-pyenv-dependencies.sh      \
-    build/verifier/configure-pyenv.sh               \
-    build/verifier/testing.pref                     \
-    build/verifier/requirements.lock                \
-    build/verifier/concent-api.tar                  \
+VERIFIER_SOURCE_FROM_CONCENT_API :=                              \
+    build/verifier/install-concent-api-python-dependencies.sh    \
+    build/verifier/install-middleman-protocol.sh                 \
+    build/verifier/concent-api-manage.sh                         \
+    build/verifier/run-celery.sh                                 \
+    build/verifier/clean-pyenv-dependencies.sh                   \
+    build/verifier/configure-pyenv.sh                            \
+    build/verifier/testing.pref                                  \
+    build/verifier/requirements.lock                             \
+    build/verifier/cacheable-requirements.lock                   \
+    build/verifier/concent-api.tar                               \
     build/verifier/local_settings.py
 
 VERIFIER_SOURCE :=                                 \
@@ -65,12 +68,17 @@ SIGNING_SERVICE_SOURCE :=                                  \
     build/signing-service/Dockerfile                       \
     build/signing-service/install-dependencies.sh          \
     build/signing-service/install-signing-service.sh       \
+    build/signing-service/install-middleman-protocol.sh    \
     build/signing-service/clean-container.sh               \
     build/signing-service/run-signing-service.sh           \
     build/signing-service/create-user.sh                   \
     build/signing-service/build-dependencies.txt           \
     build/signing-service/testing.pref                     \
     $(SIGNING_SERVICE_SOURCE_FROM_CONCENT_API)
+
+CACHEABLE_REQUIREMENTS_FILES :=                                        \
+    build/concent-api/cacheable-requirements.lock                      \
+    build/signing-service/signing-service/cacheable-requirements.lock
 
 ifndef IMAGE_VERSION
     IMAGE_VERSION := $(shell git describe --always --abbrev=16)
@@ -97,7 +105,7 @@ postgresql: build/ $(POSTGRESQL_SOURCE)
 	docker build --tag $(IMAGE_PREFIX)postgresql:$(IMAGE_VERSION) build/postgresql/
 	docker tag $(IMAGE_PREFIX)postgresql:$(IMAGE_VERSION) $(IMAGE_PREFIX)postgresql:latest
 
-concent-api: build/ $(CONCENT_API_SOURCE) build/concent-api/requirements.lock build/concent-api/testing.pref build/repositories/concent build/concent-api/middleman_protocol/
+concent-api: build/ $(CONCENT_API_SOURCE) build/concent-api/requirements.lock build/concent-api/testing.pref build/repositories/concent build/concent-api/middleman_protocol/ build/concent-api/middleman_protocol/RELEASE-VERSION build/concent-api/cacheable-requirements.lock
 	docker build --tag $(IMAGE_PREFIX)concent-api:$(IMAGE_VERSION) build/concent-api/
 	docker tag $(IMAGE_PREFIX)concent-api:$(IMAGE_VERSION) $(IMAGE_PREFIX)concent-api:latest
 
@@ -105,17 +113,17 @@ geth: build/ $(GETH_SOURCE)
 	docker build -t $(IMAGE_PREFIX)geth:$(IMAGE_VERSION) build/geth/
 	docker tag $(IMAGE_PREFIX)geth:$(IMAGE_VERSION) $(IMAGE_PREFIX)geth:latest
 
-verifier: build/ $(VERIFIER_SOURCE) build/repositories/golem/ build/verifier/golem/scripts/ build/verifier/golem/imgverifier-requirements.txt build/verifier/middleman_protocol/
+verifier: build/ $(VERIFIER_SOURCE) build/repositories/golem/ build/verifier/golem/scripts/ build/verifier/golem/imgverifier-requirements.txt build/verifier/middleman_protocol/ build/verifier/middleman_protocol/RELEASE-VERSION
 	docker build --tag $(IMAGE_PREFIX)verifier:$(IMAGE_VERSION) build/verifier/
 	docker tag $(IMAGE_PREFIX)verifier:$(IMAGE_VERSION) $(IMAGE_PREFIX)verifier:latest
 
-signing-service: build/ $(SIGNING_SERVICE_SOURCE) build/signing-service/signing-service/ build/signing-service/middleman_protocol/ build/signing-service/signing-service/RELEASE-VERSION
+signing-service: build/ $(SIGNING_SERVICE_SOURCE) build/signing-service/signing-service/ build/signing-service/middleman_protocol/ build/signing-service/middleman_protocol/RELEASE-VERSION build/signing-service/signing-service/RELEASE-VERSION build/signing-service/signing-service/cacheable-requirements.lock
 	docker build --tag $(IMAGE_PREFIX)signing-service:$(IMAGE_VERSION) build/signing-service/
 	docker tag $(IMAGE_PREFIX)signing-service:$(IMAGE_VERSION) $(IMAGE_PREFIX)signing-service:latest
 
 concent-signing-service-package: build/ $(SIGNING_SERVICE_SOURCE) dist/concent-signing-service-%.tar.xz
 
-dist/concent-signing-service-%.tar.xz: build/signing-service/signing-service/ build/signing-service/middleman_protocol/ build/signing-service/signing-service/RELEASE-VERSION
+dist/concent-signing-service-%.tar.xz: build/signing-service/signing-service/ build/signing-service/signing-service/cacheable-requirements.lock build/signing-service/middleman_protocol/ build/signing-service/signing-service/RELEASE-VERSION
 	mkdir dist || true
 	tar                                                                                                                    \
 		--create                                                                                                           \
@@ -148,7 +156,7 @@ verifier-clean:
 signing-service-clean:
 	docker rmi $(IMAGE_PREFIX)signing-service:$(IMAGE_VERSION) --force
 
-build/virtualenv/: build/repositories/concent/concent_api/requirements.lock build/package-builder/build-virtualenv.sh
+build/virtualenv/: build/concent-api/cacheable-requirements.lock build/package-builder/build-virtualenv.sh
 	build/package-builder/build-virtualenv.sh "$<" "build"
 
 build/concent-api/requirements.lock: build/concent-api/concent-api.tar
@@ -159,15 +167,18 @@ build/concent-api/requirements.lock: build/concent-api/concent-api.tar
 		--directory build/concent-api/           \
 		concent_api/requirements.lock
 
+$(CACHEABLE_REQUIREMENTS_FILES): build/%/cacheable-requirements.lock: build/%/requirements.lock
+	awk '$$2!="../middleman_protocol"' "$<" > "$@"
+
 build/%/testing.pref: ../concent-builder/files/testing.pref
 	cp "$<" "$@"
 
-build/concent-api/concent-api.tar: build/repositories/concent  build/virtualenv/
+build/concent-api/concent-api.tar: build/repositories/concent
 	mkdir --parents $(dir $@)
 	package-builder/build-concent-api.sh "build/repositories/concent/" "build/concent-api"
 
 
-build/nginx-proxy/concent-api-assets.tar: build/repositories/concent build/virtualenv/ build/package-builder/build-concent-api-assets.sh
+build/nginx-proxy/concent-api-assets.tar: build/repositories/concent  build/concent-api/cacheable-requirements.lock build/virtualenv/ build/package-builder/build-concent-api-assets.sh
 	mkdir --parents "$(dir $@)"
 	build/package-builder/build-concent-api-assets.sh \
 		"build/repositories/concent/"                 \
@@ -211,14 +222,11 @@ build/repositories/golem/: build/package-builder/clone-or-update.sh /var/concent
 build/%/middleman_protocol/: build/repositories/concent
 	cp --recursive "$</middleman_protocol/." "$@"
 
-build/signing-service/signing-service/RELEASE-VERSION: build/signing-service/signing-service/
+build/%/RELEASE-VERSION: build/%
 	echo -n "$(shell cd build/repositories/concent/; git describe --always --abbrev=16)" > "$@"
 
 build/signing-service/signing-service/: build/repositories/concent
 	cp --recursive "$</signing_service/." "$@"
-
-build/signing-service/middleman_protocol/: build/repositories/concent
-	cp --recursive "$</middleman_protocol/." "$@"
 
 build/:
 	mkdir --parents "$@"
