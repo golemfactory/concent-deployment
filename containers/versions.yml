@@ -18,7 +18,3 @@ kubectl_version:              "1.13.0-00"
 python_version:               "3.6"
 rabbitmq_alpine_version:      "3.7.6"
 su_exec_hash:                 "60e8c3010aaa85f5d919448d082ecdf6e8b75a1c"
-# The docker verifier image that uses debian jessie needs pip version 18.0 or older.
-# Newer versions of pip fail with `403 Client Error: SSL is required for url: http://pypi.python.org/simple/opencv-python/` error,
-# when the `--extra-index-url` flag is used with HTTPS protocol and the package is from base python source.
-verifier_image_pip_version:   "18.0"
