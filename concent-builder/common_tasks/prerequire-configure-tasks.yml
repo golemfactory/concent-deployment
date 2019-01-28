@@ -1,9 +1,9 @@
 - name:   Install required packages for apt_key and apt_repository
-  apt:    name={{ item }}
-  with_items:
-    - apt-transport-https
-    - ca-certificates
-    - curl
+  apt:
+    name:
+      - apt-transport-https
+      - ca-certificates
+      - curl
 
 - name:   Use pinning to ensure that packages from testing are installed only of stable packages are not available
   copy:

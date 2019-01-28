@@ -1,13 +1,14 @@
 - name:    Install dependencies from testing
-  apt:  name={{ item }} default_release=testing
-  with_items:
-    - python{{ python_version }}
-    - python3-pip
-    - python{{ python_version }}-dev
-    # Packages like python3-apt contain files with paths that contain specific Python version (e.g. 3.6).
-    # We need to update them to make sure the paths match the interpreter version we have just installed.
-    - python3-apt
-    - virtualenv
+  apt:
+    default_release: testing
+    name:
+      - python{{ python_version }}
+      - python3-pip
+      - python{{ python_version }}-dev
+      # Packages like python3-apt contain files with paths that contain specific Python version (e.g. 3.6).
+      # We need to update them to make sure the paths match the interpreter version we have just installed.
+      - python3-apt
+      - virtualenv
 
 - name:     apt autoclean
   command:  apt autoclean
@@ -18,7 +19,6 @@
 - name:    Install yasha in global python environment using pip
   pip:
     executable: pip3
-    name:       "{{ item }}"
-  with_items:
-    - yasha
-    - ansible
+    name:
+      - yasha
+      - ansible

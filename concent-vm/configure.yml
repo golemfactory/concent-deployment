@@ -12,17 +12,17 @@
           include_tasks: ../concent-builder/common_tasks/prerequire-configure-tasks.yml
 
         - name:   Install basic utilities
-          apt:  name={{ item }}
-          with_items:
-            - ncdu
-            - tree
-            - htop
-            - tmux
-            - vim
+          apt:
+            name:
+              - ncdu
+              - tree
+              - htop
+              - tmux
+              - vim
 
         - name:   Install dependencies
-          apt:  name={{ item }}
-          with_items:
+          apt:
+            name:
             - build-essential
             - python2.7
             - python-pip  # For Python 2
@@ -53,11 +53,13 @@
             - cargo
 
         - name:   Install extra dependencies from testing for Golem
-          apt:  name={{ item }} default_release=testing
-          with_items:
-            - python3-pip
-            - python3-netifaces
-            - python3-psutil
+          apt:
+            default_release: testing
+            name:
+              - python3-pip
+              - python3-netifaces
+              - python3-psutil
+              - rustc
 
         - name:   Create the user account that will be used for building stuff
           user:
