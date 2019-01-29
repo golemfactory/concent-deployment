@@ -3,9 +3,10 @@
 # Install signing-service dependencies
 ${BASH_SOURCE%/*}/install-dependencies.sh
 
+python="/opt/pyenv/versions/{{ specific_python_version_for_penv }}/bin/python{{ python_version }}"
 virtualenv_dir=/usr/lib/signing_service/virtualenv
 # Create virtualenv and Django app's dependencies
-virtualenv --python "python{{ python_version }}" "$virtualenv_dir"
+virtualenv --python "$python" "$virtualenv_dir"
 source "$virtualenv_dir/bin/activate"
 cd /usr/lib/signing_service/signing-service/
 python -m pip install --upgrade pip

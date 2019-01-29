@@ -1,24 +1,18 @@
 #!/bin/bash -e
 
 # Update package lists for Debian and install dependencies
-dependencies=(
+# Packages needed to build python extensions, dependencies of golem-messages in particular
+readarray dependencies < ${BASH_SOURCE%/*}/build-dependencies.txt
+
+dependencies+=(
     # Required by psycopg2 python package (PostgreSQL support)
     libpq-dev
 
-    # Packages needed to build python extensions, dependencies of golem-messages in particular
-    gcc
-    libssl-dev
-    git
-    pkg-config
+    # Package uses by golem-messages
     libsecp256k1-dev
-    libffi-dev
-    software-properties-common
 )
 
 testing_dependencies=(
-    # There's no stable Python 3.6 package in Debian Stretch yet so we have to get it from testing.
-    python{{ python_version }}
-    python{{ python_version }}-dev
     virtualenv
     # The upgrade of `virtualenv` package also upgrade `python3-apt` and `libapt-pkg5.0:amd64` packages.
     # We don't install recommendation packages(`--no-install-recommends`) which is in this case `apt` package.
@@ -42,7 +36,15 @@ apt-get install              \
     --no-install-recommends  \
     ${testing_dependencies[*]}
 
-# Clean up
-apt-get clean
-apt autoremove --assume-yes
-rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+# There's no stable Python 3.6 package in Debian Stretch yet, it's only available on the debian unstable repository, 
+# so we have to get it from pyenv package.
+git clone                                            \
+    https://github.com/pyenv/pyenv                   \
+    /opt/pyenv                                       \
+    --branch {{ pyenv_version }}                     \
+    --depth  1
+
+rm -rf /opt/pyenv/.git
+export PYENV_ROOT="/opt/pyenv"
+pyenv=/opt/pyenv/bin/pyenv
+$pyenv install {{ specific_python_version_for_penv }}

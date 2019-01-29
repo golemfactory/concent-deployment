@@ -1,16 +1,12 @@
 #!/bin/bash -e
 
 # Update package lists for Debian and install dependencies
-dependencies=(
+# Packages needed to build concent(python extensions, dependencies of golem-messages in particular)
+readarray dependencies < ${BASH_SOURCE%/*}/build-dependencies.txt
+
+dependencies+=(
     # Required by psycopg2 python package (PostgreSQL support)
     libpq-dev
-
-    # Packages needed to build concent(python extensions, dependencies of golem-messages in particular)
-    libssl-dev
-    git
-    pkg-config
-    libffi-dev
-    software-properties-common
 
     # Packages needed to build Golem's imgverifier image (which our image is based on)
     libglib2.0-0
@@ -28,9 +24,6 @@ testing_dependencies=(
     libsecp256k1-dev
     python3-pip
 
-    # There's no stable Python 3.6 package in Debian Jessie so we have to get it from testing.
-    python{{ python_version }}
-    python{{ python_version }}-dev
     virtualenv
     # The upgrade of `virtualenv` package also upgrade `python3-apt` and `libapt-pkg5.0:amd64` packages.
     # We don't install recommendation packages(`--no-install-recommends`) which is in this case `apt` package.
@@ -56,6 +49,19 @@ apt-get install              \
     ${testing_dependencies[*]}
 
 
+# There's no stable Python 3.6 package in Debian Stretch yet, it's only available on the debian unstable repository, 
+# so we have to get it from pyenv package.
+git clone                                            \
+    https://github.com/pyenv/pyenv                   \
+    /opt/pyenv                                       \
+    --branch {{ pyenv_version }}                     \
+    --depth  1
+
+rm -rf /opt/pyenv/.git
+export PYENV_ROOT="/opt/pyenv"
+pyenv=/opt/pyenv/bin/pyenv
+$pyenv install {{ specific_python_version_for_penv }}
+
 # Download and install su-exec.
 # su-exec is a small program that, unlike sudo, does not start a separate shell
 # and just runs a command with different provileges in the current shell.
@@ -70,10 +76,6 @@ chmod 555 /usr/local/bin/su-exec
 su-exec nobody true
 
 # Python packages needed by Golem's imgverifier and Concent's verifier
-python3.6 -m pip install --upgrade pip
-python3.6 -m pip install --no-cache-dir --requirement /golem/work/imgverifier-requirements.txt
-
-# Clean up
-apt-get clean
-apt autoremove --assume-yes
-rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* ~/.cache/pip/*
+python="/opt/pyenv/versions/{{ specific_python_version_for_penv }}/bin/python{{ python_version }}"
+$python -m pip install --upgrade pip
+$python -m pip install --no-cache-dir --requirement /golem/work/imgverifier-requirements.txt

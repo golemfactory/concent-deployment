@@ -2,6 +2,7 @@ FROM golemfactory/blender:{{ golemfactory_blender_version }}
 
 # Add dependencies from golem verification and concent
 COPY testing.pref                             /etc/apt/preferences.d/
+COPY build-dependencies.txt                   /tmp/
 COPY golem/imgverifier-requirements.txt       /golem/work/
 COPY install-dependencies.sh                  /tmp/
 RUN  /tmp/install-dependencies.sh
@@ -10,6 +11,7 @@ RUN  /tmp/install-dependencies.sh
 COPY requirements.lock              /srv/http/concent_api/
 COPY middleman_protocol             /srv/http/middleman_protocol/
 COPY install-concent-api.sh         /tmp/
+COPY clean-container.sh             /tmp/
 RUN  /tmp/install-concent-api.sh
 
 

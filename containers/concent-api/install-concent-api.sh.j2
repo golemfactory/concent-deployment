@@ -1,9 +1,10 @@
 #!/bin/bash -e
 
+python="/opt/pyenv/versions/{{ specific_python_version_for_penv }}/bin/python{{ python_version }}"
 virtualenv_dir=/srv/http/virtualenv
 
 # Create virtualenv and Django app's dependencies
-virtualenv --python "python{{ python_version }}" "$virtualenv_dir"
+virtualenv --python "$python" "$virtualenv_dir"
 source "$virtualenv_dir/bin/activate"
 python -m pip install --upgrade pip
 # The requirements needs to be installed from the directory it's in because it contains relative paths.
@@ -11,5 +12,5 @@ cd /srv/http/concent_api/
 python -m pip install --no-cache-dir --requirement "/srv/http/concent_api/requirements.lock"
 python -m pip install --no-cache-dir gunicorn=="{{ gunicorn_version }}"
 
-# Clean up
-rm -rf ~/.cache/pip/*
+# Clean container and temporary packages needed to build requirements
+${BASH_SOURCE%/*}/clean-container.sh

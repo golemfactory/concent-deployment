@@ -27,40 +27,46 @@ GETH_SOURCE :=                              \
     build/geth/Dockerfile                   \
     build/geth/is-geth-synchronized.sh
 
-CONCENT_API_SOURCE :=                           \
-    build/concent-api/install-concent-api.sh    \
-    build/concent-api/install-dependencies.sh   \
-    build/concent-api/Dockerfile                \
-    build/concent-api/concent-api-manage.sh     \
-    build/concent-api/run-celery.sh             \
-    build/concent-api/run-gunicorn.sh           \
+CONCENT_API_SOURCE :=                                \
+    build/concent-api/install-concent-api.sh         \
+    build/concent-api/install-dependencies.sh        \
+    build/concent-api/Dockerfile                     \
+    build/concent-api/clean-container.sh             \
+    build/concent-api/concent-api-manage.sh          \
+    build/concent-api/run-celery.sh                  \
+    build/concent-api/build-dependencies.txt         \
+    build/concent-api/run-gunicorn.sh                \
     build/concent-api/local_settings.py
 
-VERIFIER_SOURCE_FROM_CONCENT_API :=          \
-    build/verifier/install-concent-api.sh    \
-    build/verifier/concent-api-manage.sh     \
-    build/verifier/run-celery.sh             \
-    build/verifier/testing.pref              \
-    build/verifier/requirements.lock         \
-    build/verifier/concent-api.tar           \
+VERIFIER_SOURCE_FROM_CONCENT_API :=                 \
+    build/verifier/install-concent-api.sh           \
+    build/verifier/concent-api-manage.sh            \
+    build/verifier/run-celery.sh                    \
+    build/verifier/clean-container.sh               \
+    build/verifier/testing.pref                     \
+    build/verifier/requirements.lock                \
+    build/verifier/concent-api.tar                  \
     build/verifier/local_settings.py
 
 VERIFIER_SOURCE :=                           \
     build/verifier/entrypoint.sh             \
     build/verifier/install-dependencies.sh   \
+    build/verifier/build-dependencies.txt    \
     build/verifier/Dockerfile                \
     $(VERIFIER_SOURCE_FROM_CONCENT_API)
 
+SIGNING_SERVICE_SOURCE_FROM_CONCENT_API :=       \
+    build/signing-service/clean-container.sh
 
-SIGNING_SERVICE_SOURCE :=                               \
-    build/signing-service/Dockerfile                    \
-    build/signing-service/install-dependencies.sh       \
-    build/signing-service/install-signing-service.sh    \
-    build/signing-service/run-signing-service.sh        \
-    build/signing-service/clean-container.sh            \
-    build/signing-service/create-user.sh                \
-    build/signing-service/build-dependencies.txt        \
-    build/signing-service/testing.pref
+SIGNING_SERVICE_SOURCE :=                                  \
+    build/signing-service/Dockerfile                       \
+    build/signing-service/install-dependencies.sh          \
+    build/signing-service/install-signing-service.sh       \
+    build/signing-service/run-signing-service.sh           \
+    build/signing-service/create-user.sh                   \
+    build/signing-service/build-dependencies.txt           \
+    build/signing-service/testing.pref                     \
+    $(SIGNING_SERVICE_SOURCE_FROM_CONCENT_API)
 
 ifndef IMAGE_VERSION
     IMAGE_VERSION := $(shell git describe --always --abbrev=16)
@@ -175,6 +181,10 @@ build/nginx-proxy/concent-api-docs.tar: build/repositories/concent build/package
 
 $(VERIFIER_SOURCE_FROM_CONCENT_API): build/verifier/%: build/concent-api/%
 	mkdir --parents "build/verifier/"
+	cp "$<" "$@"
+
+$(SIGNING_SERVICE_SOURCE_FROM_CONCENT_API): build/signing-service/%: build/concent-api/%
+	mkdir --parents "build/signing-service/"
 	cp "$<" "$@"
 
 build/verifier/golem/scripts/: build/repositories/golem/apps/rendering/resources/scripts/
