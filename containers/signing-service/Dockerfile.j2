@@ -7,6 +7,8 @@ COPY signing-service/RELEASE-VERSION    /usr/lib/signing_service/RELEASE-VERSION
 COPY signing-service/requirements.lock  /usr/lib/signing_service/signing-service/
 COPY testing.pref                       /etc/apt/preferences.d/
 COPY build-dependencies.txt             /tmp/
+COPY pyenv-build-dependencies.txt       /tmp/
+COPY configure-pyenv.sh                 /tmp/
 COPY install-dependencies.sh            /tmp/
 COPY install-signing-service.sh         /tmp/
 COPY clean-container.sh                 /tmp/
