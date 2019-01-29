@@ -2,6 +2,9 @@ FROM golemfactory/blender:{{ golemfactory_blender_version }}
 
 # Add dependencies from golem verification and concent
 COPY testing.pref                             /etc/apt/preferences.d/
+COPY pyenv-build-dependencies.txt             /tmp/
+COPY configure-pyenv.sh                       /tmp/
+COPY clean-pyenv-dependencies.sh              /tmp/
 COPY golem/imgverifier-requirements.txt       /golem/work/
 COPY install-dependencies.sh                  /tmp/
 RUN  /tmp/install-dependencies.sh
