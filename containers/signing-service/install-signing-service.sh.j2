@@ -17,5 +17,7 @@ python -m pip install --requirement requirements.lock
 mkdir daily_thresholds
 chown --recursive signing-service:signing-service daily_thresholds
 
+# Temporary file which is needed to build middleman protocol
+rm /usr/lib/signing_service/RELEASE-VERSION
 # Clean container and temporary packages needed to build requirements
 ${BASH_SOURCE%/*}/clean-container.sh
