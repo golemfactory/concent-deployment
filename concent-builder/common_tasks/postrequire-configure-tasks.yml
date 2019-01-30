@@ -1,5 +1,5 @@
 - name:    Install dependencies from testing
-  apt:  name={{ item }} default_release=testing
+  apt:  name={{ item }} default_release=unstable
   with_items:
     - python{{ python_version }}
     - python3-pip

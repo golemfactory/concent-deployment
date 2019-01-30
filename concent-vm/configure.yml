@@ -53,7 +53,7 @@
             - cargo
 
         - name:   Install extra dependencies from testing for Golem
-          apt:  name={{ item }} default_release=testing
+          apt:  name={{ item }} default_release=unstable
           with_items:
             - python3-pip
             - python3-netifaces

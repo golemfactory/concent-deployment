@@ -12,7 +12,7 @@
 
 - name:   Enable the testing repository
   apt_repository:
-    repo:  "deb http://ftp.de.debian.org/debian testing main"
+    repo:  "deb http://ftp.de.debian.org/debian unstable main"
     state: present
 
 - name:   Add Docker repository key
