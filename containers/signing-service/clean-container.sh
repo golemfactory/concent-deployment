@@ -4,8 +4,8 @@ readarray temporary_dependencies <<< $(cat ${BASH_SOURCE%/*}/build-dependencies.
 
 # Clean up
 apt-get clean
-apt autoremove --assume-yes
 apt-get remove --purge --assume-yes ${temporary_dependencies[*]}
+apt autoremove --assume-yes
 
 # Temporary file which is needed to build middleman protocol
 rm /usr/lib/signing_service/RELEASE-VERSION
