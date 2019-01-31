@@ -1,13 +1,38 @@
 - name:    Install dependencies from testing
   apt:  name={{ item }} default_release=testing
   with_items:
-    - python{{ python_version }}
     - python3-pip
-    - python{{ python_version }}-dev
     # Packages like python3-apt contain files with paths that contain specific Python version (e.g. 3.6).
     # We need to update them to make sure the paths match the interpreter version we have just installed.
     - python3-apt
     - virtualenv
+
+- name:   Clone pyenv repository
+  git:
+    repo:    "{{ pyenv_repository }}"
+    dest:    "{{ pyenv_dir }}"
+    version: "{{ pyenv_version }}"
+    clone:   yes
+    update:  yes
+
+- name:    Install dependencies from pyenv
+  apt:  name={{ item }}
+  with_items:
+    - make
+    - zlib1g-dev
+    - libbz2-dev
+    - libreadline-dev
+    - libsqlite3-dev
+    - llvm
+    - libncurses5-dev
+    - libncursesw5-dev
+    - xz-utils
+    - tk-dev
+
+- name:   Install python3.6 package
+  shell: "{{ pyenv_dir }}/bin/pyenv install {{ specific_python_version_for_penv }}"
+  environment:
+    PYENV_ROOT: "{{ pyenv_dir }}"
 
 - name:     apt autoclean
   command:  apt autoclean

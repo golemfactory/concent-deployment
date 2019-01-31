@@ -25,7 +25,7 @@
             - "{{ concent_dir }}/middleman_protocol"
 
         - name:   Create virtualenv for concent
-          command:  virtualenv ~/virtualenv --python "python{{ python_version }}" creates="~/virtualenv"
+          command:  virtualenv ~/virtualenv --python "{{ python_path }}" creates="~/virtualenv"
 
         - name:   Install requirements for concent
           pip:

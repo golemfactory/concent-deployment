@@ -3,3 +3,6 @@ data_dir:          /var/concent-data
 build_dir:         /home/{{ shared_user }}/build/{{ cluster }}
 local_secret_dir:  ../../concent-secrets
 deployment_values: ../../concent-deployment-values
+pyenv_repository:            https://github.com/pyenv/pyenv
+pyenv_dir:                   /opt/pyenv
+python_path:                 /opt/pyenv/versions/{{ specific_python_version_for_penv }}/bin/python{{ python_version }}

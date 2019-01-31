@@ -3,9 +3,10 @@
 requirements_path=$(realpath "$1")
 build_dir=$(realpath "$2")
 
+python="/opt/pyenv/versions/{{ specific_python_version_for_penv }}/bin/python{{ python_version }}"
 mkdir --parents "$build_dir/virtualenv/"
 
-virtualenv --python "python{{ python_version }}" "$build_dir/virtualenv/"
+virtualenv --python "$python" "$build_dir/virtualenv/"
 source "$build_dir/virtualenv/bin/activate"
 cd "$build_dir/repositories/concent/concent_api/"
 echo -n "$(git describe --tags)" > ../middleman_protocol/RELEASE-VERSION
