@@ -7,9 +7,6 @@
     - become:      yes
       become_user: root
       block:
-        - name:   Add node.js to repository
-          shell: curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
-
         - name:   Install node.js
           apt:
             name:
