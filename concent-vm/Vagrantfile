@@ -55,16 +55,19 @@ Vagrant.configure("2") do |config|
         partition_name=(
             /dev/sdb
         )
+
         for directory in "${directories[@]}"; do
             if [ ! -d "$directory" ]; then
                 mkdir $directory
             fi
-            mountpoint -q $directory || sudo mount ${partition_name[$index]} $directory
+            mountpoint --quiet $directory || sudo mount ${partition_name[$index]} $directory
             ((index++))
         done
+
         # Create docker group and add your user to it.
-        grep -q docker /etc/group || sudo groupadd docker
-        sudo usermod -aG docker vagrant
+        grep --quiet docker /etc/group || sudo groupadd docker
+        sudo usermod --append --groups docker vagrant
+
         # Change owner of `/home/vagrant/.local/` directory
         sudo chown --recursive vagrant:vagrant /home/vagrant/.local/
     SHELL
