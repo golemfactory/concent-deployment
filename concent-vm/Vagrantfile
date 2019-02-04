@@ -15,17 +15,17 @@ Vagrant.configure("2") do |config|
     # This should be an absolute path because `vboxmanage` fails when used with
     # a relative one on some systems (discovered on Ubuntu xx.xx with Vagrant 2.2.1).
     disk_dir                 = File.expand_path('./disk/')
-    golem_configuration_disk = "#{disk_dir}/golem_configuration_directory.vdi"
+    $golem_configuration_disk = "#{disk_dir}/golem_configuration_directory.vdi"
 
     config.vm.provider "virtualbox" do |virtualbox|
         virtualbox.memory = 2048
         virtualbox.gui    = false
-        if not File.exists?(golem_configuration_disk)
+        if not File.exists?($golem_configuration_disk)
             FileUtils.mkdir_p(disk_dir)
 
             virtualbox.customize [
                 'createhd',
-                '--filename', golem_configuration_disk,
+                '--filename', $golem_configuration_disk,
                 '--variant',  'Fixed',
                 '--size',     1 * 1024, # MB
             ]
@@ -37,12 +37,12 @@ Vagrant.configure("2") do |config|
             '--port',         1,
             '--device',       0,
             '--type',         'hdd',
-            '--medium',       golem_configuration_disk,
+            '--medium',       $golem_configuration_disk,
             '--hotpluggable', 'on'
         ]
     end
 
-    if not File.exists?(golem_configuration_disk)
+    if not File.exists?($golem_configuration_disk)
         config.vm.provision "shell", privileged: true, inline: <<-SHELL
             mkfs.ext4 /dev/sdb
         SHELL
@@ -84,13 +84,13 @@ Vagrant.configure("2") do |config|
     end
 
     config.trigger.after :halt do |trigger|
-        detach_virtual_disk(trigger, 1, golem_configuration_disk)
+        detach_virtual_disk(trigger, 1, $golem_configuration_disk)
     end
 
     config.trigger.before :destroy do |trigger|
         # `vagrant destroy` normally destroys any virtual disks attached to the machine.
         # Our disk contains Ethereum blockchain which can take a lot of time to redownload so we detach it to prevent its destruction.
-        detach_virtual_disk(trigger, 1, golem_configuration_disk)
+        detach_virtual_disk(trigger, 1, $golem_configuration_disk)
     end
 
     config.vm.provision "ansible", run: "always" do |ansible|
