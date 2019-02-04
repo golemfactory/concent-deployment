@@ -26,5 +26,19 @@
     state:        present
     update_cache: no
 
+- name:   Add NodeSource repository key
+  apt_key:
+    url:   https://deb.nodesource.com/gpgkey/nodesource.gpg.key
+    state: present
+
+- name:   Add NodeSource apt repository
+  apt_repository:
+    repo:         "{{ item }}"
+    state:        present
+    update_cache: no
+  with_items:
+    - "deb     https://deb.nodesource.com/node_10.x {{ ansible_distribution_release }} main"
+    - "deb-src https://deb.nodesource.com/node_10.x {{ ansible_distribution_release }} main"
+
 - name:   Update apt package index
   apt:    update_cache=yes
