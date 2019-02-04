@@ -80,6 +80,7 @@ Vagrant.configure("2") do |config|
                 "--type       hdd "                         +
                 "--medium     none"
             )
+            system("VBoxManage closemedium '#{$golem_configuration_disk}'")
         end
     end
 
