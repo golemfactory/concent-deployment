@@ -19,7 +19,6 @@
               - htop
               - tmux
               - vim
-              - curl
 
         - name:   Install dependencies
           apt:
