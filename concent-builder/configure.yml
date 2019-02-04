@@ -25,29 +25,29 @@
           apt:  update_cache=yes
 
         - name:    Install basic packages
-          apt:     name={{ item }}
-          with_items:
-            - ncdu
-            - tree
-            - htop
-            - tmux
+          apt:
+            name:
+              - ncdu
+              - tree
+              - htop
+              - tmux
 
         - name:    Install dependencies
-          apt:     name={{ item }}
-          with_items:
-            - build-essential
-            - libssl-dev
-            - pkg-config
-            - libsecp256k1-dev
-            - git
-            - kubectl={{ kubectl_version }}
-            - docker-engine={{ docker_version }}
-            - google-cloud-sdk={{ google_cloud_sdk_version }}
-            - libpq-dev
-            - gcc
-            - python3-yaml
-            - postgresql-{{ postgres_version }}
-            - python3-psycopg2
+          apt:
+            name:
+              - build-essential
+              - libssl-dev
+              - pkg-config
+              - libsecp256k1-dev
+              - git
+              - kubectl={{ kubectl_version }}
+              - docker-engine={{ docker_version }}
+              - google-cloud-sdk={{ google_cloud_sdk_version }}
+              - libpq-dev
+              - gcc
+              - python3-yaml
+              - postgresql-{{ postgres_version }}
+              - python3-psycopg2
 
         - name:   include common postrequire tasks from `postrequire-configure-tasks.yml` file
           include_tasks: common_tasks/postrequire-configure-tasks.yml
