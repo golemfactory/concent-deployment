@@ -3,6 +3,8 @@
   vars_files:
     - ../concent-builder/repositories.yml
     - consts.yml
+  vars:
+    - golem_electron_version: dev
   tasks:
     - become:      yes
       become_user: root
