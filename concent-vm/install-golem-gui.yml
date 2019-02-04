@@ -1,8 +1,8 @@
 - hosts:
-    - vagrant
+    - concent-vm
   vars_files:
     - ../concent-builder/repositories.yml
-    - vars.yml
+    - consts.yml
   tasks:
     - become:      yes
       become_user: vagrant
