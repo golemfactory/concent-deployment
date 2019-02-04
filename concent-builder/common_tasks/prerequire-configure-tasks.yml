@@ -22,8 +22,9 @@
 
 - name:   Add Docker.io apt repository
   apt_repository:
-    repo:  "deb https://apt.dockerproject.org/repo {{ ansible_distribution|lower }}-{{ ansible_distribution_release }} main"
-    state: present
+    repo:         "deb https://apt.dockerproject.org/repo {{ ansible_distribution|lower }}-{{ ansible_distribution_release }} main"
+    state:        present
+    update_cache: no
 
 - name:   Install system updates for Debian
   apt:  update_cache=yes
