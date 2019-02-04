@@ -60,6 +60,14 @@
               - python3-psutil
               - rustc
 
+        # FIXME: Why doesn't the task above install rustc from testing? Find the cause and fix it properly.
+        # Reported as https://github.com/golemfactory/concent-deployment/issues/319
+        - name:   Quick and dirty workaround for rustc not getting installed from testing
+          shell:  apt-get install rustc
+              --target-release testing
+              --no-install-recommends
+              --assume-yes
+
         - name:   Create the user account that will be used for building stuff
           user:
             name:   builder
