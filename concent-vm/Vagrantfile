@@ -14,12 +14,15 @@ Vagrant.configure("2") do |config|
 
     # This should be an absolute path because `vboxmanage` fails when used with
     # a relative one on some systems (discovered on Ubuntu xx.xx with Vagrant 2.2.1).
-    golem_configuration_disk = File.expand_path('./disk/golem_configuration_directory.vdi')
+    disk_dir                 = File.expand_path('./disk/')
+    golem_configuration_disk = "#{disk_dir}/golem_configuration_directory.vdi"
 
     config.vm.provider "virtualbox" do |virtualbox|
         virtualbox.memory = 2048
         virtualbox.gui    = false
         if not File.exists?(golem_configuration_disk)
+            FileUtils.mkdir_p(disk_dir)
+
             virtualbox.customize [
                 'createhd',
                 '--filename', golem_configuration_disk,
