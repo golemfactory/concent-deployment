@@ -8,5 +8,5 @@ result=$(
     golem-run-console-mode.sh $@ & \
     cd ~/golem_electron/;          \
     npm run start:app &            \
-    npm run start:mainnet &        \
+    npm run start &                \
 )
