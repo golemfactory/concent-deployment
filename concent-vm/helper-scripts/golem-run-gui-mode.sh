@@ -8,8 +8,7 @@ export DISPLAY=:0.0
 
 # Running the commands in $() allows our trap to kill them all on exit
 result=$(
-    golem-run-console-mode.sh $@ & \
-    cd ~/golem_electron/;          \
-    npm run start:app &            \
-    npm run start &                \
+    cd ~/golem_electron/; \
+    npm run start:app &   \
+    npm run start &       \
 )
