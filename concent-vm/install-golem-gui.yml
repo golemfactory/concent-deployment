@@ -10,10 +10,14 @@
         - name:   Add node.js to repository
           shell: curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
 
-        - name:   Install xfce desktop environment
+        - name:   Install node.js
           apt:
             name:
               - nodejs
+
+        - name:   Install XFCE desktop environment
+          apt:
+            name:
               - xfce4
               - libgconf-2-4
               - libnss3-dev
@@ -21,7 +25,7 @@
     - become:      yes
       become_user: vagrant
       block:
-        - name:   Clone golem electron repository
+        - name:   Clone golem-electron repository
           git:
             repo:    "{{ golem_electron_repository }}"
             dest:    "{{ golem_electron_dir }}"
