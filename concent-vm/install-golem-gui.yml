@@ -9,10 +9,11 @@
     - become:      yes
       become_user: root
       block:
-        - name:   Install node.js
+        - name:   Install node.js and yarn
           apt:
             name:
               - nodejs
+              - yarn
 
         - name:   Install XFCE desktop environment
           apt:
@@ -32,8 +33,8 @@
             clone:   yes
             update:  yes
 
-        - name:   Install dependencies for golem electron
-          command: npm install
+        - name:   Install dependencies for golem-electron using yarn
+          command: yarn
           args:
             chdir: ~/golem_electron/
 
