@@ -40,5 +40,16 @@
     - "deb     https://deb.nodesource.com/node_10.x {{ ansible_distribution_release }} main"
     - "deb-src https://deb.nodesource.com/node_10.x {{ ansible_distribution_release }} main"
 
+- name:   Add yarn repository key
+  apt_key:
+    url:   https://dl.yarnpkg.com/debian/pubkey.gpg
+    state: present
+
+- name:   Add yarn apt repository
+  apt_repository:
+    repo:         deb https://dl.yarnpkg.com/debian/ stable main
+    state:        present
+    update_cache: no
+
 - name:   Update apt package index
   apt:    update_cache=yes
