@@ -46,10 +46,8 @@
             dest:       ~/
             remote_src: yes
 
-        - name:    Copy to execute path
+        - name:    Put a symlink to hyperg in ~/bin/
           file:
             src:  ~/hyperg/hyperg
             dest: ~/bin/hyperg
-            owner: vagrant
-            group: vagrant
             state: link
