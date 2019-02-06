@@ -138,12 +138,10 @@
     - become:      yes
       become_user: vagrant
       block:
-        - name:   Install helper scripts for managing Concent
-          command: cp                                                            \
-              --recursive                                                        \
-              --preserve                                                         \
-              "{{ concent_deployment_dir }}/concent-vm/helper-scripts/."         \
-              "~/bin/"
+        - name:    Create ~/bin/
+          file:
+            dest:  ~/bin/
+            state: directory
 
         - name:    Install ~/.bash_aliases
           copy:

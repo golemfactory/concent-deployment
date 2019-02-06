@@ -8,6 +8,18 @@
     - become:      yes
       become_user: vagrant
       block:
+        - name:   Install helper scripts for managing Concent
+          copy:
+            src:  "helper-scripts/{{ item }}"
+            dest: "~/bin/{{ item }}"
+            mode: 0555
+          with_items:
+            - concent-env.sh
+            - concent-migrate.sh
+            - concent-reset.sh
+            - concent-run.sh
+            - concent-update.sh
+
         - name:   Clone concent repository
           git:
             repo:    "{{ repositories.concent.url }}"

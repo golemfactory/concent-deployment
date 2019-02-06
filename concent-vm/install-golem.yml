@@ -58,3 +58,12 @@
             src:  ~/hyperg/hyperg
             dest: ~/bin/hyperg
             state: link
+
+        - name:   Install helper scripts for Golem
+          copy:
+            src:  "helper-scripts/{{ item }}"
+            dest: "~/bin/{{ item }}"
+            mode: 0555
+          with_items:
+            - golem-env.sh
+            - golem-run-console-mode.sh
