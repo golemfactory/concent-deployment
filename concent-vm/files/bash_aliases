@@ -1,0 +1,6 @@
+alias egrep='egrep --color=auto'
+alias fgrep='fgrep --color=auto'
+alias grep='grep --color=auto'
+alias l='ls -C'
+alias ll='ls -l --all'
+alias ls='ls --color=auto --classify --human-readable'

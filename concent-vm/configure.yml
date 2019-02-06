@@ -138,3 +138,8 @@
               --preserve                                                         \
               "{{ concent_deployment_dir }}/concent-vm/helper-scripts/."         \
               "~/bin/"
+
+        - name:    Install ~/.bash_aliases
+          copy:
+            src:   bash_aliases
+            dest:  ~/.bash_aliases
