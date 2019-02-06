@@ -12,6 +12,7 @@
           git:
             repo:    "{{ repositories.golem.url }}"
             dest:    "{{ golem_dir }}"
+            # NOTE: The default for golem_version comes from versions.yml
             version: "{{ golem_version }}"
             clone:   yes
             update:  yes

@@ -97,11 +97,12 @@ Vagrant.configure("2") do |config|
     end
 
     config.vm.provision "ansible" do |ansible|
+        extra_vars = {}
+        extra_vars['concent_deployment_version'] = ENV['CONCENT_DEPLOYMENT_VERSION'] if ENV.key?('CONCENT_DEPLOYMENT_VERSION')
+
         ansible.compatibility_mode = "2.0"
         ansible.playbook           = "configure.yml"
-        ansible.extra_vars         = {
-            concent_deployment_version: ENV['CONCENT_DEPLOYMENT_VERSION'] || "master",
-        }
+        ansible.extra_vars         = extra_vars
         ansible.inventory_path     = "./inventory"
         ansible.limit              = "all"
     end
