@@ -462,7 +462,7 @@ The `concent-vm/` directory contains a Vagrant configuration that creates a virt
 The machine has multiple purposes:
 - It can be used to run and debug Concent tests in a reproducible environment.
 - It serves as a reference for setting up Concent development environment.
-- It can can be set up to run Golem from source.
+- It can be set up to build and run Golem from source.
 
 #### Prerequisites
 ##### Vagrant
@@ -492,7 +492,7 @@ vagrant plugin install vagrant-vbguest
 ```
 
 #### Building the machine
-`concent-vm/Vagrantfile` creates performs basic setup but does not install Concent or Golem.
+`concent-vm/Vagrantfile` performs basic setup but does not install Concent or Golem.
 It installs system packages and starts services that may be needed by either.
 
 This step needs access to `concent-deployment` sources.
