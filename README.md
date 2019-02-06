@@ -487,7 +487,7 @@ ansible-playbook install-golem.yml                                 \
     --inventory   inventory
 ```
 
-`golem_version` parameter determines which branch/tag/commit from the `concent` repository will be deployed in the machine.
+`golem_version` parameter determines which branch/tag/commit from the `golem` repository will be deployed in the machine.
 Version listed in `containers/versions.yml` in `concent-deployment` repository is used by default.
 
 #### Using the machine
