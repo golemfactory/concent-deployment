@@ -34,7 +34,7 @@
             update:  yes
 
         - name:   Install dependencies for golem-electron using yarn
-          command: yarn
+          command: yarn install --pure-lockfile
           args:
             chdir: ~/golem_electron/
 
