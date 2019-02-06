@@ -519,21 +519,35 @@ vagrant plugin install vagrant-vbguest
 ```
 
 #### Building the machine
-`concent-vm/Vagrantfile` performs basic setup but does not install Concent or Golem.
-It installs system packages and starts services that may be needed by either.
+##### Quick setup examples
+The examples below assume that you already have a clone of the `concent-deployment` repository and you're in the `concent-vm/` directory.
 
-This step needs access to `concent-deployment` sources.
-`CONCENT_DEPLOYMENT_VERSION` specifies git branch/tag/commit to use.
-Sources are downloaded from Github (it does **not** copy the code from your local repository).
-
+###### VM with Golem
+You can build the machine by running:
 ``` bash
-cd concent-vm/
-export CONCENT_DEPLOYMENT_VERSION=master
+export CONCENT_VM_INSTALL_GOLEM=true
+export CONCENT_VM_INSTALL_GOLEM_ELECTRON=true
+export CONCENT_VM_GOLEM_ELECTRON_VERSION=b0.19.0
+export ANSIBLE_STDOUT_CALLBACK=debug
+
 vagrant up
+vagrant reload
 ```
 
-##### Installing Concent
-###### Configuration
+This installs:
+- Docker
+- PosgtgreSQL server
+- Local `nginx-storage` instance.
+- `golem` from the branch/commit/tag listed under `golem_version` in `containers/versions.yml`.
+- `golem-electron` from the `b0.19.0` branch
+- Lightweight desktop environment (XFCE)
+
+
+You can stop the machine at any moment with `vagrant halt`.
+Note that to start the machine later you need to have the environment variables defined in your shell.
+It's recommended to put them into a script and always source it before running any Vagrant commands.
+
+###### VM with Concent
 This step requires two configuration files.
 
 `concent-vm/extra_settings.py` is a Python script that will be imported into the automatically generated `local_settings.py` in the machine.
@@ -548,58 +562,77 @@ export ETHEREUM_PRIVATE_KEY="..."
 export SIGNING_SERVICE_PRIVATE_KEY="..."
 ```
 
-###### Installation
-After creating the configuration, it's enough to run the following playbook:
+Now you can build the machine by running:
 ``` bash
-ansible-playbook install-concent.yml                               \
-    --extra-vars  concent_version=master                           \
-    --private-key .vagrant/machines/default/virtualbox/private_key \
-    --user        vagrant                                          \
-    --inventory   inventory
+export CONCENT_VM_INSTALL_CONCENT=true
+export CONCENT_VM_CONCENT_DEPLOYMENT_VERSION=$(git describe)
+export ANSIBLE_STDOUT_CALLBACK=debug
+
+vagrant up
 ```
 
-`concent_version` parameter determines which branch/tag/commit from the `concent` repository will be deployed in the machine.
-Version listed in `containers/versions.yml` in `concent-deployment` repository is used by default.
+The above assumes that the commit you have checked out has already been pushed to Github.
+The machine always downloads all the repositories (including `concent-deployment`) from there.
 
-##### Installing Golem
-Golem installation does not require any extra configuration.
-Just run the following playbook:
+This installs:
+- Docker
+- PosgtgreSQL server
+- Local `nginx-storage` instance.
+- RabbitMQ server running in a Docker container.
+- `concent` from the branch/commit/tag listed under `concent_version` in `containers/versions.yml`.
+
+
+###### VM with everything
+You can build the machine by running:
 ``` bash
-ansible-playbook install-golem.yml                                 \
-    --extra-vars  golem_version=develop                            \
-    --private-key .vagrant/machines/default/virtualbox/private_key \
-    --user        vagrant                                          \
-    --inventory   inventory
+export CONCENT_VM_INSTALL_CONCENT=true
+export CONCENT_VM_INSTALL_GOLEM=true
+export CONCENT_VM_INSTALL_GOLEM_ELECTRON=true
+export CONCENT_VM_CONCENT_DEPLOYMENT_VERSION=$(git describe)
+export CONCENT_VM_CONCENT_VERSION=master
+export CONCENT_VM_GOLEM_VERSION=develop
+export CONCENT_VM_GOLEM_ELECTRON_VERSION=b0.19.0
+export CONCENT_VM_HYPERG_PORT=3282
+export CONCENT_VM_GOLEM_START_PORT=40102
+export CONCENT_VM_SHOW_GUI=true
+export CONCENT_VM_MEMORY=3072
+export CONCENT_VM_CPUS=3
+export ANSIBLE_STDOUT_CALLBACK=debug
+
+vagrant up
+vagrant reload
 ```
 
-`golem_version` parameter determines which branch/tag/commit from the `golem` repository will be deployed in the machine.
-Version listed in `containers/versions.yml` in `concent-deployment` repository is used by default.
+This installs:
+- Docker
+- PosgtgreSQL server
+- Local `nginx-storage` instance.
+- RabbitMQ server running in a Docker container.
+- `concent` from the `master` branch
+- `golem` from the `develop` branch
+- `golem-electron` from the `b0.19.0` branch
+- Lightweight desktop environment (XFCE)
 
-##### Installing Golem GUI
-After installing Golem you may opt to install its `golem-electron` GUI too.
-The playbook also installs a lightweight XFCE desktop environment in the machine that lets you actually run it inside without connecting to the X server running on the host.
+This example also shows how to customize the machine.
+- The machine runs with 3 GB RAM and 2 CPU cores.
+- Vagrant will forward ports 3282, 40102 and 40103 of the machine to the host.
+     Note that these ports may still not be available to other clients if your host is behind a NAT (e.g. you're using a home router).
+- Golem will be configured to use 40102 as `start port` and `seed port` in `app_cfg.ini`.
+- The helper script for starting Golem in the machine (`golem-run-console-mode.sh`) will run `hyperg` at port 3282.
 
-To install it, run the following playbook:
+
+##### Reconfiguring the machine
+If you change any of the environment variables used to configure the machine, you may need to rerun the configuration playbooks.
+You can do it with
+
 ``` bash
-ansible-playbook install-golem-gui.yml                             \
-    --extra-vars  golem_electron_version=dev                       \
-    --private-key .vagrant/machines/default/virtualbox/private_key \
-    --user        vagrant                                          \
-    --inventory   inventory
+vagrant provision
 ```
 
-`golem_electron_version` parameter determines which branch/tag/commit from the `golem-electron` repository will be deployed in the machine.
-The default is the `dev` branch.
-
-To be able to run graphical programs inside the machine, you also have to perform some manual steps:
-- Make sure the machine is not running.
-    If it is, stop it with `vagrant halt`.
-- Start VirtualBox GUI.
-- Select the `concent-vm` image.
-- Go to Settings > Display.
-- Set video memory to 128 MB.
-
-Now when you start the machine with `vagrant up`, you can show it screen by right-clicking it in VirtualBox GUI and selecting 'Show'.
+In some cases (e.g. if the change resulted in the graphical environment being installed) it may be necessary to restart the machine as well:
+``` bash
+vagrant reload
+```
 
 
 #### Using the machine
@@ -685,15 +718,6 @@ Starts the Electron app that provides a GUI for Golem.
 Does **not** start the console app.
 The console app should already be running in a separate terminal.
 
-To actually see the window you need to unhide the graphical output from the machine.
-This can be done from the VirtualBox GUI:
-- Start the machine as usual (with `vagrant up`):
-- Start VirtualBox GUI.
-    You should see that the `concent-vm` machine is running.
-- Right click `concent-vm` and select "Show" from the context menu.
-    You'll see the graphical login screen.
-- Log in as `vagrant` (the default password is `vagrant`).
-
 Now you can launch the GUI from a terminal:
 ``` bash
 golem-run-gui-mode.sh
@@ -702,6 +726,8 @@ golem-run-gui-mode.sh
 This does not need to be a graphical terminal.
 You can do it from a shell started with `vagrant ssh`.
 
+If you have configured your machine with `CONCENT_VM_INSTALL_GOLEM_ELECTRON=true` or `CONCENT_VM_SHOW_GUI=true` and restarted it, you should be able to see the desktop of the machine.
+If that's not the case you can always launch VirtualBox GUI, select the machine and use the "Show" option.
 
 ###### `golem-run-all.sh`
 Starts both Golem GUI and the console app on a single terminal.
