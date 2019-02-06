@@ -17,8 +17,10 @@ Vagrant.configure("2") do |config|
     $golem_configuration_disk = "#{disk_dir}/golem_configuration_directory.vdi"
 
     config.vm.provider "virtualbox" do |virtualbox|
-        virtualbox.memory = 2048
         virtualbox.gui    = false
+        virtualbox.memory = ENV['CONCENT_VM_MEMORY'] || 2048 # MB
+        virtualbox.cpus   = ENV['CONCENT_VM_CPUS']   || 1
+
         if not File.exists?($golem_configuration_disk)
             FileUtils.mkdir_p(disk_dir)
 
