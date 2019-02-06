@@ -33,6 +33,13 @@
           args:
             chdir: "{{ golem_dir }}"
 
+        - name:   Remove cached Python packages
+          file:
+            path:  "{{ item }}"
+            state: absent
+          with_items:
+            - ~/.cache/pip/
+
         - name:   Download hyperg
           get_url:
             url:      "{{ golem_hyperdrive_repository }}"

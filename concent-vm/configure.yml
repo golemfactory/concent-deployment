@@ -60,6 +60,12 @@
               - python3-psutil
               - rustc
 
+        - name:    Remove unused dependencies
+          apt:     autoremove=yes
+
+        - name:    Clear apt cache
+          command: apt-get clean
+
         # FIXME: Why doesn't the task above install rustc from testing? Find the cause and fix it properly.
         # Reported as https://github.com/golemfactory/concent-deployment/issues/319
         - name:   Quick and dirty workaround for rustc not getting installed from testing
