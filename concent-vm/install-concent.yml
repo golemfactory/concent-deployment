@@ -24,6 +24,7 @@
           git:
             repo:    "{{ repositories.concent.url }}"
             dest:    "{{ concent_dir }}"
+            # NOTE: The default for concent_version comes from versions.yml
             version: "{{ concent_version }}"
             clone:   yes
             update:  yes
