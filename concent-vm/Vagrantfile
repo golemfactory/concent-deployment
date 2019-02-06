@@ -97,7 +97,7 @@ Vagrant.configure("2") do |config|
         detach_virtual_disk(trigger, 1, $golem_configuration_disk)
     end
 
-    config.vm.provision "ansible", run: "always" do |ansible|
+    config.vm.provision "ansible" do |ansible|
         ansible.compatibility_mode = "2.0"
         ansible.playbook           = "configure.yml"
         ansible.extra_vars         = {
