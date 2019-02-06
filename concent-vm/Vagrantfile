@@ -16,6 +16,17 @@ Vagrant.configure("2") do |config|
 
     config.vm.network "private_network", ip: "172.40.2.3"
 
+    if ENV.key?('CONCENT_VM_HYPERG_PORT')
+        hyperg_port = ENV['CONCENT_VM_HYPERG_PORT'].to_i
+        config.vm.network "forwarded_port", guest: hyperg_port, host: hyperg_port
+    end
+
+    if ENV.key?('CONCENT_VM_GOLEM_START_PORT')
+        start_port = ENV['CONCENT_VM_GOLEM_START_PORT'].to_i
+        config.vm.network "forwarded_port", guest: start_port,     host: start_port
+        config.vm.network "forwarded_port", guest: start_port + 1, host: start_port + 1
+    end
+
     # This should be an absolute path because `vboxmanage` fails when used with
     # a relative one on some systems (discovered on Ubuntu xx.xx with Vagrant 2.2.1).
     disk_dir                  = File.expand_path('./disk/')
