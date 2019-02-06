@@ -469,6 +469,10 @@ The machine has multiple purposes:
 You need Vagrant >= 2.2.0.
 Install it with your system package manager.
 
+##### Ansible
+You need Asible >= 2.7.0 for Vagrant to run configuration playbooks.
+Install it with your system package manager.
+
 ##### VirtualBox
 The machine runs on VirtualBox.
 Install it with your system package manager.
@@ -476,7 +480,15 @@ Install it with your system package manager.
 VirtualBox provides several kernel modules and requires them to be loaded before you can start any virtual machine.
 These modules need to be built for your specific kernel version and rebuilt again whenever you update your kernel.
 It's recommended to use [DKMS](https://en.wikipedia.org/wiki/Dynamic_Kernel_Module_Support) to do this automatically.
-Most distributions provide a package named `virtualbox-dkms` or `virtualbox-host-dkms` that provides module sources and configures your system to build them.
+Most distributions provide a package named `virtualbox-dkms` (Ubuntu) or `virtualbox-host-dkms` that provides module sources and configures your system to build them.
+
+To be able to build the modules you also need kernel headers.
+The package containing them is called `linux-headers` on Arch Linux; the name contains kernel version on other distributions.
+Make sure that it matches the version of the kernel you're currently running (you can check that with `uname --kernel-release`).
+
+``` bash
+sudo apt-get install virtualbox-dkms linux-headers-x.y.z-w
+```
 
 On some systems the modules are not loaded automatically after the installation.
 If you can't start a machine, try to load `vboxdrv` kernel module manually first:
@@ -484,6 +496,21 @@ If you can't start a machine, try to load `vboxdrv` kernel module manually first
 sudo modprobe vboxdrv
 ```
 These modules are loaded automatically when the system starts so you should no longer have to do this after the next reboot.
+
+###### VirtualBox Guest Additions
+VirtualBox provides a set of additional drivers and software that can be installed in the virtual machine to improve performance and usability.
+This includes: sharing folders with the machine, clipboard integration or better video support.
+It's all provided in the form of a [VirtualBox Guest Additions](https://www.virtualbox.org/manual/ch04.html) ISO.
+
+VirtualBox will download the ISO automatically but it will do it every time a new machine is built which significantly slows down the process.
+Many distributions provide a package which stores the ISO locally.
+It's recommended to install it with your package manager.
+
+The package is called `virtualbox-guest-additions-iso` on Ubuntu and `virtualbox-guest-iso` on Arch Linux.
+
+``` bash
+sudo apt-get install virtualbox-guest-additions-iso
+```
 
 ##### Vagrant plugins
 Install `vagrant-vbguest` plugin:
