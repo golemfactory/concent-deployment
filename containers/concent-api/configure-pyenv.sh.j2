@@ -1,0 +1,12 @@
+#! /bin/bash -e
+
+git clone                                            \
+    https://github.com/pyenv/pyenv                   \
+    /opt/pyenv                                       \
+    --branch {{ pyenv_version }}                     \
+    --depth  1
+
+rm -rf /opt/pyenv/.git
+export PYENV_ROOT="/opt/pyenv"
+pyenv=/opt/pyenv/bin/pyenv
+$pyenv install {{ python_version }}.{{ python_patch_version }}

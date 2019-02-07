@@ -1,6 +1,9 @@
 FROM debian:{{ debian_version }}
 
 COPY testing.pref                   /etc/apt/preferences.d/
+COPY pyenv-build-dependencies.txt   /tmp/
+COPY configure-pyenv.sh             /tmp/
+COPY clean-pyenv-dependencies.sh    /tmp/
 COPY install-dependencies.sh        /tmp/
 RUN  /tmp/install-dependencies.sh
 
