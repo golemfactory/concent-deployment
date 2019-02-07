@@ -37,3 +37,11 @@
           command: npm install
           args:
             chdir: ~/golem_electron/
+
+        - name:   Install helper scripts for Golem GUI
+          copy:
+            src:  "helper-scripts/{{ item }}"
+            dest: "~/bin/{{ item }}"
+            mode: 0555
+          with_items:
+            - golem-run-gui-mode.sh
