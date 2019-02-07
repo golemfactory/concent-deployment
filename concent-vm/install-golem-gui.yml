@@ -44,4 +44,5 @@
             dest: "~/bin/{{ item }}"
             mode: 0555
           with_items:
+            - golem-run-all.sh
             - golem-run-gui-mode.sh
