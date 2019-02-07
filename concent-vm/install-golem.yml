@@ -17,7 +17,7 @@
             update:  yes
 
         - name:   Create virtualenv for golem
-          command:  virtualenv ~/golem_virtualenv --python "python{{ python_version }}" creates="~/golem_virtualenv"
+          command:  virtualenv ~/golem_virtualenv --python "{{ python_path }}" creates="~/golem_virtualenv"
 
         - name:   Install requirements for golem
           pip:
