@@ -69,6 +69,8 @@ SIGNING_SERVICE_SOURCE :=                                  \
     build/signing-service/install-dependencies.sh          \
     build/signing-service/install-signing-service.sh       \
     build/signing-service/install-middleman-protocol.sh    \
+    build/signing-service/generate-ecc-key-pair.sh         \
+    build/signing-service/generate-ecc-key-pair.py         \
     build/signing-service/clean-container.sh               \
     build/signing-service/run-signing-service.sh           \
     build/signing-service/create-user.sh                   \

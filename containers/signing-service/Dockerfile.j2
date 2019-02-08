@@ -8,6 +8,8 @@ COPY build-dependencies.txt                       /tmp/
 COPY pyenv-build-dependencies.txt                 /tmp/
 COPY signing-service/cacheable-requirements.lock  /usr/lib/signing_service/signing-service/
 COPY configure-pyenv.sh                           /tmp/
+COPY generate-ecc-key-pair.py                     /usr/local/lib/
+COPY generate-ecc-key-pair.sh                     /usr/local/bin/
 COPY install-dependencies.sh                      /tmp/
 COPY install-signing-service.sh                   /tmp/
 COPY clean-container.sh                           /tmp/
