@@ -7,38 +7,28 @@
     - "{{ deployment_values }}/var.yml"
     - "{{ deployment_values }}/var-{{ cluster }}.yml"
   tasks:
-    - become:      yes
-      become_user: "{{ shared_user }}"
-      block:
-        - name: Remove the build directory to get rid of files from previous builds
-          file:
-            path:    "{{ build_dir }}"
-            state:   absent
+    - name: Remove the build directory to get rid of files from previous builds
+      file:
+        path:    "{{ build_dir }}"
+        state:   absent
 
-        - name: Check out working copy of concent-deployment repositories
-          git:
-            repo:    "{{ data_dir }}/concent-deployment"
-            dest:    "{{ build_dir }}/concent-deployment"
-            version: "{{ concent_versions[concent_version].versions['concent-deployment'] }}"
-            clone:   yes
-            update:  yes
+    - name: Check out working copy of concent-deployment repositories
+      git:
+        repo:    "{{ data_dir }}/concent-deployment"
+        dest:    "{{ build_dir }}/concent-deployment"
+        version: "{{ concent_versions[concent_version].versions['concent-deployment'] }}"
+        clone:   yes
+        update:  yes
 
-    - become:      yes
-      become_user: root
-      block:
-        - name: Install var.yml from the local machine
-          copy:
-            src:   "{{ deployment_values }}/{{ item }}"
-            dest:  "{{ build_dir }}/concent-deployment/kubernetes/"
-            owner: "{{ shared_user }}"
-            group: "{{ shared_user }}"
-          with_items:
-            - var.yml
-            - var-{{ cluster }}.yml
+    - name: Install var.yml from the local machine
+      copy:
+        src:   "{{ deployment_values }}/{{ item }}"
+        dest:  "{{ build_dir }}/concent-deployment/kubernetes/"
+      with_items:
+        - var.yml
+        - var-{{ cluster }}.yml
 
-    - become:      yes
-      become_user: "{{ shared_user }}"
-      block:
+    - block:
         - name: Build containers
           make:
             chdir: "{{ build_dir }}/concent-deployment/containers"
@@ -49,6 +39,7 @@
           make:
             chdir: "{{ build_dir }}/concent-deployment/kubernetes"
             params:
+              CONCENT_SECRET_DIR: "{{ deployment_dir }}/concent-secrets/{{ cluster }}"
               IMAGE_PREFIX:       "{{ image_prefix }}"
               CLUSTER:            "{{ cluster }}"
 

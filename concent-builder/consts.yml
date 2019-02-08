@@ -1,6 +1,7 @@
 shared_user:       builder
 data_dir:          /var/concent-data
-build_dir:         /home/{{ shared_user }}/build/{{ cluster }}
+deployment_dir:    /home/{{ ansible_user_id }}/deployment
+build_dir:         /home/{{ ansible_user_id }}/build/{{ cluster }}
 local_secret_dir:  ../../concent-secrets
 deployment_values: ../../concent-deployment-values
 pyenv_repository:  https://github.com/pyenv/pyenv
