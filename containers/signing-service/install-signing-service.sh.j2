@@ -10,7 +10,7 @@ virtualenv --python "$python" "$virtualenv_dir"
 source "$virtualenv_dir/bin/activate"
 cd /usr/lib/signing_service/signing-service/
 python -m pip install --upgrade pip
-python -m pip install --requirement requirements.lock
+python -m pip install --requirement cacheable-requirements.lock
 
 # Create the daily_thresholds directory that will be contain files with information about transactions
 # and change owner to the signing-service user
