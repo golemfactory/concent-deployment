@@ -33,6 +33,13 @@
           args:
             chdir: "{{ golem_dir }}"
 
+        - name:   Remove cached Python packages
+          file:
+            path:  "{{ item }}"
+            state: absent
+          with_items:
+            - ~/.cache/pip/
+
         - name:   Download hyperg
           get_url:
             url:      "{{ golem_hyperdrive_repository }}"
@@ -46,10 +53,17 @@
             dest:       ~/
             remote_src: yes
 
-        - name:    Copy to execute path
+        - name:    Put a symlink to hyperg in ~/bin/
           file:
             src:  ~/hyperg/hyperg
             dest: ~/bin/hyperg
-            owner: vagrant
-            group: vagrant
             state: link
+
+        - name:   Install helper scripts for Golem
+          copy:
+            src:  "helper-scripts/{{ item }}"
+            dest: "~/bin/{{ item }}"
+            mode: 0555
+          with_items:
+            - golem-env.sh
+            - golem-run-console-mode.sh

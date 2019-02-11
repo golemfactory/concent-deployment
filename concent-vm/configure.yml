@@ -60,6 +60,12 @@
               - python3-psutil
               - rustc
 
+        - name:    Remove unused dependencies
+          apt:     autoremove=yes
+
+        - name:    Clear apt cache
+          command: apt-get clean
+
         # FIXME: Why doesn't the task above install rustc from testing? Find the cause and fix it properly.
         # Reported as https://github.com/golemfactory/concent-deployment/issues/319
         - name:   Quick and dirty workaround for rustc not getting installed from testing
@@ -132,9 +138,12 @@
     - become:      yes
       become_user: vagrant
       block:
-        - name:   Install helper scripts for managing Concent
-          command: cp                                                            \
-              --recursive                                                        \
-              --preserve                                                         \
-              "{{ concent_deployment_dir }}/concent-vm/helper-scripts/."         \
-              "~/bin/"
+        - name:    Create ~/bin/
+          file:
+            dest:  ~/bin/
+            state: directory
+
+        - name:    Install ~/.bash_aliases
+          copy:
+            src:   bash_aliases
+            dest:  ~/.bash_aliases
