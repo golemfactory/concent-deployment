@@ -11,9 +11,8 @@ COPY configure-pyenv.sh                           /tmp/
 COPY install-dependencies.sh                      /tmp/
 COPY install-signing-service.sh                   /tmp/
 COPY clean-container.sh                           /tmp/
-COPY middleman_protocol/                          /usr/lib/signing_service/middleman_protocol/
 RUN  /tmp/install-signing-service.sh
-COPY middleman_protocol                           /usr/lib/signing_service/middleman_protocol/
+COPY middleman_protocol/                          /usr/lib/signing_service/middleman_protocol/
 COPY install-middleman-protocol.sh                /tmp/
 RUN  /tmp/install-middleman-protocol.sh
 
