@@ -1,31 +1,36 @@
 ### 0.11.0
-- Added virtual machine with automating configuration of golem and concent for testing purpose (#146, #147, #148, #182, #186).
-- Added liveness and readiness probe to geth (#44).
+- Added ansible playbooks which automates creation of jenkins CI (#297).
+- Added Vagrant configuration which automates creation of a virtual machine with a fully configured Concent and/or Golem instance suitable for development and local testing (#146, #147, #148, #182, #186).
+- Added liveness probe to geth (#44,#341).
 - Added support for enabling routing based on golem-messages version on a single cluster (#289).
 - Added ability to manage resource limits for applications on different clusters (#257).
 - Added ability to switching between an internal and external geth instance (#285).
-- Added ability to generate a key pair for signing-service (#335).
-- Deployment process is now execute in home user path on the concent-builder server (#223).
+- Added helper script and instructions which automates deployment process (#277).
+- Added helper script and instructions for generating a key pair for Signing Service (#335).
+- Deployment playbooks now use the account of the user running the playbook rather than one shared account for everyone (#223).
 - Bugfix: added missing `gcloud` and `kubectl` packages source (#275).
 - Bugfix: added missing upload limit for proxy nginx router (#320).
-- Bugfix: upgraded `rustc` package from debian testing repository after golem requires version that isn't available on debian stable repository (#307, #328).
+- Bugfix: upgraded `rustc` package from debian testing repository since golem requires version that isn't available on debian stable repository (#307, #328).
 - Bugfix: `python3.6` now is installed from pyenv source after debian deleted it from testing repository (#321).
-- Bugfix: deleted duplicate directive in the signing-service docker image (#337).
 - Bugfix: removed workaround for pip version `18.0` in docker verifier image after pypiserver was upgraded on the golem side (#296).
+- Bugfix: fixed nginx router regex to correctly mapping golem-messages version headers to clusters (#345).
 
 Compatibility:
 - Golem: 0.19.0
 - Concent: 0.11.0
 
 ### 0.10.5
-- Added virtual machine with automating configuration of golem and concent for testing purpose (bacported from master).
-- Added liveness and readiness probe to geth (backported from master).
-- Bugfix: `python3.6` now is installed from pyenv source after debian deleted it from testing repository (backported from master).
-- Bugfix: removed workaround for pip version `18.0` in docker verifier image after pypiserver was upgraded on the golem side (backported from master).
-- Bugfix: added missing upload limit for proxy nginx router (backported from master).
+Changes backported from version 0.11.0:
+- Added Vagrant configuration which automates creation of a virtual machine with a fully configured Concent and/or Golem instance suitable for development and local testing.
+- Added support for enabling routing based on golem-messages version on a single cluster.
+- Added readiness probe to geth.
+- Bugfix: `python3.6` now is installed from pyenv source after debian deleted it from testing repository.
+- Bugfix: removed workaround for pip version `18.0` in docker verifier image after pypiserver was upgraded on the golem side.
+- Bugfix: added missing upload limit for proxy nginx router.
+- Bugfix: fixed nginx router regex to correctly mapping golem-messages version headers to clusters.
 
 Compatibility:
-- Golem: 0.18.2
+- Golem: 0.18.3
 - Concent: 0.10.3
 
 ### 0.10.4
