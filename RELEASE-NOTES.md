@@ -1,3 +1,33 @@
+### 0.11.0
+- Added virtual machine with automating configuration of golem and concent for testing purpose (#146, #147, #148, #182, #186).
+- Added liveness and readiness probe to geth (#44).
+- Added support for enabling routing based on golem-messages version on a single cluster (#289).
+- Added ability to manage resource limits for applications on different clusters (#257).
+- Added ability to switching between an internal and external geth instance (#285).
+- Added ability to generate a key pair for signing-service (#335).
+- Deployment process is now execute in home user path on the concent-builder server (#223).
+- Bugfix: added missing `gcloud` and `kubectl` packages source (#275).
+- Bugfix: added missing upload limit for proxy nginx router (#320).
+- Bugfix: upgraded `rustc` package from debian testing repository after golem requires version that isn't available on debian stable repository (#307, #328).
+- Bugfix: `python3.6` now is installed from pyenv source after debian deleted it from testing repository (#321).
+- Bugfix: deleted duplicate directive in the signing-service docker image (#337).
+- Bugfix: removed workaround for pip version `18.0` in docker verifier image after pypiserver was upgraded on the golem side (#296).
+
+Compatibility:
+- Golem: 0.19.0
+- Concent: 0.11.0
+
+### 0.10.5
+- Added virtual machine with automating configuration of golem and concent for testing purpose (bacported from master).
+- Added liveness and readiness probe to geth (backported from master).
+- Bugfix: `python3.6` now is installed from pyenv source after debian deleted it from testing repository (backported from master).
+- Bugfix: removed workaround for pip version `18.0` in docker verifier image after pypiserver was upgraded on the golem side (backported from master).
+- Bugfix: added missing upload limit for proxy nginx router (backported from master).
+
+Compatibility:
+- Golem: 0.18.2
+- Concent: 0.10.3
+
 ### 0.10.4
 - Bugfix: downgraded pip version to `18.0` and specified to use `python3.6` after errors in building and downloading python packages (#298).
 
