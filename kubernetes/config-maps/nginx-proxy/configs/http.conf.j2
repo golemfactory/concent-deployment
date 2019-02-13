@@ -32,10 +32,12 @@ upstream {{ previous_golem_messages_version }} {
 map $http_x_golem_messages $version {
      # This address uses the HTTP protocol because it is an internal endpoint that is on this cluster.
      ""          "http://{{ current_golem_messages_version }}";
-     "~^{{ current_golem_messages_version }}.*$"   "http://{{ current_golem_messages_version }}";
+     # The `current_golem_messages_version` and `previous_golem_messages_version` variables should contain only the minor and major version of golem-messages protocol.
+     # They also contain only one dot `x.xx`. This regex add second dot and match patch version of golem-messages protocol.
+     "~^{{ current_golem_messages_version }}\..+$"   "http://{{ current_golem_messages_version }}";
      {% if previous_golem_messages_version is not none %}
      # This address uses the HTTPS protocol because it is an external endpoint that is on the second cluster.
-     "~^{{ previous_golem_messages_version }}.*$"  "https://{{ previous_golem_messages_version }}";
+     "~^{{ previous_golem_messages_version }}\..+$"  "https://{{ previous_golem_messages_version }}";
      {% endif %}
      default    "not_supported";
      # Check semi version 2.0 format
@@ -44,9 +46,9 @@ map $http_x_golem_messages $version {
 
 map $http_x_golem_messages $host_param {
      ""                                            internal.local;
-     "~^{{ current_golem_messages_version }}.*$"   internal.local;
+     "~^{{ current_golem_messages_version }}\..+$"   internal.local;
      {% if previous_golem_messages_version is not none %}
-     "~^{{ previous_golem_messages_version }}.*$"  $http_host;
+     "~^{{ previous_golem_messages_version }}\..+$"  $http_host;
      {% endif %}
      default    $http_host;
 }
