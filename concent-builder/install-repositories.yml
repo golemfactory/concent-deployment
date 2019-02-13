@@ -3,6 +3,8 @@
   vars_files:
     - consts.yml
     - repositories.yml
+    - "{{ deployment_values }}/var.yml"
+    - "{{ deployment_values }}/var-{{ cluster }}.yml"
   tasks:
     - become:      yes
       become_user: "{{ shared_user }}"
@@ -17,3 +19,10 @@
             # FIXME: Do not blindly accept the hostkey
             accept_hostkey: yes
           with_dict:        "{{ repositories }}"
+
+    - block:
+        - name: Activate the service account that has permissions to access the cluster
+          command: gcloud auth activate-service-account                                                           \
+              "{{ gke.service_account_name }}@{{ gke.project }}.iam.gserviceaccount.com"                          \
+              --key-file "{{ data_dir }}/concent-secrets/cloud/{{ gke.service_account_name }}-private-key.json"
+
