@@ -27,17 +27,6 @@
             group:      jenkins
             remote_src: yes
 
-    - become:      yes
-      become_user: "{{ shared_user }}"
-      block:
-        - name: Wait for geth synchronization
-          command: ./wait-until-ready.sh geth 600
-          args:
-            chdir:  "{{ build_dir }}/concent-deployment/kubernetes/build/"
-
-    - become:      yes
-      become_user: jenkins
-      block:
         - name:  Run end-to-end test
           shell: source ../virtualenv/bin/activate &&                                             \
               ./api-e2e-tests.sh "http://{{ concent_versions[concent_version].cluster_address }}"
