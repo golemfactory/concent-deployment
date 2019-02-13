@@ -12,7 +12,7 @@ spec:
     spec:
       containers:
         - name:             geth
-          image:            {{ docker_registry }}/{{image_prefix }}geth:{{ image_version }}
+          image:            ethereum/client-go:{{ geth_version }}
           imagePullPolicy:  Always
           args:             [
               "--rinkeby",
@@ -39,12 +39,6 @@ spec:
                   value: application/json
             initialDelaySeconds: 5
             periodSeconds:       8
-          readinessProbe:
-            exec:
-              command: ["/usr/local/bin/is-geth-synchronized.sh", "127.0.0.1:8545"]
-            # This is average time of geth is up and start a synchronization.
-            initialDelaySeconds: 70
-            periodSeconds:       10
           resources:
             requests:
               # SYNC: Make sure that the memory limits for the pod include the cache size defined above.
