@@ -36,5 +36,5 @@ kubectl create --record --filename services/nginx-proxy.yml
 ./wait-until-ready.sh nginx-storage        30
 ./wait-until-ready.sh nginx-proxy          30
 {% if concent_versions[concent_version].external_geth_address is none %}
-./wait-until-ready.sh geth                 500
+./wait-until-ready.sh geth                 80
 {% endif %}
