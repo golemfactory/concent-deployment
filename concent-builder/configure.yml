@@ -2,6 +2,7 @@
     - concent-builder
   vars_files:
     - consts.yml
+    - repositories.yml
     - ../containers/versions.yml
     # NOTE: This playbook should not use values from concent-deployment-values
   tasks:
@@ -19,6 +20,15 @@
         - name:    Add Google Cloud SDK repository
           apt_repository:
             repo:  "deb http://packages.cloud.google.com/apt cloud-sdk-{{ ansible_distribution_release }} main"
+
+        - name:    Add jenkins repository key
+          apt_key:
+            url:   https://pkg.jenkins.io/debian/jenkins.io.key
+            state: present
+
+        - name:    Add jenkins repository
+          apt_repository:
+            repo:  "deb https://pkg.jenkins.io/debian binary/"
             state: present
 
         - name:   Install system updates for Debian
@@ -48,6 +58,13 @@
               - python3-yaml
               - postgresql-{{ postgres_version }}
               - python3-psycopg2
+              - default-jdk
+              - groovy
+              - nginx={{ nginx_debian_version }}
+
+        - name:    Install jenkins package
+          apt:
+            name: jenkins={{ jenkins_version }}
 
         - name:   include common postrequire tasks from `postrequire-configure-tasks.yml` file
           include_tasks: common_tasks/postrequire-configure-tasks.yml
@@ -64,3 +81,43 @@
             state: directory
             owner: "{{ shared_user }}"
             group: "{{ shared_user }}"
+
+        - name:    Create jenkins home directory
+          file:
+            path:  "{{ jenkins_home_dir }}/"
+            state: directory
+            owner: jenkins
+            group: jenkins
+
+        - name:    Add docker group to jenkins
+          user:
+            name:   jenkins
+            groups: docker
+            append: yes
+
+        - name:   Add jenkins role to sudoers
+          copy:
+            src:  "files/jenkins/jenkins_sudoers"
+            dest: "/etc/sudoers.d/jenkins"
+
+        - name: Delete default nginx config
+          file:
+            path:  "/etc/nginx/sites-enabled/default"
+            state: absent
+
+        - name: Add nginx config
+          copy:
+           src:        "files/jenkins/jenkins"
+           dest:       "/etc/nginx/sites-available/jenkins"
+
+        - name: Create symbolic link from sites-available config to sites-enabled
+          file:
+            src:        "/etc/nginx/sites-available/jenkins"
+            dest:       "/etc/nginx/sites-enabled/jenkins"
+            state:      link
+
+        - name: Restart nginx service
+          service:
+            name:    nginx
+            state:   restarted
+

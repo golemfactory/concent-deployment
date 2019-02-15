@@ -1,0 +1,72 @@
+properties([
+    [
+        $class:        'GithubProjectProperty',
+        displayName:   '',
+        projectUrlStr: '{{ jenkins_github_url_address }}'
+    ],
+    pipelineTriggers([githubPush()])
+])
+
+// This is a process of fetching and checkouting concent-deployment repository
+// before running playbooks in properly versions.
+stage ('Checkout repository') {
+    dir('/home/jenkins/concent-deployment/') {
+        git url:
+        '{{ jenkins_github_url_address }}',
+        branch: 'ci'
+    }
+    ansiblePlaybook(
+        inventory: '/home/jenkins/concent-deployment-values/ansible_inventory',
+        playbook:  '{{ jenkins_configuration_files_dir }}/set-concent-version.yml',
+        extras:    '--connection local'
+   )
+}
+// This is a process of fetching and checkouting repositories for building step.
+stage ('Build') {
+    ansiblePlaybook(
+        extraVars: [
+            cluster: 'concent-dev',
+        ],
+        inventory: '/home/jenkins/concent-deployment-values/ansible_inventory',
+        playbook:  '{{ jenkins_configuration_files_dir }}/install-repositories.yml',
+        extras:    '--connection local'
+    )
+    ansiblePlaybook(
+        extraVars: [
+            cluster: 'concent-dev',
+        ],
+        inventory: '/home/jenkins/concent-deployment-values/ansible_inventory',
+        playbook:  '{{ jenkins_configuration_files_dir }}/build-test-and-push.yml',
+        extras:    '--connection local'
+    )
+}
+stage ('Deploy') {
+    ansiblePlaybook(
+        extraVars: [
+            cluster: 'concent-dev',
+        ],
+        inventory: '/home/jenkins/concent-deployment-values/ansible_inventory',
+        playbook:  '{{ jenkins_configuration_files_dir }}/deploy.yml',
+        extras:    '--connection local'
+    )
+}
+stage ('Initialize Test Environment') {
+    ansiblePlaybook(
+        extraVars: [
+            cluster: 'concent-dev',
+        ],
+        inventory: '/home/jenkins/concent-deployment-values/ansible_inventory',
+        playbook:  '{{ jenkins_configuration_files_dir }}/initialize-test-environment.yml',
+        extras:    '--connection local'
+    )
+}
+stage ('Run Tests and Cleanup Environment') {
+    ansiblePlaybook(
+        extraVars: [
+            cluster: 'concent-dev',
+        ],
+        inventory: '/home/jenkins/concent-deployment-values/ansible_inventory',
+        playbook:  '{{ jenkins_configuration_files_dir }}/run-tests-and-cleanup.yml',
+        extras:    '--connection local'
+    )
+}

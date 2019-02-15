@@ -1,0 +1,23 @@
+- hosts:
+    - concent-builder
+  vars_files:
+    - consts.yml
+    - repositories.yml
+    - ../containers/versions.yml
+    - "{{ deployment_values }}/var.yml"
+    - "{{ deployment_values }}/var-{{ cluster }}.yml"
+  tasks:
+    - block:
+        - name: Copy concent and virtual environment for deployment build
+          command: cp                                                                  \
+              --recursive                                                              \
+              "{{ build_dir }}/concent-deployment/containers/build/{{ item.path }}"    \
+              "{{ jenkins_home_dir }}/{{ item.name }}"
+          with_items:
+            - { path: "repositories/concent", name: "concent" }
+            - { path: "virtualenv", name: "virtualenv" }
+
+        - name: Copy local_settings.py file
+          template:
+            src:     "jenkins/local_settings.py.j2"
+            dest:    "{{ jenkins_home_dir }}/concent/concent_api/concent_api/settings/local_settings.py"
