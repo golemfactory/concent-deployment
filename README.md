@@ -164,7 +164,7 @@ ansible-playbook install-secrets.yml                               \
     --user       $user
 ```
 
-All the instructions below assume that you're using local playbooks to run build and deployment commands on the remote server.
+All the instructions below assume that you're using local playbooks to run build and deployment commands on a new server.
 
 Note that if you're running the playbooks themselves from within that server too, you need to add `--connection=local` to your `ansible-playbook` calls.
 Otherwise Ansible will run its commands over SSH (rather than directly) using the public IP specified in `ansible_inventory`, which will likely fail because you're not supposed to have your private SSH key on the remote server you're connecting to.
@@ -271,6 +271,32 @@ ansible-playbook migrate-db.yml                                    \
 ```
 
 It's safe to run migrations even if there are no changes - Django will detect that and simply leave the schema as is.
+
+#### Helper script for deployment process
+
+###### `build-and-deploy-to-dev.sh`
+This script provides a streamlined way to deploy a development version of the code to the `concent-dev` cluster.
+The use case could be automated because it does not require as much flexibility as the usual deployment procedure.
+The `concent-dev` cluster does not hold any production data and when something goes wrong it's fine to just remove everything and start from scratch.
+
+The `configure.yml` playbook installs the script on the build server where it can use secrets necessary to access the cluster.
+Then it can be run from that server by any user.
+
+The script deploys the code from the `dev` branch in the `concent-deployment` repository.
+Version of the `concent` repository is specified in `concent_version` in `containers/versions.yml`.
+To deploy any other version you must change this value in your local working copy, push the commit to the repository and update the `dev` branch to point at it.
+The value can be a commit ID, tag, branch.
+
+The script performs its job by running the Ansible playbooks listed above in the right order and with the parameters suitable for the `concent-dev` cluster.
+
+Command-line options:
+1. **database_operation**: _migrate_ (default) or _reset_.
+    _migrate_ does not clear the database runs the migrations.
+    _reset_ clears the database and reinitializes it.
+2. **deployment_dir**: the directory to store a clone of the `concent-deployment` repository.
+    `~/deployment` by default.
+    This working copy should not be modified manually.
+    The script will recreate it if it does not exist or update it if it does but it will fail if a checkout is not possible (e.g. because there are uncommitted changes).
 
 ### Building nginx-storage locally
 

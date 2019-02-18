@@ -1,11 +1,11 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: migrate-database
+  name: migrate-{{ selected_database_id }}-database
 spec:
   template:
     metadata:
-      name: migrate-database
+      name: migrate-{{ selected_database_id }}-database
     spec:
       restartPolicy: Never
       containers:
@@ -21,7 +21,7 @@ spec:
           configMap:
             name: database-job-settings
       initContainers:
-        - name:             migrate-database
+        - name:             migrate-{{ selected_database_id }}-database
           image:            {{ docker_registry }}/{{ image_prefix }}concent-api:{{ image_version }}
           imagePullPolicy:  Always
           command:          ["/usr/local/bin/concent-api-manage.sh", "migrate", "--database={{ selected_database_id }}"]

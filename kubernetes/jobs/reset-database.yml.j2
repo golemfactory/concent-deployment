@@ -1,11 +1,11 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: reset-database
+  name: reset-{{ selected_database_id }}-database
 spec:
   template:
     metadata:
-      name: reset-database
+      name: reset-{{ selected_database_id }}-database
     spec:
       restartPolicy: Never
       containers:
@@ -30,7 +30,7 @@ spec:
           configMap:
             name: database-job-settings
       initContainers:
-        - name:             reset-database
+        - name:             reset-{{ selected_database_id }}-database
           image:            {{ docker_registry }}/{{ image_prefix }}postgresql:{{ image_version }}
           imagePullPolicy:  Always
           command:          ["/usr/local/bin/reset-database.sh", "{{ database_host }}", "{{ database_name }}", "{{ database_user }}"]

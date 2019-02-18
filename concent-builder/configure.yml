@@ -121,3 +121,8 @@
             name:    nginx
             state:   restarted
 
+        - name:   Add helper script for deployment
+          copy:
+            src:  build-and-deploy-to-dev.sh
+            dest: /usr/local/bin/build-and-deploy-to-dev.sh
+            mode: 0555
