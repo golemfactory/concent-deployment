@@ -28,3 +28,8 @@
         - name:    Migrate the database used by concent-api
           command: kubectl create \
             --filename "{{ build_dir }}/concent-deployment/kubernetes/build/jobs/migrate-{{ cluster_type }}-database.yml"
+
+        - name:    Wait until database migrations are completed
+          command: "{{ build_dir }}/concent-deployment/kubernetes/build/wait-until-kubectl-job-is-completed.sh migrate-{{ cluster_type }}-database 60"
+          args:
+            chdir: "{{ build_dir}}/concent-deployment/kubernetes/build/"
