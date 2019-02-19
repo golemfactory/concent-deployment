@@ -136,6 +136,7 @@
             - workflow-aggregator
             - ansible
             - github-oauth
+            - ws-cleanup
 
     - become:      yes
       become_user: root
