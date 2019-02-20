@@ -1,3 +1,17 @@
+### 0.10.5
+Changes backported from version 0.11.0:
+- Added Vagrant configuration which automates creation of a virtual machine with a fully configured Concent and/or Golem instance suitable for development and local testing.
+- Added support for enabling routing based on golem-messages version on a single cluster.
+- Added readiness probe to geth.
+- Bugfix: `python3.6` now is installed from pyenv source after debian deleted it from testing repository.
+- Bugfix: removed workaround for pip version `18.0` in docker verifier image after pypiserver was upgraded on the golem side.
+- Bugfix: added missing upload limit for proxy nginx router.
+- Bugfix: fixed nginx router regex to correctly mapping golem-messages version headers to clusters.
+
+Compatibility:
+- Golem: 0.18.3
+- Concent: 0.10.3
+
 ### 0.10.4
 - Bugfix: downgraded pip version to `18.0` and specified to use `python3.6` after errors in building and downloading python packages (#298).
 
