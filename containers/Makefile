@@ -117,7 +117,7 @@ signing-service: build/ $(SIGNING_SERVICE_SOURCE) build/signing-service/signing-
 
 concent-signing-service-package: build/ $(SIGNING_SERVICE_SOURCE) dist/concent-signing-service-%.tar.xz
 
-dist/concent-signing-service-%.tar.xz: build/signing-service/signing-service/ build/signing-service/signing-service/cacheable-requirements.lock build/signing-service/middleman_protocol/ build/signing-service/signing-service/RELEASE-VERSION
+dist/concent-signing-service-%.tar.xz: build/signing-service/signing-service/ build/signing-service/signing-service/cacheable-requirements.lock build/signing-service/middleman_protocol/ build/signing-service/signing-service/RELEASE-VERSION  build/signing-service/middleman_protocol/RELEASE-VERSION
 	mkdir dist || true
 	tar                                                                                                                    \
 		--create                                                                                                           \
