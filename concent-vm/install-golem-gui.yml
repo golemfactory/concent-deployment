@@ -1,0 +1,62 @@
+- hosts:
+    - concent-vm
+  vars_files:
+    - ../concent-builder/repositories.yml
+    - consts.yml
+  vars:
+    - golem_electron_version: dev
+  tasks:
+    - become:      yes
+      become_user: root
+      block:
+        - name:    Install node.js and yarn
+          apt:
+            name:
+              - nodejs
+              - yarn
+
+        - name:    Install XFCE desktop environment
+          apt:
+            name:
+              - xfce4
+              - libgconf-2-4
+              - libnss3-dev
+
+        - name:    Remove unused dependencies
+          apt:     autoremove=yes
+
+        - name:    Clear apt cache
+          command: apt-get clean
+
+    - become:      yes
+      become_user: vagrant
+      block:
+        - name:    Clone golem-electron repository
+          git:
+            repo:    "{{ golem_electron_repository }}"
+            dest:    "{{ golem_electron_dir }}"
+            version: "{{ golem_electron_version }}"
+            clone:   yes
+            update:  yes
+
+        - name:    Install dependencies for golem-electron using yarn
+          command: yarn install --pure-lockfile
+          args:
+            chdir: ~/golem_electron/
+
+        - name:    Remove cached yarn and electron packages
+          file:
+            path:  "{{ item }}"
+            state: absent
+          with_items:
+            - ~/.cache/yarn/
+            - ~/.electron/
+
+        - name:    Install helper scripts for Golem GUI
+          copy:
+            src:  "helper-scripts/{{ item }}"
+            dest: "~/bin/{{ item }}"
+            mode: 0555
+          with_items:
+            - golem-run-all.sh
+            - golem-run-gui-mode.sh
