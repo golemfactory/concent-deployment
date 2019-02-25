@@ -1,5 +1,6 @@
 ### next
 - Enhanced the virtual machine for running Golem/Concent with the ability to set up automatically golem-electron and a lightweight desktop environment (#339).
+- Simplified and more flexible setup process for the virtual machine for running Golem/Concent (#332).
 
 Compatibility:
 - Golem: 0.19.0
