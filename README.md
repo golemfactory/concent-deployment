@@ -462,11 +462,15 @@ The `concent-vm/` directory contains a Vagrant configuration that creates a virt
 The machine has multiple purposes:
 - It can be used to run and debug Concent tests in a reproducible environment.
 - It serves as a reference for setting up Concent development environment.
-- It can can be set up to run Golem from source.
+- It can be set up to build and run Golem from source.
 
 #### Prerequisites
 ##### Vagrant
 You need Vagrant >= 2.2.0.
+Install it with your system package manager.
+
+##### Ansible
+You need Asible >= 2.7.0 for Vagrant to run configuration playbooks.
 Install it with your system package manager.
 
 ##### VirtualBox
@@ -476,7 +480,15 @@ Install it with your system package manager.
 VirtualBox provides several kernel modules and requires them to be loaded before you can start any virtual machine.
 These modules need to be built for your specific kernel version and rebuilt again whenever you update your kernel.
 It's recommended to use [DKMS](https://en.wikipedia.org/wiki/Dynamic_Kernel_Module_Support) to do this automatically.
-Most distributions provide a package named `virtualbox-dkms` or `virtualbox-host-dkms` that provides module sources and configures your system to build them.
+Most distributions provide a package named `virtualbox-dkms` (Ubuntu) or `virtualbox-host-dkms` that provides module sources and configures your system to build them.
+
+To be able to build the modules you also need kernel headers.
+The package containing them is called `linux-headers` on Arch Linux; the name contains kernel version on other distributions.
+Make sure that it matches the version of the kernel you're currently running (you can check that with `uname --kernel-release`).
+
+``` bash
+sudo apt-get install virtualbox-dkms linux-headers-x.y.z-w
+```
 
 On some systems the modules are not loaded automatically after the installation.
 If you can't start a machine, try to load `vboxdrv` kernel module manually first:
@@ -485,6 +497,21 @@ sudo modprobe vboxdrv
 ```
 These modules are loaded automatically when the system starts so you should no longer have to do this after the next reboot.
 
+###### VirtualBox Guest Additions
+VirtualBox provides a set of additional drivers and software that can be installed in the virtual machine to improve performance and usability.
+This includes: sharing folders with the machine, clipboard integration or better video support.
+It's all provided in the form of a [VirtualBox Guest Additions](https://www.virtualbox.org/manual/ch04.html) ISO.
+
+VirtualBox will download the ISO automatically but it will do it every time a new machine is built which significantly slows down the process.
+Many distributions provide a package which stores the ISO locally.
+It's recommended to install it with your package manager.
+
+The package is called `virtualbox-guest-additions-iso` on Ubuntu and `virtualbox-guest-iso` on Arch Linux.
+
+``` bash
+sudo apt-get install virtualbox-guest-additions-iso
+```
+
 ##### Vagrant plugins
 Install `vagrant-vbguest` plugin:
 ```
@@ -492,21 +519,35 @@ vagrant plugin install vagrant-vbguest
 ```
 
 #### Building the machine
-`concent-vm/Vagrantfile` creates performs basic setup but does not install Concent or Golem.
-It installs system packages and starts services that may be needed by either.
+##### Quick setup examples
+The examples below assume that you already have a clone of the `concent-deployment` repository and you're in the `concent-vm/` directory.
 
-This step needs access to `concent-deployment` sources.
-`CONCENT_DEPLOYMENT_VERSION` specifies git branch/tag/commit to use.
-Sources are downloaded from Github (it does **not** copy the code from your local repository).
-
+###### VM with Golem
+You can build the machine by running:
 ``` bash
-cd concent-vm/
-export CONCENT_DEPLOYMENT_VERSION=master
+export CONCENT_VM_INSTALL_GOLEM=true
+export CONCENT_VM_INSTALL_GOLEM_ELECTRON=true
+export CONCENT_VM_GOLEM_ELECTRON_VERSION=b0.19.0
+export ANSIBLE_STDOUT_CALLBACK=debug
+
 vagrant up
+vagrant reload
 ```
 
-##### Installing Concent
-###### Configuration
+This installs:
+- Docker
+- PosgtgreSQL server
+- Local `nginx-storage` instance.
+- `golem` from the branch/commit/tag listed under `golem_version` in `containers/versions.yml`.
+- `golem-electron` from the `b0.19.0` branch
+- Lightweight desktop environment (XFCE)
+
+
+You can stop the machine at any moment with `vagrant halt`.
+Note that to start the machine later you need to have the environment variables defined in your shell.
+It's recommended to put them into a script and always source it before running any Vagrant commands.
+
+###### VM with Concent
 This step requires two configuration files.
 
 `concent-vm/extra_settings.py` is a Python script that will be imported into the automatically generated `local_settings.py` in the machine.
@@ -521,58 +562,92 @@ export ETHEREUM_PRIVATE_KEY="..."
 export SIGNING_SERVICE_PRIVATE_KEY="..."
 ```
 
-###### Installation
-After creating the configuration, it's enough to run the following playbook:
+Now you can build the machine by running:
 ``` bash
-ansible-playbook install-concent.yml                               \
-    --extra-vars  concent_version=master                           \
-    --private-key .vagrant/machines/default/virtualbox/private_key \
-    --user        vagrant                                          \
-    --inventory   inventory
+export CONCENT_VM_INSTALL_CONCENT=true
+export CONCENT_VM_CONCENT_DEPLOYMENT_VERSION=$(git describe)
+export ANSIBLE_STDOUT_CALLBACK=debug
+
+vagrant up
 ```
 
-`concent_version` parameter determines which branch/tag/commit from the `concent` repository will be deployed in the machine.
-Version listed in `containers/versions.yml` in `concent-deployment` repository is used by default.
+The above assumes that the commit you have checked out has already been pushed to Github.
+The machine always downloads all the repositories (including `concent-deployment`) from there.
 
-##### Installing Golem
-Golem installation does not require any extra configuration.
-Just run the following playbook:
+This installs:
+- Docker
+- PosgtgreSQL server
+- Local `nginx-storage` instance.
+- RabbitMQ server running in a Docker container.
+- `concent` from the branch/commit/tag listed under `concent_version` in `containers/versions.yml`.
+
+
+###### VM with everything
+You can build the machine by running:
 ``` bash
-ansible-playbook install-golem.yml                                 \
-    --extra-vars  golem_version=develop                            \
-    --private-key .vagrant/machines/default/virtualbox/private_key \
-    --user        vagrant                                          \
-    --inventory   inventory
+export CONCENT_VM_INSTALL_CONCENT=true
+export CONCENT_VM_INSTALL_GOLEM=true
+export CONCENT_VM_INSTALL_GOLEM_ELECTRON=true
+export CONCENT_VM_CONCENT_DEPLOYMENT_VERSION=$(git describe)
+export CONCENT_VM_CONCENT_VERSION=master
+export CONCENT_VM_GOLEM_VERSION=develop
+export CONCENT_VM_GOLEM_ELECTRON_VERSION=b0.19.0
+export CONCENT_VM_HYPERG_PORT=3282
+export CONCENT_VM_GOLEM_START_PORT=40102
+export CONCENT_VM_SHOW_GUI=true
+export CONCENT_VM_MEMORY=3072
+export CONCENT_VM_CPUS=3
+export ANSIBLE_STDOUT_CALLBACK=debug
+
+vagrant up
+vagrant reload
 ```
 
-`golem_version` parameter determines which branch/tag/commit from the `golem` repository will be deployed in the machine.
-Version listed in `containers/versions.yml` in `concent-deployment` repository is used by default.
+This installs:
+- Docker
+- PosgtgreSQL server
+- Local `nginx-storage` instance.
+- RabbitMQ server running in a Docker container.
+- `concent` from the `master` branch
+- `golem` from the `develop` branch
+- `golem-electron` from the `b0.19.0` branch
+- Lightweight desktop environment (XFCE)
 
-##### Installing Golem GUI
-After installing Golem you may opt to install its `golem-electron` GUI too.
-The playbook also installs a lightweight XFCE desktop environment in the machine that lets you actually run it inside without connecting to the X server running on the host.
+This example also shows how to customize the machine.
+- The machine runs with 3 GB RAM and 2 CPU cores.
+- Vagrant will forward ports 3282, 40102 and 40103 of the machine to the host.
+     Note that these ports may still not be available to other clients if your host is behind a NAT (e.g. you're using a home router).
+- Golem will be configured to use 40102 as `start port` and `seed port` in `app_cfg.ini`.
+- The helper script for starting Golem in the machine (`golem-run-console-mode.sh`) will run `hyperg` at port 3282.
 
-To install it, run the following playbook:
+##### Configuration variables
+| Variable                                | Value                                                                       | Default                                        | Description                                |
+|-----------------------------------------|-----------------------------------------------------------------------------|------------------------------------------------|--------------------------------------------|
+| `CONCENT_VM_INSTALL_CONCENT`            | `true` or `false`                                                           | `false`                                        | If `true`, Vagrant will download code from [`concent`](https://github.com/golemfactory/concent/) repository, build Concent and Signing Service, initialize the database and prepare the environment for running them.
+| `CONCENT_VM_INSTALL_GOLEM`              | `true` or `false`                                                           | `false`                                        | If `true`, Vagrant will download code from [`golem`](https://github.com/golemfactory/golem/) repository, build Golem, install `hyperg` and prepare the environment for running them.
+| `CONCENT_VM_INSTALL_GOLEM_ELECTRON`     | `true` or `false`                                                           | `false`                                        | If `true`, Vagrant will download code from [`golem-electron`](https://github.com/golemfactory/golem-electron/) repository, install XFCE desktop environment, build Golem's GUI and prepare the environment for running it.<br><br>If `CONCENT_VM_SHOW_GUI` is not defined, this variable also determines whether virtual machine screen is shown when the machine starts.
+| `CONCENT_VM_CONCENT_DEPLOYMENT_VERSION` | tag/branch/commit present in the `concent-deployment` repository on Github  | `master`                                       | Using version matching your local working copy (i.e. `CONCENT_VM_CONCENT_DEPLOYMENT_VERSION=$(git describe)`) is recommended.<br><br>Even if `CONCENT_VM_INSTALL_CONCENT` is not enabled, Vagrant builds and installs helper services like `nginx-storage`. The source of these services is always downloaded from the `concent-deployment` repository on Github. This variable tells `Vagrant` which commit from that repository to check out.<br><br>Note that this has no effect on which Ansible playbooks and `Vagrantfile` are used to build the machine. These are always taken from your local working copy.
+| `CONCENT_VM_CONCENT_VERSION`            | tag/branch/commit present in the `concent` repository on Github             | version specified in `containers/versions.yml` | Which commit from `concent` repository to check out before build.<br><br>Has no effect if `CONCENT_VM_INSTALL_CONCENT` is `false`.
+| `CONCENT_VM_GOLEM_VERSION`              | tag/branch/commit present in the `golem` repository on Github               | version specified in `containers/versions.yml` | Which commit from `golem` repository to check out before build.<br><br>Has no effect if `CONCENT_VM_INSTALL_GOLEM` is `false`.
+| `CONCENT_VM_GOLEM_ELECTRON_VERSION`     | tag/branch/commit present in the `golem-electron` repository on Github      | `dev`                                          | Which commit from `golem-electron` repository to check out before build.<br><br>Has no effect if `CONCENT_VM_INSTALL_GOLEM_ELECTRON` is `false`.
+| `CONCENT_VM_HYPERG_PORT`                | port number                                                                 | 3282                                           | If defined, Vagrant forwards all packets reaching this port on the host to the same port in the machine. It also configures the `run-golem-console-mode.sh` script to start `hyperg` on that port.<br><br>If not defined, the default port is used but port forwarding is **not enabled**.
+| `CONCENT_VM_GOLEM_START_PORT`           | port number                                                                 | 40102                                          | If defined, Vagrant forwards all packets reaching this port and the one with number one higher on the host to the same ports in the machine. It also configures Golem to use this value for `start port` and `seed port` settings in `app_cfg.ini`.<br><br>If not defined, the default port is used but port forwarding is **not enabled**.
+| `CONCENT_VM_SHOW_GUI`                   | `true` or `false`                                                           | equal to `CONCENT_VM_INSTALL_GOLEM_ELECTRON`   | By default Vagrant uses `CONCENT_VM_INSTALL_GOLEM_ELECTRON` to determine whether to show virtual machine screen or not. `CONCENT_VM_SHOW_GUI` allows the user to override that decision. When it's `true`, the screen is always shown on machine startup, when `false`, the screen is always hidden, no matter whether the installation of `golem-electron` is enabled or not.
+| `CONCENT_VM_MEMORY`                     | megabytes of RAM                                                            | 2048                                           | The amount of RAM to allocate for the machine.
+| `CONCENT_VM_CPUS`                       | number of CPU cores                                                         | 1                                              | The number of CPU cores to allocate for the machine.<br><br>`2` or `3` recommended.
+
+##### Reconfiguring the machine
+If you change any of the environment variables used to configure the machine, you may need to rerun the configuration playbooks.
+You can do it with
+
 ``` bash
-ansible-playbook install-golem-gui.yml                             \
-    --extra-vars  golem_electron_version=dev                       \
-    --private-key .vagrant/machines/default/virtualbox/private_key \
-    --user        vagrant                                          \
-    --inventory   inventory
+vagrant provision
 ```
 
-`golem_electron_version` parameter determines which branch/tag/commit from the `golem-electron` repository will be deployed in the machine.
-The default is the `dev` branch.
-
-To be able to run graphical programs inside the machine, you also have to perform some manual steps:
-- Make sure the machine is not running.
-    If it is, stop it with `vagrant halt`.
-- Start VirtualBox GUI.
-- Select the `concent-vm` image.
-- Go to Settings > Display.
-- Set video memory to 128 MB.
-
-Now when you start the machine with `vagrant up`, you can show it screen by right-clicking it in VirtualBox GUI and selecting 'Show'.
+In some cases (e.g. if the change resulted in the graphical environment being installed) it may be necessary to restart the machine as well:
+``` bash
+vagrant reload
+```
 
 
 #### Using the machine
@@ -658,15 +733,6 @@ Starts the Electron app that provides a GUI for Golem.
 Does **not** start the console app.
 The console app should already be running in a separate terminal.
 
-To actually see the window you need to unhide the graphical output from the machine.
-This can be done from the VirtualBox GUI:
-- Start the machine as usual (with `vagrant up`):
-- Start VirtualBox GUI.
-    You should see that the `concent-vm` machine is running.
-- Right click `concent-vm` and select "Show" from the context menu.
-    You'll see the graphical login screen.
-- Log in as `vagrant` (the default password is `vagrant`).
-
 Now you can launch the GUI from a terminal:
 ``` bash
 golem-run-gui-mode.sh
@@ -675,6 +741,8 @@ golem-run-gui-mode.sh
 This does not need to be a graphical terminal.
 You can do it from a shell started with `vagrant ssh`.
 
+If you have configured your machine with `CONCENT_VM_INSTALL_GOLEM_ELECTRON=true` or `CONCENT_VM_SHOW_GUI=true` and restarted it, you should be able to see the desktop of the machine.
+If that's not the case you can always launch VirtualBox GUI, select the machine and use the "Show" option.
 
 ###### `golem-run-all.sh`
 Starts both Golem GUI and the console app on a single terminal.

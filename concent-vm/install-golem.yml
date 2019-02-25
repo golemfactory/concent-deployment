@@ -4,6 +4,9 @@
     - ../containers/versions.yml
     - ../concent-builder/repositories.yml
     - consts.yml
+  vars:
+    - hyperg_port:      3282
+    - golem_start_port: 40102
   tasks:
     - become:      yes
       become_user: vagrant
@@ -12,6 +15,7 @@
           git:
             repo:    "{{ repositories.golem.url }}"
             dest:    "{{ golem_dir }}"
+            # NOTE: The default for golem_version comes from versions.yml
             version: "{{ golem_version }}"
             clone:   yes
             update:  yes
@@ -59,11 +63,28 @@
             dest: ~/bin/hyperg
             state: link
 
-        - name:   Install helper scripts for Golem
+        - name:   Install helper scripts for Golem (static files)
           copy:
             src:  "helper-scripts/{{ item }}"
             dest: "~/bin/{{ item }}"
             mode: 0555
           with_items:
             - golem-env.sh
+
+        - name:     Install helper scripts for Golem (templates)
+          template:
+            src:  "helper-scripts/{{ item }}.j2"
+            dest: "~/bin/{{ item }}"
+            mode: 0555
+          with_items:
             - golem-run-console-mode.sh
+
+        - name:     Configure Golem ports
+          ini_file:
+            path:    ~/.local/share/golem/default/rinkeby/app_cfg.ini
+            section: Node
+            option:  "{{ item.key }}"
+            value:   "{{ item.value }}"
+          with_dict:
+            "start port": "{{ golem_start_port }}"
+            "seed port":  "{{ golem_start_port }}"
