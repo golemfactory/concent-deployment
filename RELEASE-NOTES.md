@@ -1,3 +1,10 @@
+### next
+- Enhanced the virtual machine for running Golem/Concent with the ability to set up automatically golem-electron and a lightweight desktop environment (#339).
+
+Compatibility:
+- Golem: 0.19.0
+- Concent: 0.11.0
+
 ### 0.11.0
 - Added ansible playbooks which automates creation of jenkins CI (#297).
 - Added Vagrant configuration which automates creation of a virtual machine with a fully configured Concent and/or Golem instance suitable for development and local testing (#146, #147, #148, #182, #186).
