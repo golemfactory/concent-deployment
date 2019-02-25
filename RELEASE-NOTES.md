@@ -1,3 +1,10 @@
+### next
+- Enhanced the virtual machine for running Golem/Concent with the ability to set up automatically golem-electron and a lightweight desktop environment (#339).
+
+Compatibility:
+- Golem: 0.19.0
+- Concent: 0.11.0
+
 ### 0.11.1
 - Upgraded geth version up to `1.8.23` after Constantinople/St.Petersburg hard fork is re-enabled (#355).
 
