@@ -17,11 +17,16 @@ gcloud compute disks create --size 30GB <disk name>
 Before creating a new cluster in GKE, a PosgreSQL database and role have to be created for it.
 This operation requires privileges for creating and deleting arbitrary databases in Cloud SQL.
 For security reasons the role used to access the database from within the cluster should not have such wide privileges and this step needs to be performed outside of cluster deployment process.
+To perform this step you need to have the .vault files with encrypted secrets in your local `concent-secrets/` directory.
+Both cloud and cluster secrets are required.
+Ansible will prompt you for password required to decrypt them.
 
 ``` bash
 cd concent-deployment/cloud/
 ansible-playbook create-databases.yml                              \
     --extra-vars cluster=$cluster                                  \
+    --vault-id @prompt                                             \
+    --ask-vault-pass                                               \
     --inventory  ../../concent-deployment-values/ansible_inventory \
     --user       $user
 ```
@@ -153,13 +158,20 @@ Do this if you want to use the remote server for building and deploying.
     Where the `$user` shell variable contains the name of your shell account on the remote machine.
 
 
-### Uploading secrets and access to deploy on specific gcloud environment
-This is a separate step that is needed on the new server and in the case of changes in secrets
+### Authorizing a user account on the build server to access the clusters
+This step must be performed separately for every user of the build server who needs to be able to access other parts of the project infrastructure on Google Cloud with `kubectl` or `gcloud`.
+It can be performed by user himself or an admin who can impersonate him with `sudo`.
+
+The `$user_name` variable below indicates the user account to be authorized.
+To perform this step you need to have the .vault files with encrypted secrets in your local `concent-secrets/` directory.
+Only cloud secrets are required in this case.
+Ansible will prompt you for password required to decrypt them.
 
 ```bash
-cd concent-deployment/concent-builder/
-ansible-playbook install-secrets.yml                               \
-    --extra-vars cluster=$cluster                                  \
+cd concent-deployment/cloud/
+ansible-playbook configure-user-authentication-for-clusters.yml    \
+    --extra-vars user_name=$user_name                              \
+    --ask-vault-pass                                               \
     --inventory  ../../concent-deployment-values/ansible_inventory \
     --user       $user
 ```
@@ -188,12 +200,16 @@ ansible-playbook build-test-and-push.yml                           \
 
 ### Deploying secrets
 Before you can deploy containers, you need to make sure that certificates, keys and passwords used to configure those containers are available on the cluster.
+To perform this step you need to have the .vault files with encrypted secrets in your local `concent-secrets/` directory.
+Only cluster secrets are required in this case.
+Ansible will prompt you for password required to decrypt them.
 Deploy them with:
 
 ``` bash
 cd concent-deployment/cloud/
 ansible-playbook cluster-deploy-secrets.yml                        \
     --extra-vars cluster=$cluster                                  \
+    --ask-vault-pass                                               \
     --inventory  ../../concent-deployment-values/ansible_inventory \
     --user       $user
 ```
