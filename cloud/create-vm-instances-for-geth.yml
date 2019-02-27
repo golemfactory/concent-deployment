@@ -1,0 +1,75 @@
+- hosts:
+    - localhost
+  vars_files:
+    - ../concent-builder/consts.yml
+    - "{{ deployment_values }}/var.yml"
+  tasks:
+    - block:
+        - fail: msg="Please supply correct "geth_instance" variable. They are only two option{{ ":" }} geth-testnet/geth-mainnet"
+          when: geth_instance != "geth-testnet" and geth_instance != "geth-mainnet"
+
+        - set_fact:
+            disk_type:    "{% if geth_instance == 'geth-testnet' %} 'pd-standard' {% elif geth_instance == 'geth-mainnet'  %} 'pd-ssd' {% else %} '' {% endif %}"
+            machine_type: "{% if geth_instance == 'geth-testnet' %} 'n1-standard-1' {% elif geth_instance == 'geth-mainnet'  %} 'n1-standard-2' {% else %} '' {% endif %}"
+
+        - name:   Check if static IP address for the "{{ geth_instance }}" instance already exist
+          shell:  gcloud compute addresses list    \
+              --project {{ gke.project }}          \
+              | grep {{ geth_instance }}-ip
+          register:      ip_address_result
+          ignore_errors: yes
+
+        - name:   Check if blockchain disk for the "{{ geth_instance }}" instance already exist
+          shell:  gcloud compute disks list                     \
+              --project   {{ gke.project }}                     \
+              | grep {{ geth_instance }}-blockchain-disk
+          register:      disk_result
+          ignore_errors: yes
+
+        - name:  Check if firewall rule that allows TCP traffic exists
+          shell: gcloud compute firewall-rules list    \
+              --format      json                       \
+              --project     {{ gke.project }}          \
+              | grep allow-geth-traffic
+          register:      firewall_rules_result
+          ignore_errors: yes
+
+        - name:    Reserve static IP address for the "{{ geth_instance }}" instance
+          command: gcloud compute addresses create {{ geth_instance }}-ip                        \
+              --description "Static IP that was attached to {{ geth_instance }} instance"        \
+              --project     {{ gke.project }}                                                    \
+              --region      europe-west3
+          when: ip_address_result.stdout == ""
+
+        - name:    Create blockchain disk for the "{{ geth_instance }}" instance
+          command: gcloud compute disks create {{ geth_instance }}-blockchain-disk          \
+              --type        {{ disk_type }}                                                 \
+              --size        500GB                                                           \
+              --description "Persistent disk attached to the {{ geth_instance }} instance"  \
+              --project     {{ gke.project }}                                               \
+              --zone        {{ gke.zone }}
+          when: disk_result.stdout == ""
+
+        - name:    Create the "{{ geth_instance }}" instance
+          command: gcloud compute instances create {{ geth_instance }}               \
+              --description  "Vm instance that contain ethereum client with block"   \
+              --disk         name={{ geth_instance }}-blockchain-disk                \
+              --machine-type {{ machine_type }}                                      \
+              --address      {{ geth_instance }}-ip                                  \
+              --project      {{ gke.project }}                                       \
+              --zone         {{ gke.zone }}
+
+        - name: Add firewall rule to allow TCP traffic to the "{{ geth_instance }}" instance
+          command: gcloud compute firewall-rules create allow-geth-traffic  \
+              --allow        tcp:8545                                       \
+              --priority     1000                                           \
+              --direction    ingress                                        \
+               --project     {{ gke.project }}                              \
+              --target-tags  geth-instance
+          when: firewall_rules_result.stdout == ""
+
+        - name: Enable firewall rule for the "{{ geth_instance }}" instance
+          command: gcloud compute instances add-tags {{ geth_instance }}  \
+              --tags        geth-instance                                 \
+              --project     {{ gke.project }}                             \
+              --zone        {{ gke.zone }}
