@@ -6,6 +6,13 @@ Compatibility:
 - Golem: 0.19.0
 - Concent: 0.11.0
 
+### 0.11.1
+- Upgraded geth version up to `1.8.23` after Constantinople/St.Petersburg hard fork is re-enabled (#355).
+
+Compatibility:
+- Golem: 0.19.0
+- Concent: 0.11.0
+
 ### 0.11.0
 - Added ansible playbooks which automates creation of jenkins CI (#297).
 - Added Vagrant configuration which automates creation of a virtual machine with a fully configured Concent and/or Golem instance suitable for development and local testing (#146, #147, #148, #182, #186).
@@ -26,6 +33,14 @@ Compatibility:
 Compatibility:
 - Golem: 0.19.0
 - Concent: 0.11.0
+
+### 0.10.6
+Changes backported from version 0.11.1:
+- Upgraded geth version up to `1.8.23` after Constantinople/St.Petersburg hard fork is re-enabled.
+
+Compatibility:
+- Golem: 0.18.3
+- Concent: 0.10.3
 
 ### 0.10.5
 Changes backported from version 0.11.0:
