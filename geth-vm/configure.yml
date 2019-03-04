@@ -1,0 +1,140 @@
+- hosts:
+    - geth-vm
+  gather_facts: no
+  vars_files:
+    - ../containers/versions.yml
+  vars:
+    geth_user:       "geth_user"
+    blockchain_path: "/home/{{ geth_user }}/blockchain"
+  tasks:
+    - become:      yes
+      become_user: root
+      block:
+        - fail: msg="Please supply correct geth_instance variable. They are only two option{{ ":" }} geth-testnet/geth-mainnet"
+          when: geth_instance != "geth-testnet" and geth_instance != "geth-mainnet"
+
+        - fail: msg="Please supply the \"ansible_host\" variable that should contain geth instance ip"
+          when:  ansible_host == ""
+
+        - name: Gathering Facts
+          setup:
+
+        - set_fact:
+            geth_flag:      "{% if geth_instance == 'geth-testnet' %} --rinkeby {% else %} {% endif %}"
+            ethereum_chain: "{% if geth_instance == 'geth-testnet' %}rinkeby{% else %}frontier{% endif %}"
+
+        - name:   Create a ext4 filesystem on /dev/sdb and check disk blocks
+          filesystem:
+            fstype: ext4
+            dev:    /dev/sdb
+
+        - name:   Install required packages for apt_key and apt_repository
+          apt:
+            name:
+              - apt-transport-https
+              - ca-certificates
+              - curl
+
+        - name:   Add Docker repository key
+          apt_key:
+            url:   https://apt.dockerproject.org/gpg
+            state: present
+
+        - name:   Add Docker.io apt repository
+          apt_repository:
+            repo:         "deb https://apt.dockerproject.org/repo {{ ansible_distribution|lower }}-{{ ansible_distribution_release }} main"
+            state:        present
+            update_cache: no
+
+        - name:   Install system updates for Debian
+          apt:    update_cache=yes
+
+        - name:   Install basic utilities
+          apt:
+            name:
+              - ncdu
+              - tree
+              - htop
+              - tmux
+              - vim
+
+        - name:   Install dependencies
+          apt:
+            name:
+              - docker-engine={{ docker_version }}
+              - nginx={{ nginx_debian_version }}
+
+        - name:   Create user that will be used for running geth client
+          user:
+            name:   "{{ geth_user }}"
+            state:  present
+            groups: docker
+
+        - name:   Create directory for blockchain
+          file:
+            dest:  "{{ blockchain_path }}"
+            state: directory
+            owner: "{{ geth_user }}"
+            group: "{{ geth_user }}"
+
+        - name: Mount disk for geth blockchain
+          mount:
+            path:   "{{ blockchain_path }}"
+            src:    /dev/sdb
+            fstype: ext4
+            state:  mounted
+
+        - name: Delete default nginx configs
+          file:
+            path:  "{{ item }}"
+            state: absent
+          with_items:
+            - /etc/nginx/sites-enabled/default
+            - /etc/nginx/nginx.conf
+
+        - name: Add nginx configs
+          copy:
+            src:  "{{ item }}"
+            dest: "/etc/nginx/{{ item }}"
+          with_items:
+            - sites-available/nginx-geth-endpoint
+            - nginx.conf
+
+        - name: Create symbolic link from sites-available config to sites-enabled
+          file:
+            src:   "/etc/nginx/sites-available/nginx-geth-endpoint"
+            dest:  "/etc/nginx/sites-enabled/nginx-geth-endpoint"
+            state: link
+
+        - name: Restart nginx service
+          service:
+            name:    nginx
+            state:   restarted
+
+    - become:      yes
+      become_user: "{{ geth_user }}"
+      block:
+        - name:          Check if geth container is running
+          command:       docker inspect --format {% raw %}"{{.State.Running}}"{% endraw %} geth
+          register:      geth_container_running
+          ignore_errors: True
+
+        - name:    Run geth container
+          command: docker run                                              \
+              --rm                                                         \
+              --detach                                                     \
+              --network  host                                              \
+              --volume   {{ blockchain_path }}:/blockchain                 \
+              --name     geth                                              \
+              ethereum/client-go:{{ geth_version }}                        \
+                {{ geth_flag }}                                            \
+                --datadir     "/blockchain/.ethereum/{{ ethereum_chain }}" \
+                --syncmode    fast                                         \
+                --cache       512                                          \
+                --rpc                                                      \
+                --rpcaddr     127.0.0.1                                    \
+                --rpcport     8546                                         \
+                --rpcvhosts   geth                                         \
+                --rpcapi      "eth, web3, net"                             \
+                --ipcdisable
+          when: geth_container_running is failed or geth_container_running.stdout == "false"
