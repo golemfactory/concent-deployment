@@ -1,0 +1,148 @@
+- hosts:
+   - "{{ ethnode }}"
+  gather_facts: no
+  vars_files:
+    - ../containers/versions.yml
+  vars:
+    ethnode_user:    "ethnode_user"
+    blockchain_path: "/home/{{ ethnode_user }}/blockchain"
+  tasks:
+    - become:      yes
+      become_user: root
+      block:
+        - fail: msg="Please supply a value for ethnode variable. Valid values are{{ ":" }} 'ethnode-testnet' and 'ethnode-mainnet'"
+          when: ethnode not in ["ethnode-testnet", "ethnode-mainnet"]
+
+        - name: Gathering Facts
+          setup:
+
+        - set_fact:
+            ethnode_config:
+              ethnode-testnet:
+                geth_extra_flags: "--rinkeby"
+                ethereum_chain:   "rinkeby"
+              ethnode-mainnet:
+                geth_extra_flags: ""
+                ethereum_chain:   "frontier"
+
+        - name:   Create a ext4 filesystem on /dev/sdb and check disk blocks
+          filesystem:
+            fstype: ext4
+            dev:    /dev/sdb
+
+        - name:   Install required packages for apt_key and apt_repository
+          apt:
+            name:
+              - apt-transport-https
+              - ca-certificates
+              - curl
+
+        - name:   Add Docker repository key
+          apt_key:
+            url:   https://apt.dockerproject.org/gpg
+            state: present
+
+        - name:   Add Docker.io apt repository
+          apt_repository:
+            repo:         "deb https://apt.dockerproject.org/repo {{ ansible_distribution|lower }}-{{ ansible_distribution_release }} main"
+            state:        present
+            update_cache: no
+
+        - name:   Update apt source repositories list
+          apt:    update_cache=yes
+
+        - name:   Install basic utilities
+          apt:
+            name:
+              - ncdu
+              - tree
+              - htop
+              - tmux
+              - vim
+
+        - name:   Install dependencies
+          apt:
+            name:
+              - docker-engine={{ docker_version }}
+              - nginx={{ nginx_debian_version }}
+
+        - name:   Create user that will be used for running geth client
+          user:
+            name:   "{{ ethnode_user }}"
+            state:  present
+            groups: docker
+
+        - name:   Create directory for blockchain
+          file:
+            dest:  "{{ blockchain_path }}"
+            state: directory
+            owner: "{{ ethnode_user }}"
+            group: "{{ ethnode_user }}"
+
+        - name: Mount disk for geth blockchain
+          mount:
+            path:   "{{ blockchain_path }}"
+            src:    /dev/sdb
+            fstype: ext4
+            state:  mounted
+
+        - name: Delete default nginx configs
+          file:
+            path:  "{{ item }}"
+            state: absent
+          with_items:
+            - /etc/nginx/sites-enabled/default
+            - /etc/nginx/nginx.conf
+
+        - name: Install our custom nginx configuration
+          copy:
+            src:  "{{ item }}"
+            dest: "/etc/nginx/{{ item }}"
+          with_items:
+            - sites-available/nginx-geth-endpoint
+            - nginx.conf
+
+        - name: Create symbolic link from sites-available config to sites-enabled
+          file:
+            src:   "/etc/nginx/sites-available/nginx-geth-endpoint"
+            dest:  "/etc/nginx/sites-enabled/nginx-geth-endpoint"
+            state: link
+
+        - name: Restart nginx service
+          service:
+            name:    nginx
+            state:   restarted
+
+    - become:      yes
+      become_user: "{{ ethnode_user }}"
+      block:
+        - name:          Check if geth container is running
+          command:       docker inspect --format {% raw %}"{{.State.Running}}"{% endraw %} geth
+          register:      geth_container_running
+          ignore_errors: True
+
+        - name:    Stop and delete geth container
+          shell: |
+            docker stop geth
+            docker rm geth
+          when:    geth_container_running is succeeded or geth_container_running.stdout == "true"
+
+        - name:    Run geth container
+          command: >
+              docker run
+              --restart  always
+              --detach
+              --network  host
+              --volume   {{ blockchain_path }}:/blockchain
+              --name     geth
+              ethereum/client-go:{{ geth_version }}
+                {{ ethnode_config[ethnode].geth_extra_flags }}
+                --datadir     "/blockchain/.ethereum/{{ ethnode_config[ethnode].ethereum_chain }}"
+                --syncmode    fast
+                --cache       512
+                --rpc
+                --rpcaddr     127.0.0.1
+                --rpcport     8546
+                --rpcvhosts   geth
+                --rpcapi      "eth, web3, net"
+                --ipcdisable
