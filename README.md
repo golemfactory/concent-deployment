@@ -152,6 +152,26 @@ Do this if you want to use the remote server for building and deploying.
 
     Where the `$user` shell variable contains the name of your shell account on the remote machine.
 
+### Configuring `geth-<testnet/mainnet>-vm` machine
+This step configure geth mainnet or geth testnet instance on the remote server.
+
+The first playbook creates machine, ip and disk. The `$geth_instance` variable controls which ethereum blockchain instance will be created(`geth-testnet/geth-mainnet`).
+``` bash
+cd concent-deployment/cloud/
+ansible-playbook create-vm-instances-for-geth.yml                   \
+    --extra-vars "geth_instance=$geth_instance"                     \
+    --inventory  ../../concent-deployment-values/ansible_inventory  \
+    --user      $user
+```
+
+The second playbook configure machine and geth.
+``` bash
+cd concent-deployment/geth-vm/
+ ansible-playbook configure.yml                                     \
+    --extra-vars "geth_instance=$geth_instance"                     \
+    --inventory  ../../concent-deployment-values/ansible_inventory  \
+    --user      $user
+```
 
 ### Uploading secrets and access to deploy on specific gcloud environment
 This is a separate step that is needed on the new server and in the case of changes in secrets
