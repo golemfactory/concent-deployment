@@ -157,6 +157,33 @@ Do this if you want to use the remote server for building and deploying.
 
     Where the `$user` shell variable contains the name of your shell account on the remote machine.
 
+### Setting up Ethereum client on a separate machine
+This step installs and configures Geth on a separate machine in Google Compute Engine.
+This is optional since Geth can be deployed automatically as a part of a Concent cluster but when you have multiple clusters, having one shared instance of the client allows you to use less resources.
+Concent does not use Geth very heavily so one instance of the blockchain client can handle many Concent instances.
+It also makes deployment faster and more reliable since it's not necessary to wait for Geth synchronization every time it's updated or redeployed.
+
+This machine comes in two flavors: `ethnode-testnet` and `ethnode-mainnet`.
+If you're running both test clusters and a production cluster, you need both.
+
+The playbooks need to be run from `concent-builder` or another machine that is authorized to run `gcloud` commands on the Google Cloud project.
+To create and configure the machine run the playbooks listed below.
+The first one creates the cloud instance, reserves IP and provisions a disk.
+This operation requires permissions to the Google Cloud project
+The `$ethnode` variable specifies the flavor of the machine to be created: `ethnode-testnet` or `ethnode-mainnet`.
+The second one connects to the machine, installs everything on it and starts Geth.
+``` bash
+cd concent-deployment/cloud/
+ansible-playbook create-vm-instances-for-geth.yml                   \
+    --extra-vars "ethnode=$ethnode"                                 \
+    --inventory  ../../concent-deployment-values/ansible_inventory  \
+    --user      $user
+
+ ansible-playbook configure.yml                                     \
+    --extra-vars "ethnode=$ethnode"                                 \
+    --inventory  ../../concent-deployment-values/ansible_inventory  \
+    --user      $user
+```
 
 ### Authorizing a user account on the build server to access the clusters
 This step must be performed separately for every user of the build server who needs to be able to access other parts of the project infrastructure on Google Cloud with `kubectl` or `gcloud`.
