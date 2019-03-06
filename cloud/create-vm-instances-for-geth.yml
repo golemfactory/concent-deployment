@@ -35,10 +35,11 @@
           ignore_errors: yes
 
         - name:    Reserve static IP address for the "{{ geth_instance }}" instance
-          command: gcloud compute addresses create {{ geth_instance }}-ip                        \
-              --description "Static IP that was attached to {{ geth_instance }} instance"        \
-              --project     {{ gke.project }}                                                    \
-              --region      europe-west3
+          command: gcloud compute addresses create {{ geth_instance }}-ip                   \
+              --description "Static IP that was attached to {{ geth_instance }} instance"   \
+              --project     {{ gke.project }}                                               \
+              --region      europe-west3                                                    \
+              --subnet      default
           when: ip_address_result.stdout == ""
 
         - name:    Create blockchain disk for the "{{ geth_instance }}" instance
@@ -53,20 +54,22 @@
         - name:    Create the "{{ geth_instance }}" instance
           command: gcloud compute instances create {{ geth_instance }}               \
               --description  "Vm instance that contain ethereum client with block"   \
-              --disk         name={{ geth_instance }}-blockchain-disk                \
-              --machine-type {{ machine_type }}                                      \
-              --address      {{ geth_instance }}-ip                                  \
-              --project      {{ gke.project }}                                       \
-              --zone         {{ gke.zone }}
+              --disk                    name={{ geth_instance }}-blockchain-disk     \
+              --machine-type            {{ machine_type }}                           \
+              --private-network-ip      {{ geth_instance }}-ip                       \
+              --subnet                  default                                      \
+              --no-address                                                           \
+              --project                 {{ gke.project }}                            \
+              --zone                    {{ gke.zone }}
 
-        - name: Add firewall rule to allow TCP traffic to the "{{ geth_instance }}" instance
-          command: gcloud compute firewall-rules create allow-geth-traffic  \
-              --allow        tcp:8545                                       \
-              --priority     1000                                           \
-              --direction    ingress                                        \
-               --project     {{ gke.project }}                              \
-              --target-tags  geth-instance
-          when: firewall_rules_result.stdout == ""
+        # - name: Add firewall rule to allow TCP traffic to the "{{ geth_instance }}" instance
+        #   command: gcloud compute firewall-rules create allow-geth-traffic  \
+        #       --allow        tcp:8545                                       \
+        #       --priority     1000                                           \
+        #       --direction    ingress                                        \
+        #        --project     {{ gke.project }}                              \
+        #       --target-tags  geth-instance
+        #   when: firewall_rules_result.stdout == ""
 
         - name: Enable firewall rule for the "{{ geth_instance }}" instance
           command: gcloud compute instances add-tags {{ geth_instance }}  \
