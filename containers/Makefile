@@ -123,6 +123,9 @@ dist/concent-signing-service-%.tar.xz: build/signing-service/signing-service/ bu
 		--create                                                                                                           \
 		--verbose                                                                                                          \
 		--xz                                                                                                               \
+		--owner=0                                                                                                          \
+		--group=0                                                                                                          \
+		--numeric-owner                                                                                                    \
 		--file="dist/concent-signing-service-$(shell cat build/signing-service/signing-service/RELEASE-VERSION).tar.xz"    \
 		--directory="build/"                                                                                               \
 		signing-service/
