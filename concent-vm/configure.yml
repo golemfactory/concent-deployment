@@ -60,7 +60,7 @@
               - python3-pip
               - python3-netifaces
               - python3-psutil
-              - rustc
+              - rustc={{ rustc_version }}
 
         - name:    Remove unused dependencies
           apt:     autoremove=yes
