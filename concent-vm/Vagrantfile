@@ -140,7 +140,15 @@ Vagrant.configure("2") do |config|
         ansible.limit              = "all"
     end
 
+    concent_vm_config_file="config.yml"
     if ENV['CONCENT_VM_INSTALL_CONCENT'] == 'true'
+        if not File.exists?(concent_vm_config_file)
+          puts "Installation of Concent in the virtual machine requires a file called #{concent_vm_config_file}. " +
+               "This file should contain values that will be used in Concent's local_settings.py and as command-line parameters for the Signing Service. " +
+               "Please create it and rerun vagrant."
+            abort
+        end
+
         config.vm.provision "ansible" do |ansible|
             extra_vars = {}
             extra_vars['concent_version'] = ENV['CONCENT_VM_CONCENT_VERSION'] if ENV.key?('CONCENT_VM_CONCENT_VERSION')

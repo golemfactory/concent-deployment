@@ -4,6 +4,7 @@
     - ../containers/versions.yml
     - ../concent-builder/repositories.yml
     - consts.yml
+    - config.yml
   tasks:
     - become:      yes
       become_user: vagrant
@@ -58,24 +59,6 @@
             - middleman_protocol
             - signing_service
 
-    - name:         Looking for extra_settings.py on the host
-      local_action: stat path="{{ playbook_dir }}/extra_settings.py"
-      register:     extra_settings
-
-    - fail: msg="This playbook expects to find a file called extra_settings.py in its directory.
-          The file is a Python script that is imported into the automatically generated local_settings.py.
-          Please create it and rerun this playbook."
-      when: not extra_settings.stat.exists
-
-    - name:         Looking for signing-service-env.sh on the host
-      local_action: stat path="{{ playbook_dir }}/signing-service-env.sh"
-      register:     signing_service_env
-
-    - fail: msg="This playbook expects to find a file called signing-service-env.sh in its directory.
-          The file is a Bash script that is sourced before starting Concent's Signing Service and can define environment variables for it.
-          Please create it and rerun this playbook."
-      when: not signing_service_env.stat.exists
-
     - become:      yes
       become_user: vagrant
       block:
@@ -86,15 +69,15 @@
             mode:   0644
 
         - name:   Upload user-provided extra_settings.py to the machine
-          copy:
-            src:    extra_settings.py
-            dest:   "{{ concent_dir }}/concent_api/concent_api/settings/"
-            mode:   0644
+          template:
+            src:   extra_settings.py.j2
+            dest: "{{ concent_dir }}/concent_api/concent_api/settings/extra_settings.py"
+            mode: 0644
 
         - name:   Upload signing-service-env.sh to the virtual machine
-          copy:
-            src:    "{{ playbook_dir }}/signing-service-env.sh"
-            dest:   "~/"
+          template:
+            src:    signing-service-env.sh.j2
+            dest:   "~/signing-service-env.sh"
             mode:   0555
 
         - name:   Create verifier_storage directory
