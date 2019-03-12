@@ -112,6 +112,7 @@
             src:        "{{ concent_deployment_dir }}/concent-vm/nginx-storage.service"
             dest:       "/etc/systemd/system/nginx-storage.service"
             remote_src: yes
+            mode:       0555
 
         - name:   Run nginx-storage service
           service:
