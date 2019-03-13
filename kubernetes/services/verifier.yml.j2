@@ -26,6 +26,9 @@ spec:
             limits:
               memory: "{{ resource_limits.worker_apps.verifier.memory.limits }}"
               cpu:    "{{ resource_limits.worker_apps.verifier.cpu.limits }}"
+          env:
+            - name:  LOCAL_USER_ID
+              value: 61230
           volumeMounts:
             - name:      concent-api-secrets
               mountPath: /srv/http/concent_api/concent_api/settings/secrets/
@@ -45,6 +48,8 @@ spec:
         - name: verifier-settings
           configMap:
             name: verifier-settings
+      securityContext:
+        fsGroup: 61230
   volumeClaimTemplates:
   - metadata:
       name: verifier-storage

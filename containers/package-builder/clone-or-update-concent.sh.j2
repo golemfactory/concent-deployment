@@ -6,9 +6,6 @@ directory=$2
 if [[ "$repository" == "concent" ]]; then
     repository_path=/var/concent-data/concent/
     repository_version="{{ concent_version }}"
-elif [[ "$repository" == "golem" ]]; then
-    repository_path=/var/concent-data/golem/
-    repository_version="{{ golem_version }}"
 else
     echo "The '$repository' repository does not exist"
     exit 1

@@ -1,8 +1,0 @@
-curl
-libbz2-dev
-libreadline-dev
-libsqlite3-dev
-llvm
-libncurses5-dev
-libncursesw5-dev
-tk-dev

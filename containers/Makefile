@@ -41,18 +41,13 @@ VERIFIER_SOURCE_FROM_CONCENT_API :=                              \
     build/verifier/install-middleman-protocol.sh                 \
     build/verifier/concent-api-manage.sh                         \
     build/verifier/run-celery.sh                                 \
-    build/verifier/clean-pyenv-dependencies.sh                   \
-    build/verifier/configure-pyenv.sh                            \
-    build/verifier/testing.pref                                  \
     build/verifier/requirements.lock                             \
     build/verifier/cacheable-requirements.lock                   \
     build/verifier/concent-api.tar                               \
     build/verifier/local_settings.py
 
 VERIFIER_SOURCE :=                                 \
-    build/verifier/entrypoint.sh                   \
     build/verifier/install-dependencies.sh         \
-    build/verifier/pyenv-build-dependencies.txt    \
     build/verifier/Dockerfile                      \
     $(VERIFIER_SOURCE_FROM_CONCENT_API)
 
@@ -107,7 +102,7 @@ concent-api: build/ $(CONCENT_API_SOURCE) build/concent-api/requirements.lock bu
 	docker build --tag $(IMAGE_PREFIX)concent-api:$(IMAGE_VERSION) build/concent-api/
 	docker tag $(IMAGE_PREFIX)concent-api:$(IMAGE_VERSION) $(IMAGE_PREFIX)concent-api:latest
 
-verifier: build/ $(VERIFIER_SOURCE) build/repositories/golem/ build/verifier/golem/scripts/ build/verifier/golem/imgverifier-requirements.txt build/verifier/middleman_protocol/ build/verifier/middleman_protocol/RELEASE-VERSION
+verifier: build/ $(VERIFIER_SOURCE) build/verifier/middleman_protocol/ build/verifier/middleman_protocol/RELEASE-VERSION
 	docker build --tag $(IMAGE_PREFIX)verifier:$(IMAGE_VERSION) build/verifier/
 	docker tag $(IMAGE_PREFIX)verifier:$(IMAGE_VERSION) $(IMAGE_PREFIX)verifier:latest
 
@@ -196,22 +191,12 @@ $(SIGNING_SERVICE_SOURCE_FROM_CONCENT_API): build/signing-service/%: build/conce
 	mkdir --parents "build/signing-service/"
 	cp "$<" "$@"
 
-build/verifier/golem/scripts/: build/repositories/golem/apps/rendering/resources/scripts/
-	mkdir --parents "$@"
-	cp  --recursive "$<." "$@"
-
 $(NGINX_STORAGE_SOURCE_FROM_NGINX_PROXY): build/nginx-storage/%: build/nginx-proxy/%
 	mkdir --parents "build/nginx-storage/"
 	cp "$<" "$@"
 
-build/verifier/golem/imgverifier-requirements.txt: build/repositories/golem/apps/rendering/resources/images/requirements.txt
-	cp "$<" "$@"
-
-build/repositories/concent: build/package-builder/clone-or-update.sh /var/concent-data/concent
-	build/package-builder/clone-or-update.sh "concent" "$@"
-
-build/repositories/golem/: build/package-builder/clone-or-update.sh /var/concent-data/golem
-	build/package-builder/clone-or-update.sh  "golem" "$@"
+build/repositories/concent: build/package-builder/clone-or-update-concent.sh /var/concent-data/concent
+	build/package-builder/clone-or-update-concent.sh "concent" "$@"
 
 build/%/middleman_protocol/: build/repositories/concent
 	cp --recursive "$</middleman_protocol/." "$@"
