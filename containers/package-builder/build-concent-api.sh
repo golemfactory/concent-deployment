@@ -17,6 +17,9 @@ cd "$deployment_dir/"
 tar                                            \
     --create                                   \
     --verbose                                  \
+    --owner=0                                  \
+    --group=0                                  \
+    --numeric-owner                            \
     --file="$output_dir/concent-api.tar"       \
     --directory="$concent_dir"                 \
     --exclude=.git                             \

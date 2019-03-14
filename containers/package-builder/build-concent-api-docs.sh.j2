@@ -20,6 +20,9 @@ make html
 tar                                                \
     --create                                       \
     --verbose                                      \
+    --owner=0                                      \
+    --group=0                                      \
+    --numeric-owner                                \
     --file="$output_dir/concent-api-docs.tar"      \
     --directory="build/"                           \
     html/
