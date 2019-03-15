@@ -51,14 +51,9 @@
         - name:   Update apt source repositories list
           apt:    update_cache=yes
 
-        - name:   Install basic utilities
-          apt:
-            name:
-              - ncdu
-              - tree
-              - htop
-              - tmux
-              - vim
+
+        - name:   include task from `install-basic-utilities.yml` file
+          include_tasks: ../concent-builder/common_tasks/install-basic-utilities.yml
 
         - name:   Install dependencies
           apt:

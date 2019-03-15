@@ -34,13 +34,8 @@
         - name:   Install system updates for Debian
           apt:  update_cache=yes
 
-        - name:    Install basic packages
-          apt:
-            name:
-              - ncdu
-              - tree
-              - htop
-              - tmux
+        - name:   include task from `install-basic-utilities.yml` file
+          include_tasks: common_tasks/install-basic-utilities.yml
 
         - name:    Install dependencies
           apt:
