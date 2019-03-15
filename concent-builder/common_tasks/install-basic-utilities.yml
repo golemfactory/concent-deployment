@@ -1,0 +1,8 @@
+- name:    Install basic packages
+  apt:
+    name:
+      - ncdu
+      - tree
+      - htop
+      - tmux
+
