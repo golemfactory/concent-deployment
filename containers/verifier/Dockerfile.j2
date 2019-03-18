@@ -11,6 +11,7 @@ RUN  /tmp/install-concent-api-python-dependencies.sh   python{{ python_version }
 COPY middleman_protocol                                /srv/http/middleman_protocol/
 COPY install-middleman-protocol.sh                     /tmp/
 RUN  /tmp/install-middleman-protocol.sh
+USER nobody
 
 
 ADD concent-api.tar                 /srv/http/

@@ -26,9 +26,6 @@ spec:
             limits:
               memory: "{{ resource_limits.worker_apps.verifier.memory.limits }}"
               cpu:    "{{ resource_limits.worker_apps.verifier.cpu.limits }}"
-          env:
-            - name:  LOCAL_USER_ID
-              value: 61230
           volumeMounts:
             - name:      concent-api-secrets
               mountPath: /srv/http/concent_api/concent_api/settings/secrets/
@@ -48,8 +45,12 @@ spec:
         - name: verifier-settings
           configMap:
             name: verifier-settings
+      # securityContext allows you to add permission for pod and mounted volumes to specific group.
+      # We need this permission to create files and directories on mounted persistent disk.
+      # 65534 is the ID commonly reserved for user 'nobody' in Linux systems and our container follows this convention.
+      # We use this user when creating files and directories.
       securityContext:
-        fsGroup: 61230
+        fsGroup: 65534
   volumeClaimTemplates:
   - metadata:
       name: verifier-storage
