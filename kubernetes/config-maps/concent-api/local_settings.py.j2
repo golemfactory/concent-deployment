@@ -62,11 +62,7 @@ CELERY_BROKER_URL = 'amqp://rabbitmq.default.svc.cluster.local:5672'
 EMAIL_SUBJECT_PREFIX = "[{{ concent_versions[concent_version].gke.cluster }}:concent-api] "
 
 PAYMENT_BACKEND = 'core.payments.backends.sci_backend'
-{% if concent_versions[concent_version].external_geth_address is none %}
-GETH_ADDRESS = 'http://geth.default.svc.cluster.local:8545'
-{% else %}
-GETH_ADDRESS = '{{ concent_versions[concent_version].external_geth_address }}'
-{% endif %}
+GETH_ADDRESS = '{{ concent_versions[concent_version].external_geth_address if concent_versions[concent_version].external_geth_address != None else '{{ ethnode_geth_' ~ ethereum_chain ~ '_address }}' }}'
 CONCENT_ETHEREUM_PUBLIC_KEY = '{{ concent_ethereum_public_key }}'
 GNT_DEPOSIT_CONTRACT_ADDRESS = '{{ gnt_deposit_address }}'
 ETHEREUM_CHAIN = '{{ ethereum_chain }}'
