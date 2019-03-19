@@ -1,6 +1,7 @@
 #!/bin/bash -e
 
-python="/opt/pyenv/versions/{{ python_version }}.{{ python_patch_version }}/bin/python{{ python_version }}"
+default_python="/opt/pyenv/versions/{{ python_version }}.{{ python_patch_version }}/bin/python{{ python_version }}"
+python="${1:-$default_python}"
 virtualenv_dir=/srv/http/virtualenv
 
 # Create virtualenv and Django app's dependencies

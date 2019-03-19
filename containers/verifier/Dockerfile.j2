@@ -1,31 +1,22 @@
-FROM golemfactory/blender:{{ golemfactory_blender_version }}
+FROM golemfactory/blender_verifier:{{ golemfactory_blender_verifier_version }}
 
 # Add dependencies from golem verification and concent
-COPY testing.pref                             /etc/apt/preferences.d/
-COPY pyenv-build-dependencies.txt             /tmp/
-COPY configure-pyenv.sh                       /tmp/
-COPY clean-pyenv-dependencies.sh              /tmp/
-COPY golem/imgverifier-requirements.txt       /golem/work/
 COPY install-dependencies.sh                  /tmp/
 RUN  /tmp/install-dependencies.sh
 
 # Build virtualenv and concent apps
 COPY cacheable-requirements.lock                       /srv/http/concent_api/
 COPY install-concent-api-python-dependencies.sh        /tmp/
-RUN  /tmp/install-concent-api-python-dependencies.sh
+RUN  /tmp/install-concent-api-python-dependencies.sh   python{{ python_version }}
 COPY middleman_protocol                                /srv/http/middleman_protocol/
 COPY install-middleman-protocol.sh                     /tmp/
 RUN  /tmp/install-middleman-protocol.sh
+USER nobody
 
-
-# Copy golem verification scripts
-COPY golem/scripts /golem/scripts/
 
 ADD concent-api.tar                 /srv/http/
 COPY concent-api-manage.sh          /usr/local/bin/
 COPY run-celery.sh                  /usr/local/bin/
-COPY entrypoint.sh                  /usr/local/bin/
-
 COPY local_settings.py              /srv/http/concent_api/concent_api/settings/
 
-ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+CMD ["/usr/local/bin/run-celery.sh"]
