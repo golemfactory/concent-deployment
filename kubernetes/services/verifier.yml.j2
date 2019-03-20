@@ -7,7 +7,7 @@ spec:
     matchLabels:
       run: verifier
   serviceName: "verifier"
-  replicas: {{ replicas_count.verifier }}
+  replicas:    {{ concent_versions[concent_version] | chained_get('replica_count.verifier') | default('{{ replica_count.verifier }}', true) }}
   template:
     metadata:
       labels:

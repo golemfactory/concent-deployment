@@ -3,7 +3,7 @@ kind:       Deployment
 metadata:
   name: gatekeeper
 spec:
-  replicas:             2
+  replicas:             {{ concent_versions[concent_version] | chained_get('replica_count.gatekeeper') | default('{{ replica_count.gatekeeper }}', true) }}
   revisionHistoryLimit: 2
   template:
     metadata:

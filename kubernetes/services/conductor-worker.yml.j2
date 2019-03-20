@@ -3,8 +3,8 @@ kind:       Deployment
 metadata:
   name: conductor-worker
 spec:
-  replicas:             3
-  revisionHistoryLimit: 3
+  replicas:             {{ concent_versions[concent_version] | chained_get('replica_count.conductor_worker') | default('{{ replica_count.conductor_worker }}', true) }}
+  revisionHistoryLimit: 2
   template:
     metadata:
       labels:
