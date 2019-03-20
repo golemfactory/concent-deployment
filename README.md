@@ -548,18 +548,25 @@ Note that to start the machine later you need to have the environment variables 
 It's recommended to put them into a script and always source it before running any Vagrant commands.
 
 ###### VM with Concent
-This step requires two configuration files.
+This step requires configuration file.
 
-`concent-vm/extra_settings.py` is a Python script that will be imported into the automatically generated `local_settings.py` in the machine.
-You can use it to provide secrets or override default settings.
-It can be empty if you're fine with defaults.
+`concent-vm/config.yml` is a config file that will be used for provide:
+- version of the `concent-deployment-values` repository by specify commit or tag
+- secrets or override default settings in the `concent`
+- secrets for `signing-service`
 
-`concent-vm/signing-service-env.sh` is a shell script meant to be sourced immediately before starting an instance of Concent's Signing Service and can define values of environment variables used by it.
-At minimum it should define the following variables:
+Example configuration:
+```yaml
+concent_deployment_version: dev
 
-``` bash
-export ETHEREUM_PRIVATE_KEY="..."
-export SIGNING_SERVICE_PRIVATE_KEY="..."
+concent_local_settings:
+  use_signing_service:          True
+  additional_verification_cost: 1
+  concent_ethereum_public_key:  "c6bb9c30cd4ee54484ad10b01d2742105a70b9333b2310be8e870344f18f23d70897cf0588510fc28cf76b6379021cc2d3ead649718bef61"
+
+signing_service_env:
+  ethereum_private_key:        "ZjIwODU2ZmFhN2YxOTQzN2E0MGIwODAxYjdlNDc1Y2U0ZWZhNTkzMmVkYmFhYmMyMjFiODQ5N2VlMGM1YzRiNSAgLQo="
+  signing_service_private_key: "OTYyNmMxYzJhZmJlYzVjMmM5NGNlYmRjMzE4N2M5MjcgIC0K"
 ```
 
 Now you can build the machine by running:
