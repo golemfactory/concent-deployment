@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: nginx-proxy
 spec:
-  replicas:             2
+  replicas:             {{ concent_versions[concent_version] | chained_get('replica_count.nginx_proxy') | default('{{ replica_count.nginx_proxy }}', true) }}
   revisionHistoryLimit: 2
   template:
     metadata:

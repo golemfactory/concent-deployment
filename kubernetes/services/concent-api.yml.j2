@@ -3,7 +3,7 @@ kind:       Deployment
 metadata:
   name: concent-api
 spec:
-  replicas:             2
+  replicas:             {{ concent_versions[concent_version] | chained_get('replica_count.concent_api') | default('{{ replica_count.concent_api }}', true) }}
   revisionHistoryLimit: 2
   template:
     metadata:

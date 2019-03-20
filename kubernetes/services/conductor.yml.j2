@@ -3,7 +3,7 @@ kind:       Deployment
 metadata:
   name: conductor
 spec:
-  replicas:             2
+  replicas:             {{ concent_versions[concent_version] | chained_get('replica_count.conductor') | default('{{ replica_count.conductor }}', true) }}
   revisionHistoryLimit: 2
   template:
     metadata:
