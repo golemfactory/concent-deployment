@@ -18,11 +18,11 @@ spec:
             - containerPort: 80
           resources:
             requests:
-              memory: "{{ resource_limits.http_server_apps.conductor.memory.requests }}"
-              cpu:    "{{ resource_limits.http_server_apps.conductor.cpu.requests }}"
+              memory: "{{ concent_versions[concent_version] | chained_get('resource_limits.http_server_apps.conductor.memory.requests') | default('{{ resource_limits.http_server_apps.conductor.memory.requests }}', true) }}"
+              cpu:    "{{ concent_versions[concent_version] | chained_get('resource_limits.http_server_apps.conductor.cpu.requests') | default('{{ resource_limits.http_server_apps.conductor.cpu.requests }}', true) }}"
             limits:
-              memory: "{{ resource_limits.http_server_apps.conductor.memory.limits }}"
-              cpu:    "{{ resource_limits.http_server_apps.conductor.cpu.limits }}"
+              memory: "{{ concent_versions[concent_version] | chained_get('resource_limits.http_server_apps.conductor.memory.limits') | default('{{ resource_limits.http_server_apps.conductor.memory.limits }}', true) }}"
+              cpu:    "{{ concent_versions[concent_version] | chained_get('resource_limits.http_server_apps.conductor.cpu.limits') | default('{{ resource_limits.http_server_apps.conductor.cpu.limits }}', true) }}"
           volumeMounts:
             - name:      concent-api-secrets
               mountPath: /srv/http/concent_api/concent_api/settings/secrets/

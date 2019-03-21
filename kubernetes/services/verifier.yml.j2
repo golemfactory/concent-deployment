@@ -21,11 +21,11 @@ spec:
           command:          ["/usr/local/bin/run-celery.sh", "--loglevel", "info", "--queues", "verifier"]
           resources:
             requests:
-              memory: "{{ resource_limits.worker_apps.verifier.memory.requests }}"
-              cpu:    "{{ resource_limits.worker_apps.verifier.cpu.requests }}"
+              memory: "{{ concent_versions[concent_version] | chained_get('resource_limits.worker_apps.verifier.memory.requests') | default('{{ resource_limits.worker_apps.verifier.memory.requests }}', true) }}"
+              cpu:    "{{ concent_versions[concent_version] | chained_get('resource_limits.worker_apps.verifier.cpu.requests') | default('{{ resource_limits.worker_apps.verifier.cpu.requests }}', true) }}"
             limits:
-              memory: "{{ resource_limits.worker_apps.verifier.memory.limits }}"
-              cpu:    "{{ resource_limits.worker_apps.verifier.cpu.limits }}"
+              memory: "{{ concent_versions[concent_version] | chained_get('resource_limits.worker_apps.verifier.memory.limits') | default('{{ resource_limits.worker_apps.verifier.memory.limits }}', true) }}"
+              cpu:    "{{ concent_versions[concent_version] | chained_get('resource_limits.worker_apps.verifier.cpu.limits') | default('{{ resource_limits.worker_apps.verifier.cpu.limits }}', true) }}"
           volumeMounts:
             - name:      concent-api-secrets
               mountPath: /srv/http/concent_api/concent_api/settings/secrets/

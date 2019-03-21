@@ -16,11 +16,11 @@ spec:
           imagePullPolicy: Always
           resources:
             requests:
-              memory: "{{ resource_limits.nginx.nginx_storage.memory.requests }}"
-              cpu:    "{{ resource_limits.nginx.nginx_storage.cpu.requests }}"
+              memory: "{{ concent_versions[concent_version] | chained_get('resource_limits.nginx.nginx_storage.memory.requests') | default('{{ resource_limits.nginx.nginx_storage.memory.requests }}', true) }}"
+              cpu:    "{{ concent_versions[concent_version] | chained_get('resource_limits.nginx.nginx_storage.cpu.requests') | default('{{ resource_limits.nginx.nginx_storage.cpu.requests }}', true) }}"
             limits:
-              memory: "{{ resource_limits.nginx.nginx_storage.memory.limits }}"
-              cpu:    "{{ resource_limits.nginx.nginx_storage.cpu.limits }}"
+              memory: "{{ concent_versions[concent_version] | chained_get('resource_limits.nginx.nginx_storage.memory.limits') | default('{{ resource_limits.nginx.nginx_storage.memory.limits }}', true) }}"
+              cpu:    "{{ concent_versions[concent_version] | chained_get('resource_limits.nginx.nginx_storage.cpu.limits') | default('{{ resource_limits.nginx.nginx_storage.cpu.limits }}', true) }}"
           lifecycle:
             preStop:
               exec:
