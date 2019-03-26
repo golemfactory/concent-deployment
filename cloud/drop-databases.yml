@@ -4,8 +4,8 @@
     - ../concent-builder/consts.yml
     - "{{ deployment_values }}/var.yml"
     - "{{ deployment_values }}/var-{{ cluster }}.yml"
-    - "{{ local_secret_dir }}/{{ cluster }}/cluster-secrets.yml"
-    - "{{ local_secret_dir }}/cloud/cloud-secrets.yml"
+    - "{{ local_secret_dir }}/{{ cluster }}/cluster-secrets.yml.vault"
+    - "{{ local_secret_dir }}/cloud/cloud-secrets.yml.vault"
   vars:
     choose_database_option: delete
   roles:
