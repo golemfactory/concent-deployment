@@ -1,0 +1,29 @@
+- hosts:
+    - concent-builder
+  vars_files:
+    - ../concent-builder/consts.yml
+    - "{{ deployment_values }}/var.yml"
+  tasks:
+    - become:      yes
+      become_user: root
+      block:
+        - name: Upload decrypted "{{ gke.service_account_name }}-private-key.json" secret for activate google cloud service account
+          copy:
+            src:   "{{ local_secret_dir }}/cloud/{{ gke.service_account_name }}-private-key.json.vault"
+            dest:  "/home/{{ user_name }}/{{ gke.service_account_name }}-private-key.json"
+            owner: "{{ user_name }}"
+            group: "{{ user_name }}"
+            mode:  0444
+
+        - name: Activate the service account that has permissions to access the cluster
+          command: gcloud auth activate-service-account                                                           \
+              "{{ gke.service_account_name }}@{{ gke.project }}.iam.gserviceaccount.com"                          \
+              --key-file "/home/{{ user_name }}/{{ gke.service_account_name }}-private-key.json"
+          become:      yes
+          become_user: "{{ user_name }}"
+
+      always:
+        - name:  Delete the "{{ gke.service_account_name }}-private-key.json" secret
+          file:
+            state: absent
+            path:  "/home/{{ user_name }}/{{ gke.service_account_name }}-private-key.json"

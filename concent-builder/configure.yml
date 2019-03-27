@@ -81,6 +81,7 @@
             state: directory
             owner: "{{ shared_user }}"
             group: "{{ shared_user }}"
+            mode:  0777
 
         - name:    Create jenkins home directory
           file:
