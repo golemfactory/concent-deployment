@@ -4,8 +4,11 @@ After=docker.service
 Requires=docker.service
 
 [Service]
-User=builder
-Group=builder
-WorkingDirectory=/home/builder
+RestartSec=2s
+WorkingDirectory=/home/builder/bin
 ExecStart=/home/builder/bin/run-nginx-storage.sh
+ExecStop=/usr/bin/docker stop nginx-storage
 Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
