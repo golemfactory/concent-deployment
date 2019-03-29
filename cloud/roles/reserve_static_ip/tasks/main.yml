@@ -1,0 +1,15 @@
+- name:   Check if static IP address already exists
+  shell: >
+      gcloud compute addresses list
+      --project {{ gke.project }}
+      | grep {{ name_of_ip }}
+  register:      ip_address_result
+  ignore_errors: yes
+
+- name:    Reserve static IP address for the "{{ server_name }}" instance
+  command: >
+      gcloud compute addresses create {{ name_of_ip }}
+      --description "Static IP attached to {{ server_name }} instance"
+      --project     {{ gke.project }}
+      --region      europe-west3
+  when: ip_address_result.stdout == ""
