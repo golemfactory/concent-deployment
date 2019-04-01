@@ -42,7 +42,15 @@ catchError {
                     cluster: 'concent-dev',
                 ],
                 inventory: '/home/jenkins/concent-deployment-values/ansible_inventory',
-                playbook:  '{{ jenkins_configuration_files_dir }}/build-test-and-push.yml',
+                playbook:  '{{ jenkins_configuration_files_dir }}/build-cluster-configuration.yml',
+                extras:    '--connection local'
+            )
+            ansiblePlaybook(
+                extraVars: [
+                    cluster: 'concent-dev',
+                ],
+                inventory: '/home/jenkins/concent-deployment-values/ansible_inventory',
+                playbook:  '{{ jenkins_configuration_files_dir }}/build-test-and-push-containers.yml',
                 extras:    '--connection local'
             )
         }
