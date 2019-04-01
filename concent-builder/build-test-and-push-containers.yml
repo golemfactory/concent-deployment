@@ -7,41 +7,12 @@
     - "{{ deployment_values }}/var.yml"
     - "{{ deployment_values }}/var-{{ cluster }}.yml"
   tasks:
-    - name: Remove the build directory to get rid of files from previous builds
-      file:
-        path:    "{{ build_dir }}"
-        state:   absent
-
-    - name: Check out working copy of concent-deployment repositories
-      git:
-        repo:    "{{ data_dir }}/concent-deployment"
-        dest:    "{{ build_dir }}/concent-deployment"
-        version: "{{ concent_versions[concent_version].versions['concent-deployment'] }}"
-        clone:   yes
-        update:  yes
-
-    - name: Install var.yml from the local machine
-      copy:
-        src:   "{{ deployment_values }}/{{ item }}"
-        dest:  "{{ build_dir }}/concent-deployment/kubernetes/"
-      with_items:
-        - var.yml
-        - var-{{ cluster }}.yml
-
     - block:
         - name: Build containers
           make:
             chdir: "{{ build_dir }}/concent-deployment/containers"
             params:
               IMAGE_PREFIX:       "{{ image_prefix }}"
-
-        - name: Build cluster configuration
-          make:
-            chdir: "{{ build_dir }}/concent-deployment/kubernetes"
-            params:
-              CONCENT_SECRET_DIR: "{{ deployment_dir }}/concent-secrets/{{ cluster }}"
-              IMAGE_PREFIX:       "{{ image_prefix }}"
-              CLUSTER:            "{{ cluster }}"
 
         - name:    Create custom network that allows communication between django and postgres containers
           command: docker network create {{ concent_versions[concent_version].gke.cluster }}-{{ image_prefix }}unittest-network
