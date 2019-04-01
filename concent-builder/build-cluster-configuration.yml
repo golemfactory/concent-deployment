@@ -1,0 +1,27 @@
+- hosts:
+    - "{{ 'concent-deployment-server' if cluster == 'concent-mainnet' else 'concent-builder' }}"
+  vars_files:
+    - consts.yml
+    - repositories.yml
+    - ../containers/versions.yml
+    - "{{ deployment_values }}/var.yml"
+    - "{{ deployment_values }}/var-{{ cluster }}.yml"
+  roles:
+    - clean_up_and_set_up_environment
+  tasks:
+    - name: Install var.yml from the local machine
+      copy:
+        src:   "{{ deployment_values }}/{{ item }}"
+        dest:  "{{ build_dir }}/concent-deployment/kubernetes/"
+      with_items:
+        - var.yml
+        - var-{{ cluster }}.yml
+
+    - name: Build cluster configuration
+      make:
+        chdir: "{{ build_dir }}/concent-deployment/kubernetes"
+        params:
+          CONCENT_SECRET_DIR: "{{ deployment_dir }}/concent-secrets/{{ cluster }}"
+          IMAGE_PREFIX:       "{{ image_prefix }}"
+          CLUSTER:            "{{ cluster }}"
+
