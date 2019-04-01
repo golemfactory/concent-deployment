@@ -1,0 +1,5 @@
+- include_tasks: cluster-secrets.yml
+  when: cluster is defined and cluster in ['concent-dev', 'concent-staging', 'concent-testnet']
+
+- include_tasks: cloud-secrets.yml
+  when: cloud is defined and cloud == 'yes'
