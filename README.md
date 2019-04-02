@@ -142,6 +142,30 @@ Do this if you want to use the virtual machine for deployment.
 
     This will run the `configure.yml` playbook for you.
 
+### Create `concent-deployment` machine
+
+This step creates the `concent-deployment` machine that will be use for deployment to `mainnet`, `testnet`, `staging` clusters environment and configuration machines, disks etc.
+
+- Run the `create-compute-instance-for-deployment-server.yml` playbook.
+
+    ``` bash
+    cd concent-deployment/cloud/
+    ansible-playbook create-compute-instance-for-deployment-server.yml  \
+        --inventory ../../concent-deployment-values/ansible_inventory   \
+        --user      $user
+    ```
+### Configuring `concent-deployment` machine
+
+This step configures the `concent-deployment` machine.
+
+- Run the `configure-concent-deployment-server.yml` playbook.
+
+    ``` bash
+    cd concent-deployment/concent-builder/
+    ansible-playbook configure-concent-deployment-server.yml           \
+        --inventory ../../concent-deployment-values/ansible_inventory  \
+        --user      $user
+    ```
 ### Configuring `concent-builder` machine
 
 Do this if you want to use the remote server for building and deploying.
@@ -189,6 +213,10 @@ ansible-playbook create-vm-instances-for-geth.yml                   \
 This step must be performed separately for every user of the build server who needs to be able to access other parts of the project infrastructure on Google Cloud with `kubectl` or `gcloud`.
 It can be performed by user himself or an admin who can impersonate him with `sudo`.
 
+The `$cluster` variable decides about deployment to specific environment but also which server will be use for deployment process.
+If you want it for `mainnet`, `testnet` or `staging` environments you must create and configure the `concent-deployment` server.
+This behavior applies to all playbooks, except building container process (`build-test-and-push-containers.yml`).
+
 The `$user_name` variable below indicates the user account to be authorized.
 To perform this step you need to have the .vault files with encrypted secrets in your local `concent-secrets/` directory.
 Only cloud secrets are required in this case.
@@ -197,7 +225,7 @@ Ansible will prompt you for password required to decrypt them.
 ```bash
 cd concent-deployment/cloud/
 ansible-playbook configure-user-authentication-for-clusters.yml    \
-    --extra-vars user_name=$user_name                              \
+    --extra-vars "cluster=$cluster user_name=$user_name"           \
     --ask-vault-pass                                               \
     --inventory  ../../concent-deployment-values/ansible_inventory \
     --user       $user
@@ -219,7 +247,12 @@ ansible-playbook install-repositories.yml                          \
     --inventory  ../../concent-deployment-values/ansible_inventory \
     --user       $user
 
-ansible-playbook build-test-and-push.yml                           \
+ansible-playbook build-cluster-configuration.yml                   \
+    --extra-vars cluster=$cluster                                  \
+    --inventory  ../../concent-deployment-values/ansible_inventory \
+    --user       $user
+```
+ansible-playbook build-test-and-push-containers.yml                \
     --extra-vars cluster=$cluster                                  \
     --inventory  ../../concent-deployment-values/ansible_inventory \
     --user       $user
