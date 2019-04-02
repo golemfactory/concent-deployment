@@ -1,0 +1,12 @@
+upstream stream_backend {
+    server 127.0.0.1:8546 max_fails=2 fail_timeout=15s;
+}
+
+server {
+
+    listen 8545 reuseport;
+
+    proxy_connect_timeout 15s;
+    proxy_timeout         40s;
+    proxy_pass            stream_backend;
+}

@@ -1,0 +1,80 @@
+- hosts:
+    - localhost
+  vars_files:
+    - ../concent-builder/consts.yml
+    - consts.yml
+    - "{{ deployment_values }}/var.yml"
+  tasks:
+    - block:
+        - fail: msg="Please supply a value for ethnode variable. Valid values are{{ ":" }} 'ethnode-testnet' and 'ethnode-mainnet'"
+          when: ethnode not in ["ethnode-testnet", "ethnode-mainnet"]
+
+        - name:   Check if static IP address for the "{{ ethnode }}" instance already exists
+          shell: >
+              gcloud compute addresses list
+              --project {{ gke.project }}
+              | grep {{ ethnode }}-ip
+          register:      ip_address_result
+          ignore_errors: yes
+
+        - name:   Check if blockchain disk for the "{{ ethnode }}" instance already exists
+          shell: >
+              gcloud compute disks list
+              --project   {{ gke.project }}
+              | grep {{ ethnode }}-blockchain-disk
+          register:      disk_result
+          ignore_errors: yes
+
+        - name:  Check if firewall rule that allows TCP traffic exists
+          shell: >
+              gcloud compute firewall-rules list
+              --format      json
+              --project     {{ gke.project }}
+              | grep allow-ethnode-traffic
+          register:      firewall_rules_result
+          ignore_errors: yes
+
+        - name:    Reserve static IP address for the "{{ ethnode }}" instance
+          command: >
+              gcloud compute addresses create {{ ethnode }}-ip
+              --description "Static IP attached to {{ ethnode }} instance"
+              --project     {{ gke.project }}
+              --region      europe-west3
+          when: ip_address_result.stdout == ""
+
+        - name:    Create blockchain disk for the "{{ ethnode }}" instance
+          command: >
+              gcloud compute disks create {{ ethnode }}-blockchain-disk
+              --type        {{ ethnode_config[ethnode].disk_type }}
+              --size        {{ ethnode_config[ethnode].disk_size }}
+              --description "Persistent disk attached to the {{ ethnode }} instance"
+              --project     {{ gke.project }}
+              --zone        {{ gke.zone }}
+          when: disk_result.stdout == ""
+
+        - name:    Machine running Ethereum client {{ "(" }}{{ ethnode }}{{ ")" }}
+          command: >
+              gcloud compute instances create {{ ethnode }}
+              --description  "Vm instance that contain ethereum client with block"
+              --disk         name={{ ethnode }}-blockchain-disk
+              --machine-type {{ ethnode_config[ethnode].machine_type }}
+              --address      {{ ethnode }}-ip
+              --project      {{ gke.project }}
+              --zone         {{ gke.zone }}
+
+        - name: Add firewall rule to allow TCP traffic to the "{{ ethnode }}" instance
+          command: >
+              gcloud compute firewall-rules create allow-ethnode-traffic
+              --allow        tcp:8545
+              --priority     1000
+              --direction    ingress
+               --project     {{ gke.project }}
+              --target-tags  ethnode-instance
+          when: firewall_rules_result.stdout == ""
+
+        - name: Enable firewall rule for the "{{ ethnode }}" instance
+          command: >
+              gcloud compute instances add-tags {{ ethnode }}
+              --tags        ethnode-instance
+              --project     {{ gke.project }}
+              --zone        {{ gke.zone }}

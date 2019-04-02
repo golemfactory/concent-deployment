@@ -1,0 +1,9 @@
+ethnode_config:
+  ethnode-testnet:
+    disk_type:    pd-standard
+    disk_size:    100GB
+    machine_type: n1-standard-1
+  ethnode-mainnet:
+    disk_type:    pd-ssd
+    disk_size:    500GB
+    machine_type: n1-standard-2
