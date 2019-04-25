@@ -1,5 +1,5 @@
 - hosts:
-    - concent-deployment
+    - concent-deployment-server
   vars_files:
     - ../containers/versions.yml
     - ../concent-builder/consts.yml
