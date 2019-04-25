@@ -9,7 +9,7 @@
     - { role: upload_cluster_secrets, cluster: "concent-dev" }
     - { role: upload_cluster_secrets, cluster: "concent-staging" }
     - { role: upload_cluster_secrets, cluster: "concent-testnet" }
-    - { role: upload_cluster_secrets, cloud:   "yes" }
+    - { role: upload_cluster_secrets, deploy_cloud_secrets: yes  }
   tasks:
     - become:      yes
       become_user: root

@@ -2,4 +2,4 @@
   when: cluster is defined and cluster in ['concent-dev', 'concent-staging', 'concent-testnet']
 
 - include_tasks: cloud-secrets.yml
-  when: cloud is defined and cloud == 'yes'
+  when: deploy_cloud_secrets is defined and deploy_cloud_secrets
