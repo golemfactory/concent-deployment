@@ -10,7 +10,7 @@
     - reserve_static_ip
   tasks:
     - block:
-        - name:    Machine running "{{ server_name }}"
+        - name:    Create a GCP instance for {{ server_name }}
           command: >
               gcloud compute instances create {{ server_name }}
               --description  "Vm instance that contain {{ server_name }}"
