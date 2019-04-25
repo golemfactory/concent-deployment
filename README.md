@@ -142,9 +142,9 @@ Do this if you want to use the virtual machine for deployment.
 
     This will run the `configure.yml` playbook for you.
 
-### Create `concent-deployment` machine
+### Creating `concent-deployment` machine
 
-This step creates the `concent-deployment` machine that will be use for deployment to `mainnet`, `testnet`, `staging` clusters environment and configuration machines, disks etc.
+This step creates the `concent-deployment` machine meant to be used for deployment to `mainnet`, `testnet`, `staging` clusters environment and configuration machines, disks etc.
 
 - Run the `create-compute-instance-for-deployment-server.yml` playbook.
 
@@ -152,18 +152,6 @@ This step creates the `concent-deployment` machine that will be use for deployme
     cd concent-deployment/cloud/
     ansible-playbook create-compute-instance-for-deployment-server.yml  \
         --inventory ../../concent-deployment-values/ansible_inventory   \
-        --user      $user
-    ```
-### Configuring `concent-deployment` machine
-
-This step configures the `concent-deployment` machine.
-
-- Run the `configure-concent-deployment-server.yml` playbook.
-
-    ``` bash
-    cd concent-deployment/concent-builder/
-    ansible-playbook configure-concent-deployment-server.yml           \
-        --inventory ../../concent-deployment-values/ansible_inventory  \
         --user      $user
     ```
 ### Configuring `concent-builder` machine
@@ -180,6 +168,19 @@ Do this if you want to use the remote server for building and deploying.
     ```
 
     Where the `$user` shell variable contains the name of your shell account on the remote machine.
+
+### Configuring `concent-deployment` machine
+
+This step configures the `concent-deployment` machine.
+
+- Run the `configure-concent-deployment-server.yml` playbook.
+
+    ``` bash
+    cd concent-deployment/concent-builder/
+    ansible-playbook configure-concent-deployment-server.yml           \
+        --inventory ../../concent-deployment-values/ansible_inventory  \
+        --user      $user
+    ```
 
 ### Setting up Ethereum client on a separate machine
 This step installs and configures Geth on a separate machine in Google Compute Engine.
@@ -213,9 +214,10 @@ ansible-playbook create-vm-instances-for-geth.yml                   \
 This step must be performed separately for every user of the build server who needs to be able to access other parts of the project infrastructure on Google Cloud with `kubectl` or `gcloud`.
 It can be performed by user himself or an admin who can impersonate him with `sudo`.
 
-The `$cluster` variable decides about deployment to specific environment but also which server will be use for deployment process.
-If you want it for `mainnet`, `testnet` or `staging` environments you must create and configure the `concent-deployment` server.
-This behavior applies to all playbooks, except building container process (`build-test-and-push-containers.yml`).
+The `$cluster` variable determines which server the playbook will be executed on.
+For `concent-dev` it connects to `concent-builder`.
+For other values (`concent-staging`, `concent-testnet` or `concent-mainnet`) - to `concent-deployment-server`.
+This behavior applies to all playbooks, except for `build-test-and-push-containers.yml`.
 
 The `$user_name` variable below indicates the user account to be authorized.
 To perform this step you need to have the .vault files with encrypted secrets in your local `concent-secrets/` directory.
