@@ -17,6 +17,9 @@
         - name:   include common prerequire tasks from `prerequire-configure-tasks.yml` file
           include_tasks: ../concent-builder/common_tasks/prerequire-configure-tasks.yml
 
+        - name:   include task from `install-basic-utilities.yml` file
+          include_tasks: ../concent-builder/common_tasks/install-basic-utilities.yml
+
         - name:   Install system updates for Debian
           apt:  update_cache=yes
 
