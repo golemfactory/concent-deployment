@@ -1,5 +1,5 @@
 - hosts:
-    - "{{ 'concent-deployment-server' if cluster == 'concent-mainnet' else 'concent-builder' }}"
+    - "{{ 'concent-deployment-server' if cluster in ['concent-mainnet', 'concent-testnet', 'concent-staging'] else 'concent-builder' }}"
   vars_files:
     - consts.yml
     - repositories.yml
