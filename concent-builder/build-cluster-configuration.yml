@@ -7,7 +7,7 @@
     - "{{ deployment_values }}/var.yml"
     - "{{ deployment_values }}/var-{{ cluster }}.yml"
   roles:
-    - cleanup-and-set-up-environment
+    - clean_up_and_set_up_environment
   tasks:
     - name: Install var.yml from the local machine
       copy:
