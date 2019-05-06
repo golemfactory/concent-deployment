@@ -1,6 +1,6 @@
 debian_version:                        "9.4"
 docker_version:                        "17.05.0~ce-0~debian-stretch"
-geth_version:                          "v1.8.23"
+geth_version:                          "v1.8.27"
 # Remember set version in concent_version variable also require configure it in the var-concent-<cluster_name>.yml file
 concent_version:                       "v0.11.0"
 golemfactory_blender_verifier_version: "1.1"
