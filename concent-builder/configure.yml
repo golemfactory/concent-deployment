@@ -12,15 +12,6 @@
         - name:   include common prerequire tasks from `prerequire-configure-tasks.yml` file
           include_tasks: ../concent-builder/common_tasks/prerequire-configure-tasks.yml
 
-        - name:    Add Google SDK repository key
-          apt_key:
-            url:   https://packages.cloud.google.com/apt/doc/apt-key.gpg
-            state: present
-
-        - name:    Add Google Cloud SDK repository
-          apt_repository:
-            repo:  "deb http://packages.cloud.google.com/apt cloud-sdk-{{ ansible_distribution_release }} main"
-
         - name:    Add jenkins repository key
           apt_key:
             url:   https://pkg.jenkins.io/debian/jenkins.io.key
@@ -47,7 +38,6 @@
               - git
               - kubectl={{ kubectl_version }}
               - docker-engine={{ docker_version }}
-              - google-cloud-sdk={{ google_cloud_sdk_version }}
               - libpq-dev
               - gcc
               - python3-yaml

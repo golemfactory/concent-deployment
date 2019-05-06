@@ -1,0 +1,20 @@
+- hosts:
+    - localhost
+  vars_files:
+    - ../concent-builder/consts.yml
+    - "{{ deployment_values }}/var.yml"
+  vars:
+    server_name: concent-deployment-server
+    name_of_ip: "{{ server_name }}-ip"
+  roles:
+    - reserve_static_ip
+  tasks:
+    - block:
+        - name:    Create a GCP instance for {{ server_name }}
+          command: >
+              gcloud compute instances create {{ server_name }}
+              --description  "Vm instance that contain {{ server_name }}"
+              --machine-type f1-micro
+              --address      {{ name_of_ip }}
+              --project      {{ gke.project }}
+              --zone         {{ gke.zone }}

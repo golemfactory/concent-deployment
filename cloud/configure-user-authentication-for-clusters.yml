@@ -1,8 +1,9 @@
 - hosts:
-    - concent-builder
+    - "{{ 'concent-deployment-server' if cluster in ['concent-mainnet', 'concent-testnet', 'concent-staging'] else 'concent-builder' }}"
   vars_files:
     - ../concent-builder/consts.yml
     - "{{ deployment_values }}/var.yml"
+    - "{{ deployment_values }}/var-{{ cluster }}.yml"
   tasks:
     - become:      yes
       become_user: root

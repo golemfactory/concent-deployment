@@ -18,6 +18,7 @@
 
 - name:   Install dependencies for pyenv
   apt:
+    default_release: testing
     name:
       - zlib1g-dev
       - libbz2-dev

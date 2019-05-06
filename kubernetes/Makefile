@@ -6,7 +6,6 @@ CLUSTER_SCRIPTS :=                                            \
     build/services/conductor.yml                              \
     build/services/conductor-worker.yml                       \
     build/services/nginx-storage.yml                          \
-    build/services/geth.yml                                   \
     build/services/rabbitmq.yml                               \
     build/services/signing-service.yml                        \
     build/services/verifier.yml                               \

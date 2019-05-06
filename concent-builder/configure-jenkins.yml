@@ -29,8 +29,6 @@
             state: directory
           with_items:
             - concent-secrets
-            - concent-secrets/{{ cluster }}/
-            - concent-secrets/cloud/
             - concent-secrets/jenkins/
 
     - become:      yes
@@ -38,19 +36,11 @@
       block:
         - name: Upload secrets
           copy:
-            src:   "{{ local_secret_dir }}/{{ cluster }}/{{ item }}"
-            dest:  "{{ jenkins_home_dir }}/concent-secrets/{{ cluster }}/{{ item }}"
+            src:   "{{ local_secret_dir }}/jenkins/.token"
+            dest:  "{{ jenkins_home_dir }}/concent-secrets/jenkins/.token"
             owner: jenkins
             group: jenkins
             mode:  0400
-          with_items:
-            - cluster-secrets.yml
-            - "../cloud/{{ gke.service_account_name }}-private-key.json"
-            - nginx-proxy-ssl.crt
-            - nginx-proxy-ssl.key
-            - nginx-storage-ssl.crt
-            - nginx-storage-ssl.key
-            - "../jenkins/.token"
 
         - name: Delete default user settings
           file:
