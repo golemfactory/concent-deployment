@@ -34,6 +34,23 @@ Compatibility:
 - Golem: 0.19.0
 - Concent: 0.11.0
 
+### 0.10.7
+- All features/bugfixes backported from 0.11.2
+
+Changes backported from version 0.11.0:
+- Added ansible playbooks which automates creation of jenkins CI (#297).
+- Added ability to manage resource limits for applications on different clusters (#257).
+- Added ability to switching between an internal and external geth instance (#285).
+- Added helper script and instructions which automates deployment process (#277).
+- Added helper script and instructions for generating a key pair for Signing Service (#335).
+- Deployment playbooks now use the account of the user running the playbook rather than one shared account for everyone (#223).
+- Bugfix: added missing `gcloud` and `kubectl` packages source (#275).
+- Bugfix: upgraded `rustc` package from debian testing repository since golem requires version that isn't available on debian stable repository (#307, #328).
+
+Compatibility:
+- Golem: 0.18.3
+- Concent: 0.10.4
+
 ### 0.10.6
 Changes backported from version 0.11.1:
 - Upgraded geth version up to `1.8.23` after Constantinople/St.Petersburg hard fork is re-enabled.
