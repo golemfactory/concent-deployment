@@ -34,14 +34,6 @@
     - become:      yes
       become_user: root
       block:
-        - name: Upload secrets
-          copy:
-            src:   "{{ local_secret_dir }}/jenkins/.token"
-            dest:  "{{ jenkins_home_dir }}/concent-secrets/jenkins/.token"
-            owner: jenkins
-            group: jenkins
-            mode:  0400
-
         - name: Delete default user settings
           file:
             path:  /var/lib/jenkins/users/users.xml
@@ -99,6 +91,14 @@
             name:    jenkins
             state:   restarted
 
+        - name: Upload secrets
+          copy:
+            src:   "{{ local_secret_dir }}/jenkins/token.vault"
+            dest:  "{{ jenkins_home_dir }}/concent-secrets/jenkins/.token"
+            owner: jenkins
+            group: jenkins
+            mode:  0400
+
     - become:      yes
       become_user: jenkins
       block:
@@ -127,6 +127,12 @@
             - ansible
             - github-oauth
             - ws-cleanup
+
+      always:
+        - name:  Delete token secret file
+          file:
+            state: absent
+            path:  "{{ jenkins_home_dir }}/concent-secrets/jenkins/.token"
 
     - become:      yes
       become_user: root
