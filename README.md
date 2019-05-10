@@ -3,6 +3,126 @@ Scripts and configuration for Concent deployment
 
 ## GKE cluster configuration
 
+### Service Accounts with privileges to Google Cloud Platform resources
+
+You must create two service accounts that will be control level of access to Google Cloud Platform resources.
+First one define `Concent Deployer` access and should be attach to the `concent-builder` server.
+Second one define `Concent Cloud Admin` access and should be attach to the `concent-deployment-server` server.
+
+Variables used below:
+- <service_account_name> - Name of service account that will be create (`concent-deployer`/`concent-cloud-admin`)
+- <project_name> - Name of Google Cloud Project
+- <cloud_storage_bucket_name> - Name of Google Cloud Storage Bucket contains container registry
+
+Make sure your user account has enough permission to creates and adds roles to service accounts.
+To create service account execute command:
+```bash
+gcloud beta iam service-accounts create <service_account_name>  \
+    --display-name "<service_account_display_name>"
+```
+
+Specific roles that should be added to service accounts:
+- Concent Deployer:
+    - Permissions on project level:
+        - `Kubernetes Engine Viewer`
+        ```bash
+            gcloud projects add-iam-policy-binding  <project_name>                                        \
+                --member='serviceAccount:<service_account_name>@<project_name>.iam.gserviceaccount.com'   \
+                --role='roles/container.viewer'
+        ```
+    - Permissions for Google Cloud Storage Bucket with container registry:
+        - `Storage Object Viewer`
+        ```bash
+            gsutil iam ch serviceAccount:<service_account_name>@<project_name>.iam.gserviceaccount.com:objectViewer  \
+            gs://<cloud_storage_bucket_name>
+        ```
+        - `Storage Object Creator`
+        ```bash
+            gsutil iam ch serviceAccount:<service_account_name>@<project_name>.iam.gserviceaccount.com:objectCreator \
+            gs://<cloud_storage_bucket_name>
+        ```
+        - `Bucket Viewer`
+            - To create custom role execute:
+            ```bash
+                gcloud iam roles create BucketViewer                        \
+                    --project <project_name>                                \
+                    --title "Bucket Viewer"                                 \
+                    --permissions storage.buckets.get,storage.buckets.list
+            ```
+            - To attach role to service account on specific cloud storage bucket execute:
+            ```bash
+                gsutil iam ch serviceAccount:<service_account_name>@<project_name>.iam.gserviceaccount.com:projects/<project_name>/roles/BucketViewer  \
+                gs://<cloud_storage_bucket_name>
+            ```
+        - Enable Bucket Policy:
+            ```bash
+                gsutil bucketpolicyonly set on gs://<cloud_storage_bucket_name>
+
+            ```
+    - Permissions for the `Dev` clusters at kubernetes level
+        - Kuberbenetes RBAC `edit` role
+        ```bash
+            kubectl create clusterrolebinding concent-deployer-access-to-dev-cluster   \
+                --clusterrole=edit                                                     \
+                --user="<service_account_unique_id>"                                   \
+                --namespace=default
+        ```
+
+- Concent Cloud Admin
+    - Permissions on project level:
+        - `Kubernetes Engine Admin`
+        ```bash
+            gcloud projects add-iam-policy-binding  <project_name>                                        \
+                --member='serviceAccount:<service_account_name>@<project_name>.iam.gserviceaccount.com'   \
+                --role='roles/container.admin'
+        ```
+        - `Compute Instance Admin`
+        ```bash
+            gcloud projects add-iam-policy-binding  <project_name>                                        \
+                --member='serviceAccount:<service_account_name>@<project_name>.iam.gserviceaccount.com'   \
+                --role='roles/compute.instanceAdmin'
+        ```
+        - `Compute Network Admin`
+        ```bash
+            gcloud projects add-iam-policy-binding  <project_name>                                        \
+                --member='serviceAccount:<service_account_name>@<project_name>.iam.gserviceaccount.com'   \
+                --role='roles/compute.networkAdmin'
+        ```
+        - `Storage Admin`
+        ```bash
+            gcloud projects add-iam-policy-binding  <project_name>                                        \
+                --member='serviceAccount:<service_account_name>@<project_name>.iam.gserviceaccount.com'   \
+                --role='roles/compute.storageAdmin'
+        ```
+        - `Cloud SQL Admin`
+        ```bash
+            gcloud projects add-iam-policy-binding  <project_name>                                        \
+                --member='serviceAccount:<service_account_name>@<project_name>.iam.gserviceaccount.com'   \
+                --role='roles/cloudsql.admin'
+        ```
+        - `Compute Firewall Admin`
+            - To create custom role execute:
+            ```bash
+                gcloud iam roles create ComputeFirewallAdmin                                                                                                 \
+                    --project <project_name>                                                                                                                 \
+                    --title "Compute Firewall Admin"                                                                                                         \
+                    --permissions compute.firewalls.create,compute.firewalls.delete,compute.firewalls.get,compute.firewalls.list,compute.firewalls.update
+            ```
+            - To attach role to service account execute:
+            ```bash
+                gcloud projects add-iam-policy-binding <project_name>                                        \
+                    --member='serviceAccount:<service_account_name>@<project_name>.iam.gserviceaccount.com'  \
+                    --role='projects/<project_name>/roles/ComputeFirewallAdmin'
+            ```
+    - Permissions for default compute instance service account and Concent Deployer service account:
+        - `Service Account User`
+        ```bash
+            gcloud iam service-accounts add-iam-policy-binding <target_service_account_name>   \
+                --member='serviceAccount:<service_account_name>'                               \
+                --role='roles/iam.serviceAccountUser'                                          \
+                --project='<project_name>'
+        ```
+
 ### Storage
 
 The `nginx-storage` pod assumes that an ext4-formatted persistent disk with name defined by the `nginx_storage_disk` variable in `var.yml` is provisioned and mounts it in read-write mode.
@@ -339,7 +459,8 @@ ansible-playbook reset-db.yml                                      \
 ```
 
 **WARNING**: This operation removes all the data from an existing database.
-
+                                            Permission on project level:
+      
 #### Migration
 
 From time to time a Concent update may require making changes to the database schema.
