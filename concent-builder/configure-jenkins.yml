@@ -29,29 +29,11 @@
             state: directory
           with_items:
             - concent-secrets
-            - concent-secrets/{{ cluster }}/
-            - concent-secrets/cloud/
             - concent-secrets/jenkins/
 
     - become:      yes
       become_user: root
       block:
-        - name: Upload secrets
-          copy:
-            src:   "{{ local_secret_dir }}/{{ cluster }}/{{ item }}"
-            dest:  "{{ jenkins_home_dir }}/concent-secrets/{{ cluster }}/{{ item }}"
-            owner: jenkins
-            group: jenkins
-            mode:  0400
-          with_items:
-            - cluster-secrets.yml
-            - "../cloud/{{ gke.service_account_name }}-private-key.json"
-            - nginx-proxy-ssl.crt
-            - nginx-proxy-ssl.key
-            - nginx-storage-ssl.crt
-            - nginx-storage-ssl.key
-            - "../jenkins/.token"
-
         - name: Delete default user settings
           file:
             path:  /var/lib/jenkins/users/users.xml
@@ -109,6 +91,14 @@
             name:    jenkins
             state:   restarted
 
+        - name: Upload secrets
+          copy:
+            src:   "{{ local_secret_dir }}/jenkins/token.vault"
+            dest:  "{{ jenkins_home_dir }}/concent-secrets/jenkins/.token"
+            owner: jenkins
+            group: jenkins
+            mode:  0400
+
     - become:      yes
       become_user: jenkins
       block:
@@ -138,6 +128,12 @@
             - github-oauth
             - ws-cleanup
 
+      always:
+        - name:  Delete token secret file
+          file:
+            state: absent
+            path:  "{{ jenkins_home_dir }}/concent-secrets/jenkins/.token"
+
     - become:      yes
       become_user: root
       block:
@@ -152,28 +148,3 @@
           service:
             name:    jenkins
             state:   restarted
-
-    - become:      yes
-      become_user: "{{ shared_user }}"
-      block:
-        - name:  Check if firewall rule that allows HTTP traffic exists
-          shell: gcloud compute firewall-rules list    \
-              --format=json                            \
-              | grep allow-http-traffic
-          register:      result
-          ignore_errors: yes
-
-        - name: Add firewall rule to allow http traffic
-          command: gcloud compute firewall-rules create \
-              allow-http-traffic                        \
-              --allow=tcp:80                            \
-              --priority=1000                           \
-              --direction=ingress                       \
-              --target-tags=http-server
-          when: result.stdout == ""
-
-        - name: Enable firewall rule for deployment server
-          command: "gcloud compute instances add-tags    \
-              {{ deployment_server_name }}               \
-              --tags=http-server                         \
-              --zone={{ gke.zone }}"

@@ -1,0 +1,33 @@
+- become:      yes
+  become_user: root
+  block:
+    - name:    Create user that will be used for building stuff
+      user:
+        name:   "{{ shared_user }}"
+        state:  present
+
+    - name:    Create a global directory for data shared by all users
+      file:
+        path:  "{{ item }}"
+        state: directory
+        owner: "{{ shared_user }}"
+        group: "{{ shared_user }}"
+        mode:  0777
+      with_items:
+        - "{{ data_dir }}"
+        - "{{ data_dir }}/concent-secrets/"
+        - "{{ data_dir }}/concent-secrets/{{ cluster }}"
+
+    - name: Upload secrets
+      copy:
+        src:     "{{ local_secret_dir }}/{{ cluster }}/{{ item }}"
+        dest:    "{{ data_dir }}/concent-secrets/{{ cluster }}/{{ item }}"
+        decrypt: no
+        owner:   "{{ shared_user }}"
+        group:   "{{ shared_user }}"
+      with_items:
+        - cluster-secrets.yml.vault
+        - nginx-proxy-ssl.crt.vault
+        - nginx-proxy-ssl.key.vault
+        - nginx-storage-ssl.crt.vault
+        - nginx-storage-ssl.key.vault

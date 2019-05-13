@@ -1,0 +1,69 @@
+- hosts:
+    - concent-deployment-server
+  vars_files:
+    - ../containers/versions.yml
+    - ../concent-builder/consts.yml
+    - ../concent-builder/repositories.yml
+    - "{{ deployment_values }}/var.yml"
+  roles:
+    - { role: upload_cluster_secrets, cluster: "concent-dev" }
+    - { role: upload_cluster_secrets, cluster: "concent-staging" }
+    - { role: upload_cluster_secrets, cluster: "concent-testnet" }
+    - { role: upload_cloud_secrets, deploy_cloud_secrets: yes  }
+  tasks:
+    - become:      yes
+      become_user: root
+      block:
+        - name:   include common prerequire tasks from `prerequire-configure-tasks.yml` file
+          include_tasks: ../concent-builder/common_tasks/prerequire-configure-tasks.yml
+
+        - name:   include task from `install-basic-utilities.yml` file
+          include_tasks: ../concent-builder/common_tasks/install-basic-utilities.yml
+
+        - name:   Install system updates for Debian
+          apt:  update_cache=yes
+
+        - name:    Install basic packages
+          apt:
+            name:
+              - ncdu
+              - tree
+              - htop
+              - tmux
+
+        - name:    Install dependencies
+          apt:
+            name:
+              - git
+              - kubectl={{ kubectl_version }}
+              - gcc
+              - postgresql-{{ postgres_version }}
+              - python3-psycopg2
+              - libssl-dev
+
+        - name:   include common postrequire tasks from `postrequire-configure-tasks.yml` file
+          include_tasks: ../concent-builder/common_tasks/postrequire-configure-tasks.yml
+
+    - block:
+        - name: Create directory for concent repositories
+          file:
+            path:  "{{ deployment_dir }}"
+            state: directory
+
+        - name: Clone concent repositories
+          git:
+            repo:    "{{ item.url }}"
+            dest:    "{{ deployment_dir }}/{{ item.name }}"
+            clone:   yes
+            update:  yes
+            version: master
+            force:   yes
+          with_items:
+            - { url: "{{ repositories['concent-deployment'].url }}", name: concent-deployment }
+            - { url: "{{ repositories['concent-deployment-values'].url }}", name: concent-deployment-values }
+
+        - name: Create symbolic link to concent-secrets in user home directory
+          file:
+            src:        "{{ data_dir }}/concent-secrets/"
+            dest:       "{{ deployment_dir }}/concent-secrets"
+            state:      link

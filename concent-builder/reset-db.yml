@@ -1,14 +1,12 @@
 - hosts:
-    - concent-builder
+    - "{{ 'concent-deployment-server' if cluster in ['concent-mainnet', 'concent-testnet', 'concent-staging'] else 'concent-builder' }}"
   vars_files:
     - consts.yml
     - ../containers/versions.yml
     - "{{ deployment_values }}/var.yml"
     - "{{ deployment_values }}/var-{{ cluster }}.yml"
   tasks:
-    - become:      yes
-      become_user: "{{ shared_user }}"
-      block:
+    - block:
         - name: Configure kubectl to operate on the right cluster
           command: gcloud container clusters get-credentials           \
               "{{ concent_versions[concent_version].gke.cluster }}"    \
