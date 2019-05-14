@@ -14,6 +14,10 @@ spec:
         - name:             conductor
           image:            {{ docker_registry }}/{{image_prefix }}concent-api:{{ image_version }}
           imagePullPolicy:  Always
+          command:             [
+              "/usr/local/bin/run-gunicorn.sh",
+              "{{ concent_versions[concent_version] | chained_get('amount_of_gunicorn_workers.conductor') | default(amount_of_gunicorn_workers.conductor, true) }}"
+          ]
           ports:
             - containerPort: 80
           resources:

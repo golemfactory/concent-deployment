@@ -1,3 +1,2 @@
 debian_mirror:      http://ftp.de.debian.org/debian
-gunicorn_workers:   5
 gunicorn_timeout:   30 # seconds
