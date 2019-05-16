@@ -51,9 +51,9 @@ You can use the snippets as is if you put this information in the following shel
 - `registry_bucket`: name of the Google Cloud storage bucket that's used to store data pushed to the Docker registry.
     Example: `gs://artifacts.concent-project.appspot.com `.
 - `deployer_service_account`: name of the service account with Concent Deployer privileges.
-    Example: `concent-deployer@$concent-project.iam.gserviceaccount.com`
+    Example: `concent-deployer@$project_name.iam.gserviceaccount.com`
 - `cloud_admin_service_account`: name of the service account with Concent Cloud Admin privileges.
-    Example: `concent-cloud-admin@$concent-project.iam.gserviceaccount.com`
+    Example: `concent-cloud-admin@$project_name.iam.gserviceaccount.com`
 - `default_instance_service_account`: name of the service account used by GKE by default when you create a new GCE instance.
     Example: `1234567890123-compute@developer.gserviceaccount.com`
 - `deployer_service_account_id`: Unique ID of `cloud_service_account`.
@@ -62,18 +62,29 @@ You can use the snippets as is if you put this information in the following shel
 #### Concent Deployer
 This service account needs the following IAM roles:
 
-| Role                       | Resource                                      |
-|----------------------------|-----------------------------------------------|
-| `Kubernetes Engine Viewer` | Project                                       |
-| `Storage Object Viewer`    | Storage bucket used as the container registry |
-| `Storage Object Creator`   | Storage bucket used as the container registry |
-| `Bucket Viewer`            | Storage bucket used as the container registry |
+| Role                          | Resource                                      |
+|-------------------------------|-----------------------------------------------|
+| `Kubernetes Engine Viewer`    | Project                                       |
+| `Storage Object Viewer`       | Storage bucket used as the container registry |
+| `Storage Object Creator`      | Storage bucket used as the container registry |
+| `Bucket Viewer` (custom role) | Storage bucket used as the container registry |
 
 And also the following RBAC roles inside specific Kubernetes clusters:
 
 | Role   | Resource                                      |
 |--------|-----------------------------------------------|
 | `edit` | `concent-dev` cluster                         |
+
+Command below show how to create the `Bucket Viewer` custom role.
+
+```bash
+gcloud iam roles create BucketViewer \
+    --project     "$project_name"    \
+    --title       "Bucket Viewer"    \
+    --permissions                    \
+"storage.buckets.get,"\
+"storage.buckets.list"
+```
 
 Commands below show how to create the account and assign the roles using command-line tools.
 Make sure your user account has enough privileges to create and add roles to service accounts.
@@ -83,17 +94,10 @@ gcloud beta iam service-accounts create \
     "$deployer_service_account"         \
     --display-name "Concent Deployer"
 
-gcloud iam roles create BucketViewer \
-    --project     "$project_name"    \
-    --title       "Bucket Viewer"    \
-    --permissions                    \
-"storage.buckets.get,"\
-"storage.buckets.list"
-
-gcloud projects add-iam-policy-binding
+gcloud projects add-iam-policy-binding                   \
      $project_name                                       \
      --member "serviceAccount:$deployer_service_account" \
-     --role   roles/container.viewer                     \
+     --role   roles/container.viewer
 
 gsutil iam ch "serviceAccount:$deployer_service_account:objectViewer"                              "$registry_bucket"
 gsutil iam ch "serviceAccount:$deployer_service_account:objectCreator"                             "$registry_bucket"
@@ -109,24 +113,20 @@ kubectl create clusterrolebinding concent-deployer-access-to-dev-cluster \
 ### Concent Cloud Admin
 This service account needs the following IAM roles:
 
-| Role                       | Resource                                      |
-|----------------------------|-----------------------------------------------|
-| `Kubernetes Engine Admin`  | Project                                       |
-| `Compute Instance Admin`   | Project                                       |
-| `Compute Network Admin`    | Project                                       |
-| `Storage Admin`            | Project                                       |
-| `Cloud SQL Admin`          | Project                                       |
-| `Compute Firewall Admin`   | Project                                       |
-| `Service Account User`     | Default compute instance service account      |
-| `Service Account User`     | Concent Deployer's service account            |
+| Role                                   | Resource                                      |
+|----------------------------------------|-----------------------------------------------|
+| `Kubernetes Engine Admin`              | Project                                       |
+| `Compute Instance Admin`               | Project                                       |
+| `Compute Network Admin`                | Project                                       |
+| `Storage Admin`                        | Project                                       |
+| `Cloud SQL Admin`                      | Project                                       |
+| `Compute Firewall Admin` (custom role) | Project                                       |
+| `Service Account User`                 | Default compute instance service account      |
+| `Service Account User`                 | Concent Deployer's service account            |
 
-Commands below show how to create the account and assign the roles using command-line tools:
+Command below show how to create the `Compute Firewall Admin` custom role.
 
-``` bash
-gcloud beta iam service-accounts create \
-    "$deployer_service_account"         \
-    --display-name "Concent Deployer"
-
+```bash
 gcloud iam roles create ComputeFirewallAdmin \
     --project    "$project_name"             \
     --title      "Compute Firewall Admin"    \
@@ -136,6 +136,14 @@ gcloud iam roles create ComputeFirewallAdmin \
 "compute.firewalls.get,"\
 "compute.firewalls.list,"\
 "compute.firewalls.update"
+```
+
+Commands below show how to create the account and assign the roles using command-line tools:
+
+``` bash
+gcloud beta iam service-accounts create  \
+    "$cloud_admin_service_account"       \
+    --display-name "Concent Cloud Admin"
 
 gcloud projects add-iam-policy-binding "$project_name" --member "serviceAccount:$cloud_admin_service_account" --role roles/container.admin
 gcloud projects add-iam-policy-binding "$project_name" --member "serviceAccount:$cloud_admin_service_account" --role roles/compute.instanceAdmin
@@ -491,8 +499,7 @@ ansible-playbook reset-db.yml                                      \
 ```
 
 **WARNING**: This operation removes all the data from an existing database.
-                                            Permission on project level:
-      
+
 #### Migration
 
 From time to time a Concent update may require making changes to the database schema.
