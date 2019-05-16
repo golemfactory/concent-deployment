@@ -3,7 +3,7 @@ kind:       Deployment
 metadata:
   name: conductor
 spec:
-  replicas:             {{ concent_versions[concent_version] | chained_get('replica_count.conductor') | default('{{ replica_count.conductor }}', true) }}
+  replicas:             {{ concent_versions[concent_version] | chained_get('replica_count.conductor') | default(replica_count.conductor, true) }}
   revisionHistoryLimit: 2
   template:
     metadata:
@@ -14,15 +14,19 @@ spec:
         - name:             conductor
           image:            {{ docker_registry }}/{{image_prefix }}concent-api:{{ image_version }}
           imagePullPolicy:  Always
+          command:             [
+              "/usr/local/bin/run-gunicorn.sh",
+              "{{ concent_versions[concent_version] | chained_get('amount_of_gunicorn_workers.conductor') | default(amount_of_gunicorn_workers.conductor, true) }}"
+          ]
           ports:
             - containerPort: 80
           resources:
             requests:
-              memory: "{{ concent_versions[concent_version] | chained_get('resource_limits.http_server_apps.conductor.memory.requests') | default('{{ resource_limits.http_server_apps.conductor.memory.requests }}', true) }}"
-              cpu:    "{{ concent_versions[concent_version] | chained_get('resource_limits.http_server_apps.conductor.cpu.requests') | default('{{ resource_limits.http_server_apps.conductor.cpu.requests }}', true) }}"
+              memory: "{{ concent_versions[concent_version] | chained_get('resource_limits.http_server_apps.conductor.memory.requests') | default(resource_limits.http_server_apps.conductor.memory.requests, true) }}"
+              cpu:    "{{ concent_versions[concent_version] | chained_get('resource_limits.http_server_apps.conductor.cpu.requests') | default(resource_limits.http_server_apps.conductor.cpu.requests, true) }}"
             limits:
-              memory: "{{ concent_versions[concent_version] | chained_get('resource_limits.http_server_apps.conductor.memory.limits') | default('{{ resource_limits.http_server_apps.conductor.memory.limits }}', true) }}"
-              cpu:    "{{ concent_versions[concent_version] | chained_get('resource_limits.http_server_apps.conductor.cpu.limits') | default('{{ resource_limits.http_server_apps.conductor.cpu.limits }}', true) }}"
+              memory: "{{ concent_versions[concent_version] | chained_get('resource_limits.http_server_apps.conductor.memory.limits') | default(resource_limits.http_server_apps.conductor.memory.limits, true) }}"
+              cpu:    "{{ concent_versions[concent_version] | chained_get('resource_limits.http_server_apps.conductor.cpu.limits') | default(resource_limits.http_server_apps.conductor.cpu.limits, true) }}"
           volumeMounts:
             - name:      concent-api-secrets
               mountPath: /srv/http/concent_api/concent_api/settings/secrets/

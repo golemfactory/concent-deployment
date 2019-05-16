@@ -3,7 +3,7 @@ kind:       Deployment
 metadata:
   name: concent-api-worker
 spec:
-  replicas:             {{ concent_versions[concent_version] | chained_get('replica_count.concent_api_worker') | default('{{ replica_count.concent_api_worker }}', true) }}
+  replicas:             {{ concent_versions[concent_version] | chained_get('replica_count.concent_api_worker') | default(replica_count.concent_api_worker, true) }}
   revisionHistoryLimit: 2
   template:
     metadata:
@@ -19,11 +19,11 @@ spec:
             - containerPort: 80
           resources:
             requests:
-              memory: "{{ concent_versions[concent_version] | chained_get('resource_limits.worker_apps.concent_api_worker.memory.requests') | default('{{ resource_limits.worker_apps.concent_api_worker.memory.requests }}', true) }}"
-              cpu:    "{{ concent_versions[concent_version] | chained_get('resource_limits.worker_apps.concent_api_worker.cpu.requests') | default('{{ resource_limits.worker_apps.concent_api_worker.cpu.requests }}', true) }}"
+              memory: "{{ concent_versions[concent_version] | chained_get('resource_limits.worker_apps.concent_api_worker.memory.requests') | default(resource_limits.worker_apps.concent_api_worker.memory.requests, true) }}"
+              cpu:    "{{ concent_versions[concent_version] | chained_get('resource_limits.worker_apps.concent_api_worker.cpu.requests') | default(resource_limits.worker_apps.concent_api_worker.cpu.requests, true) }}"
             limits:
-              memory: "{{ concent_versions[concent_version] | chained_get('resource_limits.worker_apps.concent_api_worker.memory.limits') | default('{{ resource_limits.worker_apps.concent_api_worker.memory.limits }}', true) }}"
-              cpu:    "{{ concent_versions[concent_version] | chained_get('resource_limits.worker_apps.concent_api_worker.cpu.limits') | default('{{ resource_limits.worker_apps.concent_api_worker.cpu.limits }}', true) }}"
+              memory: "{{ concent_versions[concent_version] | chained_get('resource_limits.worker_apps.concent_api_worker.memory.limits') | default(resource_limits.worker_apps.concent_api_worker.memory.limits, true) }}"
+              cpu:    "{{ concent_versions[concent_version] | chained_get('resource_limits.worker_apps.concent_api_worker.cpu.limits') | default(resource_limits.worker_apps.concent_api_worker.cpu.limits, true) }}"
           volumeMounts:
             - name:      concent-api-secrets
               mountPath: /srv/http/concent_api/concent_api/settings/secrets/

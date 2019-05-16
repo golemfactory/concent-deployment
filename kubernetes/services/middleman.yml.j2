@@ -28,11 +28,11 @@ spec:
               name:          external-port
           resources:
             requests:
-              memory: "{{ concent_versions[concent_version] | chained_get('resource_limits.tcp_socket_apps.middleman.memory.requests') | default('{{ resource_limits.tcp_socket_apps.middleman.memory.requests }}', true) }}"
-              cpu:    "{{ concent_versions[concent_version] | chained_get('resource_limits.tcp_socket_apps.middleman.cpu.requests') | default('{{ resource_limits.tcp_socket_apps.middleman.cpu.requests }}', true) }}"
+              memory: "{{ concent_versions[concent_version] | chained_get('resource_limits.tcp_socket_apps.middleman.memory.requests') | default(resource_limits.tcp_socket_apps.middleman.memory.requests, true) }}"
+              cpu:    "{{ concent_versions[concent_version] | chained_get('resource_limits.tcp_socket_apps.middleman.cpu.requests') | default(resource_limits.tcp_socket_apps.middleman.cpu.requests, true) }}"
             limits:
-              memory: "{{ concent_versions[concent_version] | chained_get('resource_limits.tcp_socket_apps.middleman.memory.limits') | default('{{ resource_limits.tcp_socket_apps.middleman.memory.limits }}', true) }}"
-              cpu:    "{{ concent_versions[concent_version] | chained_get('resource_limits.tcp_socket_apps.middleman.cpu.limits') | default('{{ resource_limits.tcp_socket_apps.middleman.cpu.limits }}', true) }}"
+              memory: "{{ concent_versions[concent_version] | chained_get('resource_limits.tcp_socket_apps.middleman.memory.limits') | default(resource_limits.tcp_socket_apps.middleman.memory.limits, true) }}"
+              cpu:    "{{ concent_versions[concent_version] | chained_get('resource_limits.tcp_socket_apps.middleman.cpu.limits') | default(resource_limits.tcp_socket_apps.middleman.cpu.limits, true) }}"
           volumeMounts:
             - name:      concent-api-secrets
               mountPath: /srv/http/concent_api/concent_api/settings/secrets/
