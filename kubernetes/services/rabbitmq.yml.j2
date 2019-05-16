@@ -27,11 +27,11 @@ spec:
               value: /srv/storage/mnesia
           resources:
             requests:
-              memory: "{{ concent_versions[concent_version] | chained_get('resource_limits.others.rabbitmq.memory.requests') | default('{{ resource_limits.others.rabbitmq.memory.requests }}', true) }}"
-              cpu:    "{{ concent_versions[concent_version] | chained_get('resource_limits.others.rabbitmq.cpu.requests') | default('{{ resource_limits.others.rabbitmq.cpu.requests }}', true) }}"
+              memory: "{{ concent_versions[concent_version] | chained_get('resource_limits.others.rabbitmq.memory.requests') | default(resource_limits.others.rabbitmq.memory.requests, true) }}"
+              cpu:    "{{ concent_versions[concent_version] | chained_get('resource_limits.others.rabbitmq.cpu.requests') | default(resource_limits.others.rabbitmq.cpu.requests, true) }}"
             limits:
-              memory: "{{ concent_versions[concent_version] | chained_get('resource_limits.others.rabbitmq.memory.limits') | default('{{ resource_limits.others.rabbitmq.memory.limits }}', true) }}"
-              cpu:    "{{ concent_versions[concent_version] | chained_get('resource_limits.others.rabbitmq.cpu.limits') | default('{{ resource_limits.others.rabbitmq.cpu.limits }}', true) }}"
+              memory: "{{ concent_versions[concent_version] | chained_get('resource_limits.others.rabbitmq.memory.limits') | default(resource_limits.others.rabbitmq.memory.limits, true) }}"
+              cpu:    "{{ concent_versions[concent_version] | chained_get('resource_limits.others.rabbitmq.cpu.limits') | default(resource_limits.others.rabbitmq.cpu.limits, true) }}"
           volumeMounts:
             - mountPath:  /srv/storage/mnesia/
               name:       queue-storage

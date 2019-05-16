@@ -42,11 +42,11 @@ spec:
           resources:
             requests:
               # SYNC: Make sure that the memory limits for the pod include the cache size defined above.
-              memory: "{{ concent_versions[concent_version] | chained_get('resource_limits.others.geth.memory.requests') | default('{{ resource_limits.others.geth.memory.requests }}', true) }}"
-              cpu:    "{{ concent_versions[concent_version] | chained_get('resource_limits.others.geth.cpu.requests') | default('{{ resource_limits.others.geth.cpu.requests }}', true) }}"
+              memory: "{{ concent_versions[concent_version] | chained_get('resource_limits.others.geth.memory.requests') | default(resource_limits.others.geth.memory.requests, true) }}"
+              cpu:    "{{ concent_versions[concent_version] | chained_get('resource_limits.others.geth.cpu.requests') | default(resource_limits.others.geth.cpu.requests, true) }}"
             limits:
-              memory: "{{ concent_versions[concent_version] | chained_get('resource_limits.others.geth.memory.limits') | default('{{ resource_limits.others.geth.memory.limits }}', true) }}"
-              cpu:    "{{ concent_versions[concent_version] | chained_get('resource_limits.others.geth.cpu.limits') | default('{{ resource_limits.others.geth.cpu.limits }}', true) }}"
+              memory: "{{ concent_versions[concent_version] | chained_get('resource_limits.others.geth.memory.limits') | default(resource_limits.others.geth.memory.limits, true) }}"
+              cpu:    "{{ concent_versions[concent_version] | chained_get('resource_limits.others.geth.cpu.limits') | default(resource_limits.others.geth.cpu.limits, true) }}"
           volumeMounts:
             - mountPath:  /blockchain
               name:       geth-storage

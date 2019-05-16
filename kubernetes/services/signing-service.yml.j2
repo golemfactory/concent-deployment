@@ -44,11 +44,11 @@ spec:
                   key:  signing_service_private_key
           resources:
             requests:
-              memory: "{{ concent_versions[concent_version] | chained_get('resource_limits.tcp_socket_apps.signing_service.memory.requests') | default('{{ resource_limits.tcp_socket_apps.signing_service.memory.requests }}', true) }}"
-              cpu:    "{{ concent_versions[concent_version] | chained_get('resource_limits.tcp_socket_apps.signing_service.cpu.requests') | default('{{ resource_limits.tcp_socket_apps.signing_service.cpu.requests }}', true) }}"
+              memory: "{{ concent_versions[concent_version] | chained_get('resource_limits.tcp_socket_apps.signing_service.memory.requests') | default(resource_limits.tcp_socket_apps.signing_service.memory.requests, true) }}"
+              cpu:    "{{ concent_versions[concent_version] | chained_get('resource_limits.tcp_socket_apps.signing_service.cpu.requests') | default(resource_limits.tcp_socket_apps.signing_service.cpu.requests, true) }}"
             limits:
-              memory: "{{ concent_versions[concent_version] | chained_get('resource_limits.tcp_socket_apps.signing_service.memory.limits') | default('{{ resource_limits.tcp_socket_apps.signing_service.memory.limits }}', true) }}"
-              cpu:    "{{ concent_versions[concent_version] | chained_get('resource_limits.tcp_socket_apps.signing_service.cpu.limits') | default('{{ resource_limits.tcp_socket_apps.signing_service.cpu.limits }}', true) }}"
+              memory: "{{ concent_versions[concent_version] | chained_get('resource_limits.tcp_socket_apps.signing_service.memory.limits') | default(resource_limits.tcp_socket_apps.signing_service.memory.limits, true) }}"
+              cpu:    "{{ concent_versions[concent_version] | chained_get('resource_limits.tcp_socket_apps.signing_service.cpu.limits') | default(resource_limits.tcp_socket_apps.signing_service.cpu.limits, true) }}"
       volumes:
         - name: signing-service-secrets
           secret:

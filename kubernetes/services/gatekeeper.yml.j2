@@ -3,7 +3,7 @@ kind:       Deployment
 metadata:
   name: gatekeeper
 spec:
-  replicas:             {{ concent_versions[concent_version] | chained_get('replica_count.gatekeeper') | default('{{ replica_count.gatekeeper }}', true) }}
+  replicas:             {{ concent_versions[concent_version] | chained_get('replica_count.gatekeeper') | default(replica_count.gatekeeper, true) }}
   revisionHistoryLimit: 2
   template:
     metadata:
@@ -22,11 +22,11 @@ spec:
             - containerPort: 80
           resources:
             requests:
-              memory: "{{ concent_versions[concent_version] | chained_get('resource_limits.http_server_apps.gatekeeper.memory.requests') | default('{{ resource_limits.http_server_apps.gatekeeper.memory.requests }}', true) }}"
-              cpu:    "{{ concent_versions[concent_version] | chained_get('resource_limits.http_server_apps.gatekeeper.cpu.requests') | default('{{ resource_limits.http_server_apps.gatekeeper.cpu.requests }}', true) }}"
+              memory: "{{ concent_versions[concent_version] | chained_get('resource_limits.http_server_apps.gatekeeper.memory.requests') | default(resource_limits.http_server_apps.gatekeeper.memory.requests, true) }}"
+              cpu:    "{{ concent_versions[concent_version] | chained_get('resource_limits.http_server_apps.gatekeeper.cpu.requests') | default(resource_limits.http_server_apps.gatekeeper.cpu.requests, true) }}"
             limits:
-              memory: "{{ concent_versions[concent_version] | chained_get('resource_limits.http_server_apps.gatekeeper.memory.limits') | default('{{ resource_limits.http_server_apps.gatekeeper.memory.limits }}', true) }}"
-              cpu:    "{{ concent_versions[concent_version] | chained_get('resource_limits.http_server_apps.gatekeeper.cpu.limits') | default('{{ resource_limits.http_server_apps.gatekeeper.cpu.limits }}', true) }}"
+              memory: "{{ concent_versions[concent_version] | chained_get('resource_limits.http_server_apps.gatekeeper.memory.limits') | default(resource_limits.http_server_apps.gatekeeper.memory.limits, true) }}"
+              cpu:    "{{ concent_versions[concent_version] | chained_get('resource_limits.http_server_apps.gatekeeper.cpu.limits') | default(resource_limits.http_server_apps.gatekeeper.cpu.limits, true) }}"
           volumeMounts:
             - name:      concent-api-secrets
               mountPath: /srv/http/concent_api/concent_api/settings/secrets/
