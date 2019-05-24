@@ -19,7 +19,7 @@ DEBUG_INFO_IN_ERROR_RESPONSES = {{ allow_debug_info_in_error_responses }}
 
 LOGGING['handlers']['console']['level'] = DEBUG
 
-DATABASES['storage']['NAME']     = '{{ storage_database_name }}'
+DATABASES['storage']['NAME']     = '{{ concent_versions[concent_version].storage_database_name | default(storage_database_name) }}'
 DATABASES['storage']['USER']     = '{{ storage_database_user }}'
 DATABASES['storage']['PASSWORD'] = STORAGE_DATABASE_PASSWORD
 DATABASES['storage']['HOST']     = '{{ storage_database_host }}'

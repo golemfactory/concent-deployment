@@ -24,7 +24,7 @@ LOGGING['handlers']['console']['level'] = DEBUG
 
 USE_SIGNING_SERVICE = {{ True if allow_signing_service_authentication else False }}
 
-DATABASES['control']['NAME']     = '{{ control_database_name }}'
+DATABASES['control']['NAME']     = '{{ concent_versions[concent_version].control_database_name | default(control_database_name) }}'
 DATABASES['control']['USER']     = '{{ control_database_user }}'
 DATABASES['control']['PASSWORD'] = CONTROL_DATABASE_PASSWORD
 DATABASES['control']['HOST']     = '{{ control_database_host }}'

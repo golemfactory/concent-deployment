@@ -18,7 +18,7 @@ LOGGING['handlers']['console']['level'] = DEBUG
 
 SECRET_KEY = STORAGE_SECRET_KEY
 
-DATABASES['storage']['NAME']     = '{{ storage_database_name }}'
+DATABASES['storage']['NAME']     = '{{ concent_versions[concent_version].storage_database_name | default(storage_database_name) }}'
 DATABASES['storage']['USER']     = '{{ storage_database_user }}'
 DATABASES['storage']['PASSWORD'] = STORAGE_DATABASE_PASSWORD
 DATABASES['storage']['HOST']     = '{{ storage_database_host }}'
