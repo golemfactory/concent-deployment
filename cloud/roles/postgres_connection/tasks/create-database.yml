@@ -6,28 +6,28 @@
     password:        "{{ vars[cluster_type + '_db_user_password'] | b64decode }}"
     role_attr_flags: CREATEROLE
 
-- name: Create the "{{ vars[cluster_type + '_database_name'] }}" database
+- name: Create the "{{ concent_versions[concent_version][cluster_type + '_database_name'] | default(vars[cluster_type + '_database_name']) }}" database
   postgresql_db:
     login_host:      "{{ control_database_host }}"
     login_password:  "{{ vars[cluster_type + '_db_admin_password'] | b64decode }}"
-    name:            "{{ vars[cluster_type + '_database_name'] }}"
+    name:            "{{ concent_versions[concent_version][cluster_type + '_database_name'] | default(vars[cluster_type + '_database_name']) }}"
     owner:           postgres
 
-- name: Grant "{{ vars[cluster_type + '_database_user'] }}" role all privileges for the "{{ vars[ cluster_type + '_database_name'] }}" database
+- name: Grant "{{ vars[cluster_type + '_database_user'] }}" role all privileges for the "{{ concent_versions[concent_version][cluster_type + '_database_name'] | default(vars[cluster_type + '_database_name']) }}" database
   postgresql_privs:
     login_host:      "{{ control_database_host }}"
     login_password:  "{{ vars[cluster_type + '_db_admin_password'] | b64decode }}"
-    db:              "{{ vars[cluster_type + '_database_name'] }}"
+    db:              "{{ concent_versions[concent_version][cluster_type + '_database_name'] | default(vars[cluster_type + '_database_name']) }}"
     role:            "{{ vars[cluster_type + '_database_user'] }}"
     type:            database
-    objs:            "{{ vars[cluster_type + '_database_name'] }}"
+    objs:            "{{ concent_versions[concent_version][cluster_type + '_database_name'] | default(vars[cluster_type + '_database_name']) }}"
     privs:           ALL
 
 - name: Grant postgres all the privileges of the "{{ vars[cluster_type + '_database_user'] }}" role
   postgresql_privs:
     login_host:      "{{ control_database_host }}"
     login_password:  "{{ vars[cluster_type + '_db_admin_password'] | b64decode }}"
-    db:              "{{ vars[cluster_type + '_database_name'] }}"
+    db:              "{{ concent_versions[concent_version][cluster_type + '_database_name'] | default(vars[cluster_type + '_database_name']) }}"
     type:            group
     objs:            "{{ vars[cluster_type + '_database_user'] }}"
     roles:           postgres
@@ -37,6 +37,6 @@
     login_user:      postgres
     login_host:      "{{ control_database_host }}"
     login_password:  "{{ vars[cluster_type + '_db_admin_password'] | b64decode }}"
-    database:        "{{ vars[cluster_type + '_database_name'] }}"
+    database:        "{{ concent_versions[concent_version][cluster_type + '_database_name'] | default(vars[cluster_type + '_database_name']) }}"
     name:            public
     owner:           "{{ vars[cluster_type + '_database_user'] }}"
