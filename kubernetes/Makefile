@@ -101,7 +101,7 @@ build/vars-merged.yml: $(DEPLOYMENT_VALUES_DIR)/var.yml $(DEPLOYMENT_VALUES_DIR)
 
 build/%-database-configuration.yml:
 	echo "selected_database_id:    $*"  >> "$@"
-	echo "database_name:          \"{{ $*_database_name }}\"" >> "$@"
+	echo "database_name:          \"{{ concent_versions[concent_version].$*_database_name | default($*_database_name) }}\"" >> "$@"
 	echo "database_user:          \"{{ $*_database_user }}\"" >> "$@"
 	echo "database_host:          \"{{ $*_database_host }}\"" >> "$@"
 	if [ '$*' = 'control' ]; then                      \
