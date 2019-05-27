@@ -55,7 +55,7 @@ GETH_ADDRESS = 'http://geth.default.svc.cluster.local:8545'
 {% else %}
 GETH_ADDRESS = '{{ concent_versions[concent_version].external_geth_address }}'
 {% endif %}
-CONCENT_ETHEREUM_PUBLIC_KEY = '{{ concent_ethereum_public_key }}'
+CONCENT_ETHEREUM_PUBLIC_KEY = '{{ concent_versions[concent_version].concent_ethereum_public_key | default(concent_ethereum_public_key) }}'
 GNT_DEPOSIT_CONTRACT_ADDRESS = '{{ concent_versions[concent_version].gnt_deposit_address | default(gnt_deposit_address) }}'
 ETHEREUM_CHAIN = '{{ ethereum_chain }}'
 
