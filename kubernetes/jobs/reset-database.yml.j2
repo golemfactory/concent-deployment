@@ -13,6 +13,13 @@ spec:
           image:           busybox
           imagePullPolicy: Always
           command:         ["sh", "-c", "echo Done."]
+          resources:
+            requests:
+              memory: "{{ concent_versions[concent_version] | chained_get('resource_limits.others.reset_db.memory.requests') | default(resource_limits.others.reset_db.memory.requests, true) }}"
+              cpu:    "{{ concent_versions[concent_version] | chained_get('resource_limits.others.reset_db.cpu.requests') | default(resource_limits.others.reset_db.cpu.requests, true) }}"
+            limits:
+              memory: "{{ concent_versions[concent_version] | chained_get('resource_limits.others.reset_db.memory.limits') | default(resource_limits.others.reset_db.memory.limits, true) }}"
+              cpu:    "{{ concent_versions[concent_version] | chained_get('resource_limits.others.reset_db.cpu.limits') | default(resource_limits.others.reset_db.cpu.limits , true) }}"
       volumes:
         - name: {{ selected_database_id }}-db-secrets
           secret:
@@ -34,6 +41,13 @@ spec:
           image:            {{ docker_registry }}/{{ image_prefix }}postgresql:{{ image_version }}
           imagePullPolicy:  Always
           command:          ["/usr/local/bin/reset-database.sh", "{{ database_host }}", "{{ database_name }}", "{{ database_user }}"]
+          resources:
+            requests:
+              memory: "{{ concent_versions[concent_version] | chained_get('resource_limits.others.reset_db.memory.requests') | default(resource_limits.others.reset_db.memory.requests, true) }}"
+              cpu:    "{{ concent_versions[concent_version] | chained_get('resource_limits.others.reset_db.cpu.requests') | default(resource_limits.others.reset_db.cpu.requests, true) }}"
+            limits:
+              memory: "{{ concent_versions[concent_version] | chained_get('resource_limits.others.reset_db.memory.limits') | default(resource_limits.others.reset_db.memory.limits, true) }}"
+              cpu:    "{{ concent_versions[concent_version] | chained_get('resource_limits.others.reset_db.cpu.limits') | default(resource_limits.others.reset_db.cpu.limits, true) }}"
           env:
             - name: PGPASSWORD
               valueFrom:
@@ -44,6 +58,13 @@ spec:
           image:            {{ docker_registry }}/{{ image_prefix }}concent-api:{{ image_version }}
           imagePullPolicy:  Always
           command:          ["/usr/local/bin/concent-api-manage.sh", "migrate", "--database={{ selected_database_id }}"]
+          resources:
+            requests:
+              memory: "{{ concent_versions[concent_version] | chained_get('resource_limits.others.reset_db.memory.requests') | default(resource_limits.others.reset_db.memory.requests, true) }}"
+              cpu:    "{{ concent_versions[concent_version] | chained_get('resource_limits.others.reset_db.cpu.requests') | default(resource_limits.others.reset_db.cpu.requests, true) }}"
+            limits:
+              memory: "{{ concent_versions[concent_version] | chained_get('resource_limits.others.reset_db.memory.limits') | default(resource_limits.others.reset_db.memory.limits, true) }}"
+              cpu:    "{{ concent_versions[concent_version] | chained_get('resource_limits.others.reset_db.cpu.limits') | default(resource_limits.others.reset_db.cpu.limits, true) }}"
           volumeMounts:
             - name:       concent-api-secrets
               mountPath:  /srv/http/concent_api/concent_api/settings/secrets/
@@ -56,6 +77,13 @@ spec:
           image:            {{ docker_registry }}/{{ image_prefix }}concent-api:{{ image_version }}
           imagePullPolicy:  Always
           command:          ["/usr/local/bin/concent-api-manage.sh", "loaddata", "/srv/http/fixtures/django-admin-fixture.yaml", "--database={{ selected_database_id }}"]
+          resources:
+            requests:
+              memory: "{{ concent_versions[concent_version] | chained_get('resource_limits.others.reset_db.memory.requests') | default(resource_limits.others.reset_db.memory.requests, true) }}"
+              cpu:    "{{ concent_versions[concent_version] | chained_get('resource_limits.others.reset_db.cpu.requests') | default(resource_limits.others.reset_db.cpu.requests, true) }}"
+            limits:
+              memory: "{{ concent_versions[concent_version] | chained_get('resource_limits.others.reset_db.memory.limits') | default(resource_limits.others.reset_db.memory.limits, true) }}"
+              cpu:    "{{ concent_versions[concent_version] | chained_get('resource_limits.others.reset_db.cpu.limits') | default(resource_limits.others.reset_db.cpu.limits, true) }}"
           volumeMounts:
             - name:       django-admin-fixture
               mountPath:  /srv/http/fixtures/

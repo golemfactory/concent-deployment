@@ -13,6 +13,13 @@ spec:
           image:           busybox
           imagePullPolicy: Always
           command:         ["sh", "-c", "echo Done."]
+          resources:
+            requests:
+              memory: "{{ concent_versions[concent_version] | chained_get('resource_limits.others.migrate_db.memory.requests') | default(resource_limits.others.migrate_db.memory.requests, true) }}"
+              cpu:    "{{ concent_versions[concent_version] | chained_get('resource_limits.others.migrate_db.cpu.requests') | default(resource_limits.others.migrate_db.cpu.requests, true) }}"
+            limits:
+              memory: "{{ concent_versions[concent_version] | chained_get('resource_limits.others.migrate_db.memory.limits') | default(resource_limits.others.migrate_db.memory.limits, true) }}"
+              cpu:    "{{ concent_versions[concent_version] | chained_get('resource_limits.others.migrate_db.cpu.limits') | default(resource_limits.others.migrate_db.cpu.limits, true) }}"
       volumes:
         - name: concent-api-secrets
           secret:
