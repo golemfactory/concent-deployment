@@ -2,6 +2,7 @@
     - concent-deployment-server
   vars_files:
     - ../concent-builder/consts.yml
+    - ../containers/versions.yml
     - "{{ deployment_values }}/var.yml"
     - "{{ deployment_values }}/var-{{ cluster }}.yml"
     - "{{ local_secret_dir }}/{{ cluster }}/cluster-secrets.yml.vault"

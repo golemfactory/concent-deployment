@@ -1,10 +1,11 @@
-- name: Delete the "{{ vars[cluster_type + '_database_name'] }}" database
+- name: Delete the "{{ concent_versions[concent_version][cluster_type + '_database_name'] | default(vars[cluster_type + '_database_name']) }}" database
   postgresql_db:
     login_host:      "{{ control_database_host }}"
     login_password:  "{{ vars[cluster_type + '_db_admin_password'] | b64decode }}"
     state:           absent
-    name:            "{{ vars[cluster_type + '_database_name'] }}"
+    name:            "{{ concent_versions[concent_version][cluster_type + '_database_name'] | default(vars[cluster_type + '_database_name']) }}"
     owner:           postgres
+
 
 - name: Delete the "{{ vars[cluster_type + '_database_user'] }}" role
   postgresql_user:
@@ -14,4 +15,11 @@
     name:            "{{ vars[cluster_type + '_database_user'] }}"
     password:        "{{ vars[cluster_type + '_db_user_password'] | b64decode }}"
     role_attr_flags: CREATEROLE
+  ignore_errors: yes
+  register:      result
 
+- debug:
+    msg: >
+      The "unable to remove user" error message is probably caused by second database which is used by second cluster with different concent version.
+      To remove user you must delete this database.
+  when: result is failed
