@@ -1,4 +1,15 @@
-### next
+### Next
+
+### 0.12.0
+- Added concent-deployment-server instance that has permissions to deploy in the dev, staging, testnet cluster environments (#369).
+- Added ability to control amount of gunicorn workers and manage resource limits of kubernetes jobs (#377).
+- Added ability to use different gnt deposit address in the same clusters environment (#388).
+- Added support for multiple databases in the same clusters environment (#389).
+- Added ability to use different ethereum public key in the same clusters environment (#390).
+
+Compatibility:
+- Golem: 0.20.0
+- Concent: 0.12.0
 
 ### 0.11.2
 - Enhanced the virtual machine for running Golem/Concent with the ability to set up automatically golem-electron and a lightweight desktop environment (#339).
