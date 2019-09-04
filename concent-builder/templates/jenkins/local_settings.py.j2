@@ -1,6 +1,6 @@
 from .development import *
 
-{% if concent_versions[concent_version].storage_cluster_address == concent_versions[concent_version].cluster_address and not nginx_proxy_allow_http or concent_versions[concent_version].storage_cluster_address != concent_versions[concent_version].cluster_address and not nginx_storage_allow_http %}
+{% if not nginx_proxy_allow_http %}
 STORAGE_CLUSTER_ADDRESS = "https://{{ concent_versions[concent_version].storage_cluster_address }}/"
 {% else %}
 STORAGE_CLUSTER_ADDRESS = "http://{{ concent_versions[concent_version].storage_cluster_address }}/"
