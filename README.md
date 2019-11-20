@@ -67,19 +67,18 @@ The above assumes that the `$cluster` shell variable is set to the name of the c
 Passwords and keys required for deployment are not stored in the repository.
 To deploy you need to get access to them and put them in the following locations:
 
-- `concent-secrets/$cluster/concent-builder-service-private-key.json`
-- `concent-secrets/$cluster/secrets.py`
-- `concent-secrets/$cluster/var-secret.yml`
+- `concent-secrets/$cluster/cluster-secrets.yml.vault`
+- `concent-secrets/cloud/cloud-secrets.yml.vault`
 
 #### SSL certificates
 
 The nginx instances need certificates and private keys to be able to serve HTTPS traffic.
 Put them in the following locations:
 
-- `concent-secrets/$cluster/nginx-proxy-ssl.crt`
-- `concent-secrets/$cluster/nginx-proxy-ssl.key`
-- `concent-secrets/$cluster/nginx-storage-ssl.crt`
-- `concent-secrets/$cluster/nginx-storage-ssl.key`
+- `concent-secrets/$cluster/nginx-proxy-ssl.crt.vault`
+- `concent-secrets/$cluster/nginx-proxy-ssl.key.vault`
+- `concent-secrets/$cluster/nginx-storage-ssl.crt.vault`
+- `concent-secrets/$cluster/nginx-storage-ssl.key.vault`
 
 #### Generating self-signed certificates
 
@@ -142,18 +141,18 @@ Do this if you want to use the virtual machine for deployment.
 
     This will run the `configure.yml` playbook for you.
 
-### Creating `concent-deployment` machine
+### Creating `concent-deployment-server` machine
 
-This step creates the `concent-deployment` machine meant to be used for deployment to `mainnet`, `testnet`, `staging` clusters environment and configuration machines, disks etc.
+This step creates the `concent-deployment-server` machine meant to be used for deployment to `mainnet`, `testnet`, `staging` clusters, configuring machines, creating disks, etc.
+The playbook needs to be executed from a machine that is authorized to run `gcloud` commands on the Google Cloud project.
 
 - Run the `create-compute-instance-for-deployment-server.yml` playbook.
 
     ``` bash
-    cd concent-deployment/cloud/
-    ansible-playbook create-compute-instance-for-deployment-server.yml  \
-        --inventory ../../concent-deployment-values/ansible_inventory   \
-        --user      $user
+    cd concent-deployment-values/cloud/
+    ansible-playbook create-compute-instance-for-deployment-server.yml
     ```
+
 ### Configuring `concent-builder` machine
 
 Do this if you want to use the remote server for building and deploying.
@@ -169,14 +168,14 @@ Do this if you want to use the remote server for building and deploying.
 
     Where the `$user` shell variable contains the name of your shell account on the remote machine.
 
-### Configuring `concent-deployment` machine
+### Configuring `concent-deployment-server` machine
 
-This step configures the `concent-deployment` machine.
+This step configures the `concent-deployment-server` machine.
 
 - Run the `configure-concent-deployment-server.yml` playbook.
 
     ``` bash
-    cd concent-deployment/concent-builder/
+    cd concent-deployment/cloud/
     ansible-playbook configure-concent-deployment-server.yml           \
         --inventory ../../concent-deployment-values/ansible_inventory  \
         --user      $user
@@ -191,19 +190,18 @@ It also makes deployment faster and more reliable since it's not necessary to wa
 This machine comes in two flavors: `ethnode-testnet` and `ethnode-mainnet`.
 If you're running both test clusters and a production cluster, you need both.
 
-The playbooks need to be run from `concent-builder` or another machine that is authorized to run `gcloud` commands on the Google Cloud project.
+The playbooks needs to be executed from `concent-deployment-server` machine that is authorized to run `gcloud` commands on the Google Cloud project.
 To create and configure the machine run the playbooks listed below.
 The first one creates the cloud instance, reserves IP and provisions a disk.
 This operation requires permissions to the Google Cloud project
 The `$ethnode` variable specifies the flavor of the machine to be created: `ethnode-testnet` or `ethnode-mainnet`.
 The second one connects to the machine, installs everything on it and starts Geth.
 ``` bash
-cd concent-deployment/cloud/
+cd concent-deployment-values/cloud/
 ansible-playbook create-vm-instances-for-geth.yml                   \
-    --extra-vars "ethnode=$ethnode"                                 \
-    --inventory  ../../concent-deployment-values/ansible_inventory  \
-    --user      $user
+    --extra-vars "ethnode=$ethnode"
 
+cd concent-deployment/ethnode/
  ansible-playbook configure.yml                                     \
     --extra-vars "ethnode=$ethnode"                                 \
     --inventory  ../../concent-deployment-values/ansible_inventory  \
@@ -521,7 +519,7 @@ docker run                                                                      
 This assumes that:
 - The service can connect to a Concent cluster at `concent.golem.network:9055`.
 - `85cZzVjahnRpUBwm0zlNnqTdYom1LF1P1WNShLg17cmhN2Us` is Concent's public key encoded in base64.
-- There's a shell variable called `ETHEREUM_RPIVATE_KEY` and it contains base64-encoded private key of the Concent contract.
+- There's a shell variable called `ETHEREUM_PRIVATE_KEY` and it contains base64-encoded private key of the Ethereum account authorized to move funds owned by the deposit contract.
 - There's a shell variable called `SIGNING_SERVICE_PRIVATE_KEY` and it contains base64-encoded private key for signing Golem Messages created by the Signing Service.
 - There's a shell variable called `SENTRY_DSN` that contains the secret ID that allows submitting crash report to a [Sentry](https://sentry.io) project.
     The one given above is just an example.
