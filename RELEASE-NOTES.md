@@ -1,5 +1,11 @@
 ### Next
 
+### 0.13.0
+
+Compatibility:
+- Golem: 0.21.0
+- Concent: 0.13.0
+
 ### 0.12.1
 - Bugfix: fixed jinja statement that caused an invalid value of the storage cluster address (#393).
 
