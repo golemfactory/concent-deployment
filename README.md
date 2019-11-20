@@ -31,6 +31,20 @@ ansible-playbook create-databases.yml                              \
     --user       $user
 ```
 
+### Creating the cluster
+
+The playbook needs to be executed from a machine that is authorized to run `gcloud` commands on the Google Cloud project and has appropriate privileges for creating and deleting clusters.
+To perform this step you need to have a configuration file for the specific clusters environment that cluster will represent (`concent-deployment-values/var-<cluster>.yml`).
+The configuration files are stored in the [concent-deployment-values](https://github.com/golemfactory/concent-deployment-values/) repository.
+The `$cluster` and `$concent_version` shell variables are explained below.
+
+
+``` bash
+cd concent-deployment-values/cloud/
+ansible-playbook create-cluster-instance.yml \
+    --extra-vars "cluster=$cluster concent_version=$cluster_version"
+```
+
 ## Build scenarios
 
 Scripts in this repository allow you to build containers and cluster configuration in three different scanarios. Each one has its own requirements:
@@ -152,7 +166,6 @@ The playbook needs to be executed from a machine that is authorized to run `gclo
     cd concent-deployment-values/cloud/
     ansible-playbook create-compute-instance-for-deployment-server.yml
     ```
-
 ### Configuring `concent-builder` machine
 
 Do this if you want to use the remote server for building and deploying.
