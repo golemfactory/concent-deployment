@@ -1,5 +1,12 @@
 ### Next
 
+### 0.12.1
+- Bugfix: fixed jinja statement that caused an invalid value of the storage cluster address (#393).
+
+Compatibility:
+- Golem: 0.20.2
+- Concent: 0.12.1
+
 ### 0.12.0
 - Added concent-deployment-server instance that has permissions to deploy in the dev, staging, testnet cluster environments (#369).
 - Added ability to control amount of gunicorn workers and manage resource limits of kubernetes jobs (#377).
