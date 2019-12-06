@@ -18,6 +18,7 @@ CLUSTER_SCRIPTS :=                                            \
     build/delete-config-maps.sh                               \
     build/create-services.sh                                  \
     build/wait-until-ready.sh                                 \
+    build/wait-for-attaching-external-ip.sh                   \
     build/sleep-until-kubectl-status-is-ready.sh              \
     build/delete-services.sh                                  \
     build/run-unit-tests.sh                                   \

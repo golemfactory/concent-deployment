@@ -1,0 +1,18 @@
+#! /bin/bash -e
+
+# timeout value in second
+timeout=70
+
+echo "Wait for attaching the external ip to the nginx-proxy service..."
+time_counter=0
+until $(curl --output /dev/null --silent --head --fail http://{{ concent_versions[concent_version].external_ip }}); do
+    if [[ "$timeout" == "$time_counter" ]]; then
+        echo "Timeout has occurred"
+        exit 1
+    fi
+
+    sleep 1
+    time_counter=$((time_counter+1))
+done
+echo "The external ip has been attached to the nginx-proxy service!"
+

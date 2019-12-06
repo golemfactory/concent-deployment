@@ -38,3 +38,5 @@ kubectl create --record --filename services/nginx-proxy.yml
 {% if concent_versions[concent_version].external_geth_address is none %}
 ./wait-until-ready.sh geth                 80
 {% endif %}
+
+./wait-for-attaching-external-ip.sh
