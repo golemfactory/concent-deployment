@@ -28,6 +28,4 @@
             --filename "{{ build_dir }}/concent-deployment/kubernetes/build/jobs/migrate-{{ cluster_type }}-database.yml"
 
         - name:    Wait until database migrations are completed
-          command: "{{ build_dir }}/concent-deployment/kubernetes/build/wait-until-kubectl-job-is-completed.sh migrate-{{ cluster_type }}-database 60"
-          args:
-            chdir: "{{ build_dir}}/concent-deployment/kubernetes/build/"
+          command: kubectl wait --for=condition=Complete --timeout=85s job "migrate-{{ cluster_type }}-database"

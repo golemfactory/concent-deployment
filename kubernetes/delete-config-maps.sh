@@ -1,13 +1,13 @@
 #!/bin/bash -e
 
-kubectl delete configmap nginx-storage-configs        || true
-kubectl delete configmap file-transfer-config         || true
-kubectl delete configmap nginx-configs                || true
-kubectl delete configmap nginx-settings               || true
-kubectl delete configmap gatekeeper-settings          || true
-kubectl delete configmap conductor-settings           || true
-kubectl delete configmap conductor-worker-settings    || true
-kubectl delete configmap concent-api-settings         || true
-kubectl delete configmap concent-api-worker-settings  || true
-kubectl delete configmap verifier-settings            || true
-kubectl delete configmap middleman-settings           || true
+kubectl delete --wait=true --timeout=30s --ignore-not-found=true configmap nginx-storage-configs
+kubectl delete --wait=true --timeout=30s --ignore-not-found=true configmap file-transfer-config
+kubectl delete --wait=true --timeout=30s --ignore-not-found=true configmap nginx-configs
+kubectl delete --wait=true --timeout=30s --ignore-not-found=true configmap nginx-settings
+kubectl delete --wait=true --timeout=30s --ignore-not-found=true configmap gatekeeper-settings
+kubectl delete --wait=true --timeout=30s --ignore-not-found=true configmap conductor-settings
+kubectl delete --wait=true --timeout=30s --ignore-not-found=true configmap conductor-worker-settings
+kubectl delete --wait=true --timeout=30s --ignore-not-found=true configmap concent-api-settings
+kubectl delete --wait=true --timeout=30s --ignore-not-found=true configmap concent-api-worker-settings
+kubectl delete --wait=true --timeout=30s --ignore-not-found=true configmap verifier-settings
+kubectl delete --wait=true --timeout=30s --ignore-not-found=true configmap middleman-settings

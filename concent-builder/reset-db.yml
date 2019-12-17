@@ -28,6 +28,4 @@
             --filename "{{ build_dir }}/concent-deployment/kubernetes/build/jobs/reset-{{ cluster_type }}-database.yml"
 
         - name:    Wait for database reset
-          command: "{{ build_dir }}/concent-deployment/kubernetes/build/wait-until-kubectl-job-is-completed.sh reset-{{ cluster_type }}-database 60"
-          args:
-            chdir: "{{ build_dir}}/concent-deployment/kubernetes/build/"
+          command: kubectl wait --for=condition=Complete --timeout=85s job "reset-{{ cluster_type }}-database"

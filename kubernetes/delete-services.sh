@@ -1,17 +1,18 @@
 #!/bin/bash -e
 
 
-kubectl delete --filename services/verifier.yml             || true
-kubectl delete --filename services/nginx-proxy.yml          || true
-kubectl delete --filename services/nginx-storage.yml        || true
-kubectl delete --filename services/gatekeeper.yml           || true
-kubectl delete --filename services/conductor.yml            || true
-kubectl delete --filename services/conductor-worker.yml     || true
-kubectl delete --filename services/concent-api-worker.yml   || true
-kubectl delete --filename services/concent-api.yml          || true
-kubectl delete --filename services/middleman.yml            || true
-kubectl delete --filename services/signing-service.yml      || true
-kubectl delete --filename services/rabbitmq.yml             || true
-kubectl delete --filename services/geth.yml                 || true
+kubectl delete --wait=true --timeout=30s --ignore-not-found=true --filename services/verifier.yml
+kubectl delete --wait=true --timeout=30s --ignore-not-found=true --filename services/nginx-proxy.yml
+kubectl delete --wait=true --timeout=30s --ignore-not-found=true --filename services/nginx-storage.yml
+kubectl delete --wait=true --timeout=30s --ignore-not-found=true --filename services/gatekeeper.yml
+kubectl delete --wait=true --timeout=30s --ignore-not-found=true --filename services/conductor.yml
+kubectl delete --wait=true --timeout=30s --ignore-not-found=true --filename services/conductor-worker.yml
+kubectl delete --wait=true --timeout=30s --ignore-not-found=true --filename services/concent-api-worker.yml
+kubectl delete --wait=true --timeout=30s --ignore-not-found=true --filename services/concent-api.yml
+kubectl delete --wait=true --timeout=30s --ignore-not-found=true --filename services/middleman.yml
+kubectl delete --wait=true --timeout=30s --ignore-not-found=true --filename services/signing-service.yml
+kubectl delete --wait=true --timeout=30s --ignore-not-found=true --filename services/rabbitmq.yml
+kubectl delete --wait=true --timeout=30s --ignore-not-found=true --filename services/geth.yml
+kubectl wait --for=delete pods --all || true
 
 ./delete-config-maps.sh || true
