@@ -2,7 +2,7 @@ debian_version:                        "9.4"
 docker_version:                        "17.05.0~ce-0~debian-stretch"
 geth_version:                          "v1.9.7"
 # Remember set version in concent_version variable also require configure it in the var-concent-<cluster_name>.yml file
-concent_version:                       "v0.14.0"
+concent_version:                       "v0.14.1"
 golemfactory_blender_verifier_version: "1.9.1"
 golem_hyperdrive_version:              "0.2.6"
 golem_hyperdrive_checksum:             "sha256:94220ef8533030652d4a1c126f06fa9cdce9d620b91f1c4574a109a3891e8adf"
