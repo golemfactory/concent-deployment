@@ -20,8 +20,6 @@ from ..secrets.secrets import (
 
 DEBUG_INFO_IN_ERROR_RESPONSES = {{ allow_debug_info_in_error_responses }}
 
-LOGGING['handlers']['console']['level'] = DEBUG
-
 USE_SIGNING_SERVICE = {{ True if allow_signing_service_authentication else False }}
 
 DATABASES['control']['NAME']     = '{{ concent_versions[concent_version].control_database_name | default(control_database_name) }}'
