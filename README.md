@@ -221,30 +221,12 @@ cd concent-deployment/ethnode/
     --user      $user
 ```
 
-### Authorizing a user account on the build server to access the clusters
-This step must be performed separately for every user of the build server who needs to be able to access other parts of the project infrastructure on Google Cloud with `kubectl` or `gcloud`.
-It can be performed by user himself or an admin who can impersonate him with `sudo`.
+All the instructions below assume that you're using local playbooks to run build and deployment commands on a new server.
 
 The `$cluster` variable determines which server the playbook will be executed on.
 For `concent-dev` it connects to `concent-builder`.
 For other values (`concent-staging`, `concent-testnet` or `concent-mainnet`) - to `concent-deployment-server`.
 This behavior applies to all playbooks, except for `build-test-and-push-containers.yml`.
-
-The `$user_name` variable below indicates the user account to be authorized.
-To perform this step you need to have the .vault files with encrypted secrets in your local `concent-secrets/` directory.
-Only cloud secrets are required in this case.
-Ansible will prompt you for password required to decrypt them.
-
-```bash
-cd concent-deployment/cloud/
-ansible-playbook configure-user-authentication-for-clusters.yml    \
-    --extra-vars "cluster=$cluster user_name=$user_name"           \
-    --ask-vault-pass                                               \
-    --inventory  ../../concent-deployment-values/ansible_inventory \
-    --user       $user
-```
-
-All the instructions below assume that you're using local playbooks to run build and deployment commands on a new server.
 
 Note that if you're running the playbooks themselves from within that server too, you need to add `--connection=local` to your `ansible-playbook` calls.
 Otherwise Ansible will run its commands over SSH (rather than directly) using the public IP specified in `ansible_inventory`, which will likely fail because you're not supposed to have your private SSH key on the remote server you're connecting to.

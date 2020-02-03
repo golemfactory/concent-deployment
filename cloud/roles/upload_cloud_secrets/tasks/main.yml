@@ -20,11 +20,8 @@
 
     - name: Upload secrets
       copy:
-        src:     "{{ local_secret_dir }}/{{ item }}"
-        dest:    "{{ data_dir }}/concent-secrets/{{ item }}"
+        src:     "{{ local_secret_dir }}/cloud/cloud-secrets.yml.vault"
+        dest:    "{{ data_dir }}/concent-secrets/cloud/cloud-secrets.yml"
         decrypt: no
         owner:   "{{ shared_user }}"
         group:   "{{ shared_user }}"
-      with_items:
-        - cloud/{{ gke.service_account_name }}-private-key.json.vault
-        - cloud/cloud-secrets.yml.vault
