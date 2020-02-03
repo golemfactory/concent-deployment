@@ -222,7 +222,7 @@ Scripts in this repository allow you to build containers and cluster configurati
     You obviously need access that machine to do this.
     This is the recommended way to deploy in production.
 
-## Deployment
+## Initializing the deployment environments
 
 ### Cloning the repositories
 
@@ -404,6 +404,8 @@ ansible-playbook configure-user-authentication-for-clusters.yml    \
     --user       $user
 ```
 
+## Deployment
+
 All the instructions below assume that you're using local playbooks to run build and deployment commands on a new server.
 
 Note that if you're running the playbooks themselves from within that server too, you need to add `--connection=local` to your `ansible-playbook` calls.
@@ -424,7 +426,7 @@ ansible-playbook build-cluster-configuration.yml                   \
     --extra-vars cluster=$cluster                                  \
     --inventory  ../../concent-deployment-values/ansible_inventory \
     --user       $user
-```
+
 ansible-playbook build-test-and-push-containers.yml                \
     --extra-vars cluster=$cluster                                  \
     --inventory  ../../concent-deployment-values/ansible_inventory \
