@@ -2,6 +2,166 @@
 Scripts and configuration for Concent deployment
 
 ## GKE cluster configuration
+Concent is designed as a set of microservices running in a Kubernetes cluster.
+The design is not tied to any specific cloud provider but the scripts and configuration in this repository were tested only with Google Cloud Platform.
+This section describes setup steps required for deployment on that platform.
+
+### Service accounts, roles and permissions
+Concent's infrastructure includes several stand-alone machines not being a part of any cluster.
+Each has a specific function:
+
+- `concent-builder`: Building container and running CI
+- `concent-deployment-server`: Providing isolated environment for production deployment
+- `ethnode`: Running an Ethereum client
+
+These machines need varying levels of access to other parts of the infrastructure (e.g. to be able to deploy test code to a development cluster).
+In GKE this is achieved by giving each machine a _service account_.
+The privileges of such an account should be as limited as possible to prevent abuse in case someone unauthorized gains access to the machine.
+
+The privileges currently required by the machines can be divided into the following tiers:
+
+1. **Concent Deployer** (for `concent-builder`):
+    - Creating and deleting resources within a cluster (pods, services, config maps, etc.).
+    - Creating and deleting schemas, tables and other items inside a PostgreSQL database on a Cloud SQL instance (but not the database or the instance itself).
+    - Attaching storage to cluster pods.
+    - Configuring a load balancer inside the cluster and attaching a static IP to it.
+    - Pushing/pulling Docker images to/from Docker registry.
+2. **Concent Cloud Admin** (for `concent-deployment-server`):
+    - Creating and deleting Google Compute Engine instances.
+    - Creating and deleting Kubernetes clusters.
+    - Creating and deleting Cloud SQL instances.
+    - Creating and deleting PostgreSQL databases and roles in Cloud SQL.
+    - Making Cloud SQL backups.
+    - Creating and deleting disks.
+    - Creating and deleting IPs.
+    - Deleting images from Docker registry.
+    - Changing firewall rules.
+    - Assigning service accounts to newly created machines
+
+Service accounts with these privileges need to be created either through GCP UI or using console tools (`gcloud`, `gsutil`, `kubectl`).
+This is a manual step.
+All the instructions after this section assume that you have created the accounts and assigned them the right privileges.
+
+#### Information needed by the commands
+Instructions below require bits of information specific to your GCP project.
+You can use the snippets as is if you put this information in the following shell variables:
+
+- `project_name`: name of the GCP project.
+    Example: `concent-project`.
+- `registry_bucket`: name of the Google Cloud storage bucket that's used to store data pushed to the Docker registry.
+    Example: `gs://artifacts.concent-project.appspot.com `.
+- `deployer_service_account`: name of the service account with Concent Deployer privileges.
+    Example: `concent-deployer@$project_name.iam.gserviceaccount.com`
+- `cloud_admin_service_account`: name of the service account with Concent Cloud Admin privileges.
+    Example: `concent-cloud-admin@$project_name.iam.gserviceaccount.com`
+- `default_instance_service_account`: name of the service account used by GKE by default when you create a new GCE instance.
+    Example: `1234567890123-compute@developer.gserviceaccount.com`
+- `deployer_service_account_id`: Unique ID of `cloud_service_account`.
+    Example: `540961bc4e001233456891234556712312321111`
+
+#### Concent Deployer
+This service account needs the following IAM roles:
+
+| Role                          | Resource                                      |
+|-------------------------------|-----------------------------------------------|
+| `Kubernetes Engine Viewer`    | Project                                       |
+| `Storage Object Viewer`       | Storage bucket used as the container registry |
+| `Storage Object Creator`      | Storage bucket used as the container registry |
+| `Bucket Viewer` (custom role) | Storage bucket used as the container registry |
+
+And also the following RBAC roles inside specific Kubernetes clusters:
+
+| Role   | Resource                                      |
+|--------|-----------------------------------------------|
+| `edit` | `concent-dev` cluster                         |
+
+Command below show how to create the `Bucket Viewer` custom role.
+
+```bash
+gcloud iam roles create BucketViewer \
+    --project     "$project_name"    \
+    --title       "Bucket Viewer"    \
+    --permissions                    \
+"storage.buckets.get,"\
+"storage.buckets.list"
+```
+
+Commands below show how to create the account and assign the roles using command-line tools.
+Make sure your user account has enough privileges to create and add roles to service accounts.
+
+``` bash
+gcloud beta iam service-accounts create \
+    "$deployer_service_account"         \
+    --display-name "Concent Deployer"
+
+gcloud projects add-iam-policy-binding                   \
+     $project_name                                       \
+     --member "serviceAccount:$deployer_service_account" \
+     --role   roles/container.viewer
+
+gsutil iam ch "serviceAccount:$deployer_service_account:objectViewer"                              "$registry_bucket"
+gsutil iam ch "serviceAccount:$deployer_service_account:objectCreator"                             "$registry_bucket"
+gsutil iam ch "serviceAccount:$deployer_service_account:projects/$project_name/roles/BucketViewer" "$registry_bucket"
+gsutil bucketpolicyonly set on "$registry_bucket"
+
+kubectl create clusterrolebinding concent-deployer-access-to-dev-cluster \
+    --clusterrole edit                                                   \
+    --namespace   default                                                \
+    --user        "$deployer_service_account_id"
+```
+
+### Concent Cloud Admin
+This service account needs the following IAM roles:
+
+| Role                                   | Resource                                      |
+|----------------------------------------|-----------------------------------------------|
+| `Kubernetes Engine Admin`              | Project                                       |
+| `Compute Instance Admin`               | Project                                       |
+| `Compute Network Admin`                | Project                                       |
+| `Storage Admin`                        | Project                                       |
+| `Cloud SQL Admin`                      | Project                                       |
+| `Compute Firewall Admin` (custom role) | Project                                       |
+| `Service Account User`                 | Default compute instance service account      |
+| `Service Account User`                 | Concent Deployer's service account            |
+
+Command below show how to create the `Compute Firewall Admin` custom role.
+
+```bash
+gcloud iam roles create ComputeFirewallAdmin \
+    --project    "$project_name"             \
+    --title      "Compute Firewall Admin"    \
+    --permissions                            \
+"compute.firewalls.create,"\
+"compute.firewalls.delete,"\
+"compute.firewalls.get,"\
+"compute.firewalls.list,"\
+"compute.firewalls.update"
+```
+
+Commands below show how to create the account and assign the roles using command-line tools:
+
+``` bash
+gcloud beta iam service-accounts create  \
+    "$cloud_admin_service_account"       \
+    --display-name "Concent Cloud Admin"
+
+gcloud projects add-iam-policy-binding "$project_name" --member "serviceAccount:$cloud_admin_service_account" --role roles/container.admin
+gcloud projects add-iam-policy-binding "$project_name" --member "serviceAccount:$cloud_admin_service_account" --role roles/compute.instanceAdmin
+gcloud projects add-iam-policy-binding "$project_name" --member "serviceAccount:$cloud_admin_service_account" --role roles/compute.networkAdmin
+gcloud projects add-iam-policy-binding "$project_name" --member "serviceAccount:$cloud_admin_service_account" --role roles/compute.storageAdmin
+gcloud projects add-iam-policy-binding "$project_name" --member "serviceAccount:$cloud_admin_service_account" --role roles/cloudsql.admin
+gcloud projects add-iam-policy-binding "$project_name" --member "serviceAccount:$cloud_admin_service_account" --role "projects/$project_name/roles/ComputeFirewallAdmin"
+
+gcloud iam service-accounts add-iam-policy-binding $default_instance_service_account \
+    --project "$project_name"                                                        \
+    --member "serviceAccount:$cloud_admin_service_account"                           \
+    --role    roles/iam.serviceAccountUser
+
+gcloud iam service-accounts add-iam-policy-binding $deployer_service_account \
+    --project "$project_name"                                                \
+    --member "serviceAccount:$cloud_admin_service_account"                   \
+    --role    roles/iam.serviceAccountUser
+```
 
 ### Storage
 
@@ -62,7 +222,7 @@ Scripts in this repository allow you to build containers and cluster configurati
     You obviously need access that machine to do this.
     This is the recommended way to deploy in production.
 
-## Deployment
+## Initializing the deployment environments
 
 ### Cloning the repositories
 
@@ -244,6 +404,8 @@ ansible-playbook configure-user-authentication-for-clusters.yml    \
     --user       $user
 ```
 
+## Deployment
+
 All the instructions below assume that you're using local playbooks to run build and deployment commands on a new server.
 
 Note that if you're running the playbooks themselves from within that server too, you need to add `--connection=local` to your `ansible-playbook` calls.
@@ -264,7 +426,7 @@ ansible-playbook build-cluster-configuration.yml                   \
     --extra-vars cluster=$cluster                                  \
     --inventory  ../../concent-deployment-values/ansible_inventory \
     --user       $user
-```
+
 ansible-playbook build-test-and-push-containers.yml                \
     --extra-vars cluster=$cluster                                  \
     --inventory  ../../concent-deployment-values/ansible_inventory \
