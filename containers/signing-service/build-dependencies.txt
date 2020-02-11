@@ -2,5 +2,4 @@ gcc
 libssl-dev
 git
 pkg-config
-libffi-dev
 software-properties-common
