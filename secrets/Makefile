@@ -30,7 +30,7 @@ CLUSTER_SECRETS :=                                            \
     build/apply-secrets.sh                                    \
     build/delete-secrets.sh
 
-ifeq ($(CLUSTER),$(filter $(CLUSTER), concent-dev concent-staging))
+ifeq ($(CLUSTER),$(filter $(CLUSTER), concent-dev concent-staging concent-testnet))
     CLUSTER_SECRETS :=                               \
         $(CLUSTER_SECRETS)                           \
         build/templates/signing-service-secrets.yml
