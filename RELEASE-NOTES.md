@@ -1,3 +1,9 @@
+### 0.15.0
+
+Compatibility:
+- Golem: 0.22.2
+- Concent: 0.15.0
+
 ### 0.14.2
 
 Compatibility:
