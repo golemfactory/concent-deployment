@@ -5,10 +5,13 @@ metadata:
 spec:
   replicas:             {{ concent_versions[concent_version] | chained_get('replica_count.conductor_worker') | default(replica_count.conductor_worker, true) }}
   revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: conductor-worker
   template:
     metadata:
       labels:
-        run: conductor-worker
+        app: conductor-worker
     spec:
       containers:
         - name:             conductor-worker

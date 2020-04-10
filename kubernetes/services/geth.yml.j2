@@ -5,10 +5,13 @@ metadata:
 spec:
   replicas:             1
   revisionHistoryLimit: 1
+  selector:
+    matchLabels:
+      app: geth
   template:
     metadata:
       labels:
-        run: geth
+        app: geth
     spec:
       containers:
         - name:             geth

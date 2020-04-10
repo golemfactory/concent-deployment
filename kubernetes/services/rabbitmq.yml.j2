@@ -7,10 +7,13 @@ spec:
 # For now this has to be hard-coded to 1.
   replicas:             1
   revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: rabbitmq
   template:
     metadata:
       labels:
-        run: rabbitmq
+        app: rabbitmq
     spec:
 # The name of the RabbitMQ node (RABBITMQ_NODENAME) is by default the same as the hostname,
 # which in Kubernetes is the same in every container running on a single Kubernetes node (and is the same as the hostname of that node).

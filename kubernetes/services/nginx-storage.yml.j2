@@ -5,10 +5,13 @@ metadata:
 spec:
   replicas:             1
   revisionHistoryLimit: 1
+  selector:
+    matchLabels:
+      app: nginx-storage
   template:
     metadata:
       labels:
-        run: nginx-storage
+        app: nginx-storage
     spec:
       containers:
         - image:           {{ docker_registry }}/{{ image_prefix }}nginx-storage:{{ image_version }}

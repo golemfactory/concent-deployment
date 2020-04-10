@@ -5,10 +5,13 @@ metadata:
 spec:
   replicas:             {{ concent_versions[concent_version] | chained_get('replica_count.gatekeeper') | default(replica_count.gatekeeper, true) }}
   revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: gatekeeper
   template:
     metadata:
       labels:
-        run: gatekeeper
+        app: gatekeeper
     spec:
       containers:
         - name:             gatekeeper

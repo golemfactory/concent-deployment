@@ -5,10 +5,13 @@ metadata:
 spec:
   replicas:             {{ concent_versions[concent_version] | chained_get('replica_count.nginx_proxy') | default(replica_count.nginx_proxy, true) }}
   revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: nginx-proxy
   template:
     metadata:
       labels:
-        run: nginx-proxy
+        app: nginx-proxy
     spec:
       containers:
         - image:           {{ docker_registry }}/{{ image_prefix }}nginx-proxy:{{ image_version }}

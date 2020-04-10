@@ -5,10 +5,13 @@ metadata:
 spec:
   replicas:             1
   revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: signing-service
   template:
     metadata:
       labels:
-        run: signing-service
+        app: signing-service
     spec:
       containers:
         - name:             concent-signing-service

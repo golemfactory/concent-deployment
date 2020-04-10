@@ -5,13 +5,13 @@ metadata:
 spec:
   selector:
     matchLabels:
-      run: verifier
+      app: verifier
   serviceName: "verifier"
   replicas:    {{ concent_versions[concent_version] | chained_get('replica_count.verifier') | default(replica_count.verifier, true) }}
   template:
     metadata:
       labels:
-        run: verifier
+        app: verifier
     spec:
       terminationGracePeriodSeconds: 10
       containers:

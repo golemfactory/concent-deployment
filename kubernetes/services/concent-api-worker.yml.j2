@@ -5,10 +5,13 @@ metadata:
 spec:
   replicas:             {{ concent_versions[concent_version] | chained_get('replica_count.concent_api_worker') | default(replica_count.concent_api_worker, true) }}
   revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: concent-api-worker
   template:
     metadata:
       labels:
-        run: concent-api-worker
+        app: concent-api-worker
     spec:
       containers:
         - name:             concent-api-worker
