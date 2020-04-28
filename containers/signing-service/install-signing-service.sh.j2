@@ -9,7 +9,7 @@ virtualenv_dir=/usr/lib/signing_service/virtualenv
 virtualenv --python "$python" "$virtualenv_dir"
 source "$virtualenv_dir/bin/activate"
 cd /usr/lib/signing_service/signing-service/
-python -m pip install --upgrade pip
+python -m pip install --upgrade setuptools pip
 python -m pip install --requirement cacheable-requirements.lock
 
 # Create the daily_thresholds directory that will be contain files with information about transactions
