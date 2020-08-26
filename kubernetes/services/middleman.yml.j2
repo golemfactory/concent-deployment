@@ -1,14 +1,17 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind:       Deployment
 metadata:
   name: middleman
 spec:
   replicas:             1
   revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: middleman
   template:
     metadata:
       labels:
-        run: middleman
+        app: middleman
     spec:
       containers:
         - name:             middleman

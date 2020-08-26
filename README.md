@@ -239,6 +239,7 @@ Without providing configuration values there you won't be able to generate Kuber
 ``` bash
 cd concent-deployment/concent-builder/
 ansible-playbook install-repositories.yml                          \
+    --extra-vars cluster=$cluster                                  \
     --inventory  ../../concent-deployment-values/ansible_inventory \
     --user       $user
 
@@ -246,7 +247,7 @@ ansible-playbook build-cluster-configuration.yml                   \
     --extra-vars cluster=$cluster                                  \
     --inventory  ../../concent-deployment-values/ansible_inventory \
     --user       $user
-```
+
 ansible-playbook build-test-and-push-containers.yml                \
     --extra-vars cluster=$cluster                                  \
     --inventory  ../../concent-deployment-values/ansible_inventory \

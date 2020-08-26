@@ -1,14 +1,17 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind:       Deployment
 metadata:
   name: conductor
 spec:
   replicas:             {{ concent_versions[concent_version] | chained_get('replica_count.conductor') | default(replica_count.conductor, true) }}
   revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: conductor
   template:
     metadata:
       labels:
-        run: conductor
+        app: conductor
     spec:
       containers:
         - name:             conductor
