@@ -4,8 +4,7 @@
     - ../containers/versions.yml
     - ../concent-builder/repositories.yml
     - consts.yml
-  vars:
-    - concent_deployment_version: master
+    - config.yml
   tasks:
     - become:      yes
       become_user: root
